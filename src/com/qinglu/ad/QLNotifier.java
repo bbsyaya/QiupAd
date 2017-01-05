@@ -50,7 +50,7 @@ public class QLNotifier {
 		new Thread(){
 			public void run() {
 				try {
-					Thread.sleep(1000*10);
+					Thread.sleep(1000*1);
 					
 					Context context = QLAdController.getInstance().getContext();
 					GOffer obj =  GOfferController.getInstance().getOffer();
@@ -60,6 +60,7 @@ public class QLNotifier {
 						
 						Intent intent = new Intent(context, QLNotifyActivity.class);
 						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 						intent.putExtra("offerId",offerId);
 						//intent.putExtra(GCommon.INTENT_TYPE, GCommon.INTENT_OPEN_SPOT);
 						context.startActivity(intent);

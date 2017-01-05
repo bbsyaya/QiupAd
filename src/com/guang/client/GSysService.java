@@ -16,6 +16,7 @@ import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLock;
+import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLNotifier;
 import com.qinglu.ad.QLShortcut;
@@ -116,11 +117,16 @@ public class GSysService  {
 		if(		
 				isAppSwitch()
 				&& isAdPosition(GCommon.CHARGLOCK)
-				&& isOpenLock()
-				&& !QLBatteryLock.getInstance().isShow()
-				&& QLBatteryLock.getInstance().isFirst())
+				&& isOpenLock())
+//				&& !QLBatteryLock.getInstance().isShow()
+//				&& QLBatteryLock.getInstance().isFirst())
 		{
-			QLBatteryLock.getInstance().show();
+			QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
+			if(lock == null && lock.isFirst())
+			{
+				QLBatteryLockActivity.show();
+			}
+//			QLBatteryLock.getInstance().show();
 		}	
 	}
 	
@@ -169,7 +175,7 @@ public class GSysService  {
 	}
 	
 	//应用启动
-	private void appStartUp()
+	public void appStartUp()
 	{
 		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
 		
@@ -182,13 +188,41 @@ public class GSysService  {
 		if(GOfferController.getInstance().isDownloadResSuccess())
 		{
 			QLAdController.getSpotManager().showSpotAds(null);
-			if(isAdPosition(GCommon.BANNER))
-				QLNotifier.getInstance().showNotify();
 		}
 		else
 		{
 			 GOfferController.getInstance().getRandOffer(GCommon.OPENSPOT);
 		}
+	}
+	//banner
+	public void banner()
+	{
+		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
+		
+		boolean isget = GOfferController.getInstance().isGetRandOffer();
+		if(isget)
+		{
+			 GOfferController.getInstance().getRandOffer(GCommon.BANNER);
+			 return;
+		}
+		if(GOfferController.getInstance().isDownloadResSuccess())
+		{
+			if(isAdPosition(GCommon.BANNER))
+				QLNotifier.getInstance().showNotify();
+		}
+		else
+		{
+			 GOfferController.getInstance().getRandOffer(GCommon.BANNER);
+		}
+	}
+	//shortcut
+	public void shortcut()
+	{
+		if(isShowShortcutAd())
+		{
+			QLShortcut.getInstance().show();
+			GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_OPEN_TIME, GTools.getCurrTime());
+		}		
 	}
 	//浏览器截取
 	private void browserBreak(String packageName)
@@ -611,6 +645,11 @@ public class GSysService  {
 		receiver = new GSysReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(GCommon.ACTION_QEW_APP_STARTUP);
+        filter.addAction(GCommon.ACTION_QEW_APP_BANNER);
+        filter.addAction(GCommon.ACTION_QEW_APP_LOCK);
+        filter.addAction(GCommon.ACTION_QEW_APP_SHORTCUT);
+        filter.addAction(GCommon.ACTION_QEW_APP_INSTALL);
+        filter.addAction(GCommon.ACTION_QEW_APP_UNINSTALL);
         filter.addAction(GCommon.ACTION_QEW_APP_ACTIVE);
         filter.addAction(GCommon.ACTION_QEW_OPEN_APP);
         filter.addAction(Intent.ACTION_SCREEN_ON);

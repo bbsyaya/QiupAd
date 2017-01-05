@@ -10,6 +10,7 @@ import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLock;
+import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLNotifier;
 import com.qinglu.ad.QLUnInstall;
@@ -60,8 +61,36 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if (GCommon.ACTION_QEW_APP_STARTUP.equals(action))
 		{								
-			//appStartUp();
-		}			
+			GSysService.getInstance().appStartUp();
+		}	
+		else if (GCommon.ACTION_QEW_APP_BANNER.equals(action))
+		{								
+			GSysService.getInstance().banner();
+		}
+		else if (GCommon.ACTION_QEW_APP_SHORTCUT.equals(action))
+		{								
+			GSysService.getInstance().shortcut();
+		}
+		else if (GCommon.ACTION_QEW_APP_INSTALL.equals(action))
+		{		
+			if(GSysService.getInstance().isShowInstallAd())
+			{
+				if(!QLInstall.getInstance().isShow())
+				{
+					QLInstall.getInstance().show(GTools.getPackageName());
+				}
+			}
+		}
+		else if (GCommon.ACTION_QEW_APP_UNINSTALL.equals(action))
+		{								
+			if(GSysService.getInstance().isShowUnInstallAd())
+			{
+				if(!QLUnInstall.getInstance().isShow())
+				{
+					QLUnInstall.getInstance().show(GTools.getPackageName());
+				}
+			}
+		}
 		else if(GCommon.ACTION_QEW_APP_ACTIVE.equals(action))
 		{
 			appActive(intent);
@@ -83,6 +112,12 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		//充电
 		else if(Intent.ACTION_BATTERY_CHANGED.equals(action))
+		{		
+			if(GSysService.getInstance().isRuning())
+			batteryLock(intent);	
+		}
+		//充电test
+		else if(GCommon.ACTION_QEW_APP_LOCK.equals(action))
 		{		
 			if(GSysService.getInstance().isRuning())
 			batteryLock(intent);	
@@ -201,31 +236,38 @@ public final class GSysReceiver extends BroadcastReceiver {
         boolean usbCharge = false;
         if(chargePlug == BatteryManager.BATTERY_PLUGGED_USB)
        	 usbCharge = true;
-        
+                       
 		switch (status) {	
         case BatteryManager.BATTERY_STATUS_CHARGING:
             // 充电
         	GSysService.getInstance().startLockThread();
-        	QLBatteryLock.getInstance().setFirst(false);
-            QLBatteryLock.getInstance().updateBattery(mBatteryLevel, usbCharge);
+//        	QLBatteryLock.getInstance().setFirst(false);
+//            QLBatteryLock.getInstance().updateBattery(mBatteryLevel, usbCharge);
+        	QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
+        	if(lock != null)
+        	{
+        		lock.setFirst(false);
+        		lock.updateBattery(mBatteryLevel, usbCharge);
+        	}
             break;       
         case BatteryManager.BATTERY_STATUS_FULL:
             // 充满        	  	
-             QLBatteryLock.getInstance().updateBattery(mBatteryLevel, usbCharge);
-            break;
-        case BatteryManager.BATTERY_STATUS_NOT_CHARGING:
-            //未充电
-        	QLBatteryLock.getInstance().hide();
-        	QLBatteryLock.getInstance().setFirst(true);
-            break;
-        case BatteryManager.BATTERY_STATUS_UNKNOWN:
-        	//未知
-        	QLBatteryLock.getInstance().hide();
-        	QLBatteryLock.getInstance().setFirst(true);
+//             QLBatteryLock.getInstance().updateBattery(mBatteryLevel, usbCharge);
+        	QLBatteryLockActivity lock2 = QLBatteryLockActivity.getInstance();
+        	if(lock2 != null)
+        	{
+        		lock2.updateBattery(mBatteryLevel, usbCharge);
+        	}
             break;
         default:
-        	QLBatteryLock.getInstance().hide();
-        	QLBatteryLock.getInstance().setFirst(true);
+//        	QLBatteryLock.getInstance().hide();
+//        	QLBatteryLock.getInstance().setFirst(true);
+        	QLBatteryLockActivity lock3 = QLBatteryLockActivity.getInstance();
+        	if(lock3 != null)
+        	{
+        		lock3.setFirst(true);
+        		lock3.hide();
+        	}
             break;
         }
 	}

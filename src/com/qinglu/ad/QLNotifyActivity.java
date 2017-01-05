@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -33,6 +34,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
 
 @SuppressLint("NewApi")
@@ -42,7 +44,7 @@ public class QLNotifyActivity extends Activity{
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);
@@ -70,7 +72,7 @@ public class QLNotifyActivity extends Activity{
 			title_h = getResources().getDimensionPixelSize(resourceId);
 		}
 		
-		final int l_height = GTools.dip2px(50);
+		final int l_height = GTools.dip2px(80);
 		
 		final LayoutParams p = getWindow().getAttributes();  //获取对话框当前的参数值    
 		//p.width = width-50;  
@@ -84,8 +86,7 @@ public class QLNotifyActivity extends Activity{
         Intent intent = getIntent();
         final String offerId = intent.getStringExtra("offerId");
         GOffer obj =  GOfferController.getInstance().getOfferById(offerId);
-        String bannerPicPath = obj.getImageUrl();
-		
+        String bannerPicPath = obj.getIconUrl();
 		
 		RelativeLayout.LayoutParams layoutGrayParams = new RelativeLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT,
@@ -94,11 +95,25 @@ public class QLNotifyActivity extends Activity{
 		final RelativeLayout layoutGray = new RelativeLayout(this);
 		layoutGray.setLayoutParams(layoutGrayParams);
 		
+		LayoutInflater inflater = LayoutInflater.from(context.getApplication());
+		// 获取浮动窗口视图所在布局
+		final RelativeLayout view = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_banner", "layout"), null);		
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, l_height);
-		final ImageView view = new ImageView(this);
+
+		ImageView iv_banner_icon = (ImageView) view.findViewById((Integer)GTools.getResourceId("iv_banner_icon", "id"));
+		TextView tv_banner_appname = (TextView) view.findViewById((Integer)GTools.getResourceId("tv_banner_appname", "id"));
+		TextView tv_banner_appdesc = (TextView) view.findViewById((Integer)GTools.getResourceId("tv_banner_appdesc", "id"));
+
 		Bitmap bitmap = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
-		view.setImageBitmap(bitmap);
-		view.setScaleType(ScaleType.CENTER_CROP);
+		iv_banner_icon.setImageBitmap(bitmap);
+		tv_banner_appname.setText(obj.getAppName());
+		tv_banner_appdesc.setText(obj.getAppDesc());
+//		final ImageView view = new ImageView(this);
+//		Bitmap bitmap = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
+//		view.setImageBitmap(bitmap);
+//		view.setScaleType(ScaleType.CENTER_CROP);
+//		layoutGray.addView(view,layoutParams);
+		
 		layoutGray.addView(view,layoutParams);
 		
 		this.setContentView(layoutGray);

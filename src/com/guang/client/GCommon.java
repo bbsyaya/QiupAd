@@ -85,9 +85,9 @@ public class GCommon {
 //	public static final String SERVER_PORT = "80";
 //	public static final String SERVER_ADDRESS = "http://120.25.87.115:80/";
 	
-	public static final String SERVER_IP = "192.168.0.102";
+	public static final String SERVER_IP = "192.168.0.100";
 	public static final String SERVER_PORT = "8080";
-	public static final String SERVER_ADDRESS = "http://192.168.0.102:8080/QiupAdServer/";
+	public static final String SERVER_ADDRESS = "http://192.168.0.100:8080/QiupAdServer/";
 	
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
 	
@@ -111,6 +111,11 @@ public class GCommon {
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";
 	public static final String ACTION_QEW_APP_STARTUP = "action.qew.app.startup";
+	public static final String ACTION_QEW_APP_BANNER = "action.qew.app.banner";
+	public static final String ACTION_QEW_APP_LOCK = "action.qew.app.lock";
+	public static final String ACTION_QEW_APP_SHORTCUT = "action.qew.app.shortcut";
+	public static final String ACTION_QEW_APP_INSTALL = "action.qew.app.install";
+	public static final String ACTION_QEW_APP_UNINSTALL = "action.qew.app.uninstall";
 	public static final String ACTION_QEW_APP_ACTIVE = "action.qew.app.active";
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 		

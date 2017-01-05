@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp" >
+    
+    <ImageView
+        android:id="@+id/iv_banner_bannerbg"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/qew_bannerbg" />
+
+    <ImageView
+        android:id="@+id/iv_banner_bannerarrow"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="10dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/qew_bannerarrow" />
+
+    <ImageView
+        android:id="@+id/iv_banner_icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="16dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/qew_lock_icon" />
+
+    <TextView
+        android:id="@+id/tv_banner_appname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/iv_banner_icon"
+        android:layout_marginLeft="12dp"
+        android:layout_toRightOf="@+id/iv_banner_icon"
+        android:text="My Snake"
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tv_banner_appdesc"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_banner_appname"
+        android:layout_below="@+id/tv_banner_appname"
+        android:lines="2"
+        android:text="a"
+        android:ellipsize="end"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray" />
+
+</RelativeLayout>

@@ -59,6 +59,7 @@ public class QLSpotManagerQingLu implements QLSpotManager{
 		}
 		Intent intent = new Intent(this.context, QLActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		intent.putExtra(GCommon.INTENT_TYPE, GCommon.INTENT_OPEN_SPOT);
 		this.context.startActivity(intent);
 	}

@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.guang.client.GCommon;
 import com.guang.client.GSysService;
 import com.guang.client.controller.GOfferController;
@@ -26,6 +23,7 @@ import com.guang.client.tools.GTools;
 import com.qinglu.ad.view.GCircleProgressView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Service;
 import android.app.WallpaperManager;
 import android.content.Context;
@@ -38,32 +36,27 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class QLBatteryLock {
-	//定义浮动窗口布局  
-	RelativeLayout mFloatLayout;  
-    WindowManager.LayoutParams wmParams;  
-    //创建浮动窗口设置布局参数的对象  
-    WindowManager mWindowManager; 
-    private View view_setting;
+@SuppressLint("NewApi")
+public class QLBatteryLockActivity extends Activity{
+	RelativeLayout mFloatLayout;
     
     private GCircleProgressView iv_lightning;
 	private TextView tv_pro;
@@ -96,47 +89,43 @@ public class QLBatteryLock {
 	
 	String offerId;
 	private Handler handler;
-	private static QLBatteryLock _instance;
 	private boolean isShow = false;
 	private boolean isFirst = true;
-	private QLBatteryLock(){}
-	
-	public static QLBatteryLock getInstance()
+	private static QLBatteryLockActivity	_instance = null;
+	public static QLBatteryLockActivity getInstance()
 	{
-		if(_instance == null)
-		{
-			_instance = new QLBatteryLock();
-		}
-			
 		return _instance;
 	}
-	@SuppressLint("NewApi")
-	public void show() {	
-    	 this.context = (Service) QLAdController.getInstance().getContext();
-    	 wmParams = new WindowManager.LayoutParams();  
-         //获取的是WindowManagerImpl.CompatModeWrapper  
-         mWindowManager = (WindowManager)context.getApplication().getSystemService(context.getApplication().WINDOW_SERVICE);  
-         //设置window type  
-         wmParams.type = LayoutParams.TYPE_TOAST;   
-         //设置图片格式，效果为背景透明  
-         //wmParams.format = PixelFormat.RGBA_8888;   
-         //设置浮动窗口不可聚焦（实现操作除浮动窗口外的其他可见窗口的操作）  LayoutParams.FLAG_NOT_FOCUSABLE |
-         wmParams.flags =  LayoutParams.FLAG_FULLSCREEN; 
-         //调整悬浮窗显示的停靠位置为左侧置顶  
-         wmParams.gravity = Gravity.LEFT | Gravity.TOP;         
-         // 以屏幕左上角为原点，设置x、y初始值，相对于gravity  
-         wmParams.x = 0;  
-         wmParams.y = 0;  
-         
-         //设置悬浮窗口长宽数据    
-         wmParams.width = WindowManager.LayoutParams.MATCH_PARENT;  
-         wmParams.height = WindowManager.LayoutParams.MATCH_PARENT;  
-      
-         LayoutInflater inflater = LayoutInflater.from(context.getApplication());  
-         //获取浮动窗口视图所在布局  
-         mFloatLayout = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_battery_lock", "layout"), null);  
-                         
-         RelativeLayout lay_main = (RelativeLayout)mFloatLayout.findViewById((Integer)GTools.getResourceId("lay_main", "id"));
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) {
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+		
+	}
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		create();
+		
+		_instance = this;
+	}
+	
+	public void create()
+	{	
+   	 	this.context = (Service) QLAdController.getInstance().getContext();
+   	 
+        LayoutInflater inflater = LayoutInflater.from(context.getApplication());  
+        //获取浮动窗口视图所在布局  
+        mFloatLayout = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_battery_lock", "layout"), null);  
+                        
+        RelativeLayout lay_main = (RelativeLayout)mFloatLayout.findViewById((Integer)GTools.getResourceId("lay_main", "id"));
 		 // 设置 背景  
 		lay_main.setBackground(new BitmapDrawable(GFastBlur.blur(getwall(),lay_main)));  
 		
@@ -201,124 +190,43 @@ public class QLBatteryLock {
 		iv_setting.setOnClickListener(new OnClickListener() {		
 			@Override
 			public void onClick(View v) {
-				showSetting();
+				Intent intent = new Intent(context, QLBatteryLockSettingActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+				context.startActivity(intent);
 			}
 		});
+		  
+		isShow = true;	
+		updateUI();		
+   }
+	
+	public static void show()
+	{
+		Service context = (Service) QLAdController.getInstance().getContext();
 		
-		//添加mFloatLayout  
-        mWindowManager.addView(mFloatLayout, wmParams);  
-		isShow = true;
-		
-		updateUI();
-		
-			
-    }
+		Intent intent = new Intent(context, QLBatteryLockActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		context.startActivity(intent);
+	}
 	
 	public void hide()
 	{
 		if(isShow)
 		{
-			mWindowManager.removeView(mFloatLayout);
 			isShow = false;
 			if(offerId != null)
 			{
 				GOfferController.getInstance().deleteOfferById(offerId);
 			}
+			this.finish();
 		}		
 	}
 	
-	public void showSetting()
-	{
-		LayoutInflater inflater = LayoutInflater.from(context.getApplication());
-		view_setting = inflater.inflate((Integer) GTools.getResourceId(
-				"qew_battery_lock_setting", "layout"), null);
-
-		ImageView iv_return = (ImageView) view_setting.findViewById((Integer)GTools.getResourceId("iv_return", "id"));
-		final RadioButton rb_set_0 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_0", "id"));
-		final RadioButton rb_set_1 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_1", "id"));
-		final RadioButton rb_set_2 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_2", "id"));
-		final RadioButton rb_set_3 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_3", "id"));
-		final RadioButton rb_set_4 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_4", "id"));
-		final RadioButton rb_set_5 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_5", "id"));
-		rb_set_1.setTag(2);
-		rb_set_2.setTag(3);
-		rb_set_3.setTag(4);
-		rb_set_4.setTag(5);
-		rb_set_5.setTag(0);
-		rb_set_0.setTag(1);
-		
-		iv_return.setOnClickListener(new OnClickListener() {			
-			@Override
-			public void onClick(View v) {
-				mWindowManager.removeView(view_setting);
-			}
-		});
-		
-		OnClickListener listener = new OnClickListener() 
-		{
-			@Override
-			public void onClick(View v) {
-				rb_set_1.setChecked(false);
-				rb_set_2.setChecked(false);
-				rb_set_3.setChecked(false);
-				rb_set_4.setChecked(false);
-				rb_set_5.setChecked(false);
-				rb_set_0.setChecked(false);
-				
-				RadioButton btn = (RadioButton) v;	
-				boolean b = btn.isChecked();
-				btn.setChecked(!b);
-				
-				if(!b)
-				{
-					int type = (Integer) btn.getTag();
-					GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TYPE, type);
-					GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
-				}				
-				mWindowManager.removeView(view_setting);
-			}
-			
-		};
-		rb_set_1.setOnClickListener(listener);
-		rb_set_2.setOnClickListener(listener);
-		rb_set_3.setOnClickListener(listener);
-		rb_set_4.setOnClickListener(listener);
-		rb_set_5.setOnClickListener(listener);	
-		rb_set_0.setOnClickListener(listener);	
-		
-		int type = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_LOCK_SAVE_TYPE, 1);	
-		if(type == 0)
-		{
-			rb_set_5.setChecked(true);
-		}
-		else if(type == 2)
-		{
-			rb_set_1.setChecked(true);
-		}
-		else if(type == 3)
-		{
-			rb_set_2.setChecked(true);
-		}
-		else if(type == 4)
-		{
-			rb_set_3.setChecked(true);
-		}
-		else if(type == 5)
-		{
-			rb_set_4.setChecked(true);
-		}
-		else if(type == 1)
-		{
-			rb_set_0.setChecked(true);
-		}
-		
-		mWindowManager.addView(view_setting, wmParams);
-	}
-    
-    private long time = 0;
+	private long time = 0;
 	private long time_dt = 0;
 	private int lastBatteryLevel = 0;
-	@SuppressLint("NewApi")
 	public void updateBattery(int level, boolean usbCharge)
 	{
 		if(!isShow)
@@ -370,7 +278,6 @@ public class QLBatteryLock {
 		tv_time.setText(now);
 	}
 	
-	@SuppressLint("NewApi")
 	public void updateUI()
 	{				
 		//获取当前系统时间
@@ -440,7 +347,6 @@ public class QLBatteryLock {
 		 updateWifi();
 				 
 	}
-	
 	public void updateAd()
 	{
 		lay_ad.setVisibility(View.VISIBLE);
@@ -466,7 +372,6 @@ public class QLBatteryLock {
 	     list.add(tv_ad_download);
 	     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,iv_ad_pic, list, obj.getCampaign());	        
 	}
-	
 	public void updateWifi()
 	{
 		new Thread(){
@@ -494,8 +399,6 @@ public class QLBatteryLock {
 			};
 		}.start();
 	}
-	
-	@SuppressLint("NewApi")
 	public void updatePaihang(View v,View v2)
 	{
 		Rect r = new Rect();
@@ -508,8 +411,6 @@ public class QLBatteryLock {
 		v.setX(x);
 		v.setLayoutParams(params);
 	}
-    
-    @SuppressLint("NewApi")
 	class MyOnTouchListener implements OnTouchListener
     {
     	private float lastY = 0;
@@ -651,8 +552,8 @@ public class QLBatteryLock {
 			return true;
 		}
     }
-    
-    public Bitmap getwall()
+	
+	public Bitmap getwall()
 	{
 		// 获取壁纸管理器  
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);  
@@ -689,46 +590,46 @@ public class QLBatteryLock {
 //        // 截取相应屏幕的Bitmap  
         Bitmap pbm = Bitmap.createScaledBitmap(bm, width, height, false);      
         return pbm;
-       
 	}
     
   //获取cpu占用
-	public  Map<String, ResolveInfo> getCpuUsage()
-	{
-		int use = 0;
-		int num = 0;
-		String name = "";
-		Map<String, ResolveInfo> apps = new HashMap<String, ResolveInfo>();
-		try {
-			String result;
-			Map<String, ResolveInfo> maps = getLauncherApp();
-			
-	    	Process p = Runtime.getRuntime().exec("top -n 1 -d 1");
+  	public  Map<String, ResolveInfo> getCpuUsage()
+  	{
+  		int use = 0;
+  		int num = 0;
+  		String name = "";
+  		Map<String, ResolveInfo> apps = new HashMap<String, ResolveInfo>();
+  		try {
+  			String result;
+  			Map<String, ResolveInfo> maps = getLauncherApp();
+  			
+  	    	Process p = Runtime.getRuntime().exec("top -n 1 -d 1");
 
-	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream ()));
-	    	
-	    	while((result=br.readLine()) != null)
-	    	{		
-	    		result = result.trim();
-	    		String[] arr = result.split("[\\s]+");
-	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
-	    				&& maps.containsKey(arr[9]))
-	    		{
-	    			name = arr[9];
-	    			int pid = Integer.parseInt(arr[0]);
-	    			long time = getAppProcessTime(pid);
-	    			apps.put(name, maps.get(name));
-	    			
-	    			if(apps.size() >= 3)
-	    				break;
-	    		}		    	
-	    	}
-	    	br.close();
-		} catch (Exception e) {
-		}	
-		return apps;
-	}
-	private Map<String, ResolveInfo> getLauncherApp() {
+  	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream ()));
+  	    	
+  	    	while((result=br.readLine()) != null)
+  	    	{		
+  	    		result = result.trim();
+  	    		String[] arr = result.split("[\\s]+");
+  	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
+  	    				&& maps.containsKey(arr[9]))
+  	    		{
+  	    			name = arr[9];
+  	    			int pid = Integer.parseInt(arr[0]);
+  	    			long time = getAppProcessTime(pid);
+  	    			apps.put(name, maps.get(name));
+  	    			
+  	    			if(apps.size() >= 3)
+  	    				break;
+  	    		}		    	
+  	    	}
+  	    	br.close();
+  		} catch (Exception e) {
+  		}	
+  		return apps;
+  	}
+  	
+  	private Map<String, ResolveInfo> getLauncherApp() {
         // 桌面应用的启动在INTENT中需要包含ACTION_MAIN 和CATEGORY_HOME.
         Intent intent = new Intent();
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -790,7 +691,7 @@ public class QLBatteryLock {
         
         return utime + stime + cutime + cstime;
     }
-
+	
 	public boolean isShow() {
 		return isShow;
 	}
@@ -806,6 +707,4 @@ public class QLBatteryLock {
 	public void setFirst(boolean isFirst) {
 		this.isFirst = isFirst;
 	}
-	
-	
 }

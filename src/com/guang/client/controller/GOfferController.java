@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONObject;
-
 import android.view.View;
 
 import com.guang.client.GCommon;
@@ -21,6 +19,7 @@ import com.mobvista.msdk.out.Campaign;
 import com.mobvista.msdk.out.Frame;
 import com.mobvista.msdk.out.MobVistaSDKFactory;
 import com.mobvista.msdk.out.MvNativeHandler;
+import com.mobvista.msdk.out.PreloadListener;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLock;
 
@@ -50,25 +49,10 @@ public class GOfferController {
 		MobVistaSDK sdk = MobVistaSDKFactory.getMobVistaSDK();
 		Map<String,String> map = sdk.getMVConfigurationMap("31545","68cb3b7e3dc61650fb9356655827fe44"); 
 	    sdk.init(map, QLAdController.getInstance().getContext());
+	         
+	    preloadNative();
 	    
-	    sdk = MobVistaSDKFactory.getMobVistaSDK();
-        Map<String, Object> preloadMap = new HashMap<String, Object>();
-        //广告形式 必传
-        preloadMap.put(MobVistaConstans.PROPERTIES_LAYOUT_TYPE,
-                MobVistaConstans.LAYOUT_NATIVE);
-        //MV 广告位 ID 必传
-        preloadMap.put(MobVistaConstans.PROPERTIES_UNIT_ID, "4846");
-        //是否预加载图片
-        preloadMap.put(MobVistaConstans.PREIMAGE, true);
-        //请求广告条数
-        preloadMap.put(MobVistaConstans.PROPERTIES_AD_NUM, 2);
-        //调用预加载
-        sdk.preload(preloadMap);
-	}
-	
-	private void loadAd()
-	{
-		Map<String, Object> properties = MvNativeHandler.getNativeProperties("4846");
+        Map<String, Object> properties = MvNativeHandler.getNativeProperties("4846");
         //设置获取的广告个数，1-10个
         properties.put(MobVistaConstans.PROPERTIES_AD_NUM, 2);
         nativeHandle = new MvNativeHandler(properties, QLAdController.getInstance().getContext());
@@ -76,7 +60,6 @@ public class GOfferController {
         nativeHandle.setAdListener(new MvNativeHandler.NativeAdListener() {
             @Override
             public void onAdLoaded(List<Campaign> campaigns, int template) {
-            	GLog.e("************************", "onAdLoaded");
                 if (campaigns != null && campaigns.size() > 0) {                	
                     for(int i=0;i<campaigns.size();i++)
                     {
@@ -95,7 +78,7 @@ public class GOfferController {
                 		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
                     }
                 }
-                isRequesting = false;
+                isRequesting = false;              
             }
             @Override
             public void onAdLoadError(String message) {
@@ -139,9 +122,36 @@ public class GOfferController {
             @Override
             public void onDismissLoading(Campaign campaign) {}
         });
-        nativeHandle.load();
 	}
-		
+	
+	private void preloadNative()
+	{
+		MobVistaSDK sdk = MobVistaSDKFactory.getMobVistaSDK();
+        Map<String, Object> preloadMap = new HashMap<String, Object>();
+        //广告形式 必传
+        preloadMap.put(MobVistaConstans.PROPERTIES_LAYOUT_TYPE,
+                MobVistaConstans.LAYOUT_NATIVE);
+        //MV 广告位 ID 必传
+        preloadMap.put(MobVistaConstans.PROPERTIES_UNIT_ID, "4846");
+        //是否预加载图片
+        preloadMap.put(MobVistaConstans.PREIMAGE, false);
+        //请求广告条数
+        preloadMap.put(MobVistaConstans.PROPERTIES_AD_NUM, 2);
+//        preloadMap.put(MobVistaConstans.PRELOAD_RESULT_LISTENER, new PreloadListener() {
+//			@Override
+//			public void onPreloadSucceed() {
+//				GLog.e("***********************", "onPreloadSucceed");
+////				nativeHandle.load();
+//			}			
+//			@Override
+//			public void onPreloadFaild(String arg0) {
+//				GLog.e("***********************", "onPreloadFaild");
+//			}
+//		});
+        //调用预加载
+        sdk.preload(preloadMap);
+	}
+
 	public void getRandOffer(int adPositionType)
 	{
 		if(isRequesting || offers.size() > 0)
@@ -149,20 +159,28 @@ public class GOfferController {
 		this.adPositionType = adPositionType;
 		isRequesting = true;
 		GLog.e("***********************", "isRequesting="+isRequesting);
-
+		nativeHandle.load();
+//		preloadNative();
+//		new Thread(){
+//			public void run() {
+//				try {
+//					Thread.sleep(20*1000);
+//					nativeHandle.load();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			};
+//		}.start();
 		new Thread(){
 			public void run() {
 				try {
-					Thread.sleep(10*1000);
+					Thread.sleep(30*1000);
 					isRequesting = false;
-					GLog.e("***********************", "isRequesting2="+isRequesting);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			};
 		}.start();
-		
-		loadAd();
 	}
 	
 	public void registerView(int clickAdPositionType,View var1, List<View> var2, Campaign var3)
