@@ -9,7 +9,6 @@ import com.guang.client.controller.GOfferController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
-import com.qinglu.ad.QLBatteryLock;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLNotifier;

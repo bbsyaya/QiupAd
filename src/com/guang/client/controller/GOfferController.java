@@ -21,7 +21,7 @@ import com.mobvista.msdk.out.MobVistaSDKFactory;
 import com.mobvista.msdk.out.MvNativeHandler;
 import com.mobvista.msdk.out.PreloadListener;
 import com.qinglu.ad.QLAdController;
-import com.qinglu.ad.QLBatteryLock;
+import com.qinglu.ad.QLBatteryLockActivity;
 
 public class GOfferController {
 
@@ -92,7 +92,12 @@ public class GOfferController {
             	if(GCommon.CHARGLOCK == clickAdPositionType)
             	{
             		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
-            		QLBatteryLock.getInstance().hide();
+//            		QLBatteryLock.getInstance().hide();
+            		QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
+            		if(lock!=null)
+            		{
+            			lock.hide();
+            		}
             	}
             }
             @Override

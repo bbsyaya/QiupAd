@@ -1,7 +1,6 @@
 package com.guang.client;
 
 import com.qinglu.ad.QLAdController;
-import com.qinglu.ad.QLBatteryLock;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLUnInstall;
 
@@ -57,7 +56,7 @@ public class GSysUIService extends Service{
 		flag = intent.getIntExtra("flag", 0);
 		if(flag == 1)
 		{
-			QLBatteryLock.getInstance().show();
+//			QLBatteryLock.getInstance().show();
 		}
 		else if(flag == 2)
 		{
@@ -84,7 +83,7 @@ public class GSysUIService extends Service{
 		
 		if(flag == 1)
 		{
-			QLBatteryLock.getInstance().hide();
+//			QLBatteryLock.getInstance().hide();
 		}
 		else if(flag == 2)
 		{

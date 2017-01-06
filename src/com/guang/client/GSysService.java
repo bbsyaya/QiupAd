@@ -15,7 +15,6 @@ import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
-import com.qinglu.ad.QLBatteryLock;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLNotifier;
@@ -122,7 +121,7 @@ public class GSysService  {
 //				&& QLBatteryLock.getInstance().isFirst())
 		{
 			QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
-			if(lock == null && lock.isFirst())
+			if(lock == null)
 			{
 				QLBatteryLockActivity.show();
 			}

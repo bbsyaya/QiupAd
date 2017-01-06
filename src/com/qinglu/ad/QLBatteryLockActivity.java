@@ -124,7 +124,11 @@ public class QLBatteryLockActivity extends Activity{
         LayoutInflater inflater = LayoutInflater.from(context.getApplication());  
         //获取浮动窗口视图所在布局  
         mFloatLayout = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_battery_lock", "layout"), null);  
-                        
+        RelativeLayout.LayoutParams layoutGrayParams = new RelativeLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT,
+				LinearLayout.LayoutParams.MATCH_PARENT);
+		layoutGrayParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+		this.setContentView(mFloatLayout,layoutGrayParams);              
         RelativeLayout lay_main = (RelativeLayout)mFloatLayout.findViewById((Integer)GTools.getResourceId("lay_main", "id"));
 		 // 设置 背景  
 		lay_main.setBackground(new BitmapDrawable(GFastBlur.blur(getwall(),lay_main)));  
@@ -215,6 +219,7 @@ public class QLBatteryLockActivity extends Activity{
 	{
 		if(isShow)
 		{
+			_instance = null;
 			isShow = false;
 			if(offerId != null)
 			{
