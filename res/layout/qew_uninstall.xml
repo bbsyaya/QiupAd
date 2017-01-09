@@ -43,7 +43,7 @@
             android:layout_marginLeft="10dp"
             android:layout_toEndOf="@+id/tv_uninstall_name"
             android:layout_toRightOf="@+id/tv_uninstall_name"
-            android:text="卸载成功"
+            android:text="Uninstall succeed"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#E0E0E0"
             android:textSize="18sp"
@@ -79,10 +79,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="您节省了约"
+                android:text="Saves "
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#757575"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_uninstall_m"
@@ -91,15 +91,15 @@
                 android:text="0"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#42A5F5"
-                android:textSize="26sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="M空间，可供您安装应用"
+                android:text="m storage， can be installed applications"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#757575"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -107,16 +107,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="约 "
+                android:text="≈"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#757575" 
-                android:textSize="16sp"/>
+                android:textColor="#42A5F5" 
+                android:textSize="34sp"/>
 
             <TextView
                 android:id="@+id/tv_uninstall_num"
@@ -127,13 +127,7 @@
                 android:textColor="#42A5F5"
                 android:textSize="34sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" 个"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#757575"
-                android:textSize="16sp" />
+            
         </LinearLayout>
     </LinearLayout>
 
@@ -196,7 +190,9 @@
                     android:text="神威启示录"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#757575"
-                    android:textSize="12sp" />
+                    android:lines="1"
+					android:ellipsize="end"
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -220,7 +216,9 @@
                     android:text="炫斗无双"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#757575"
-                    android:textSize="12sp" />
+                    android:lines="1"
+					android:ellipsize="end"
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -244,7 +242,9 @@
                     android:text="贪婪洞窟"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#757575"
-                    android:textSize="12sp" />
+                    android:lines="1"
+					android:ellipsize="end"
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -268,7 +268,9 @@
                     android:text="皇室战龟"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#757575"
-                    android:textSize="12sp" />
+                    android:lines="1"
+					android:ellipsize="end"
+                    android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

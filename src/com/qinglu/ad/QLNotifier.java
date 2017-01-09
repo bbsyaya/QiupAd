@@ -5,10 +5,15 @@ package com.qinglu.ad;
 
 import java.util.List;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.guang.client.GCommon;
 import com.guang.client.controller.GOfferController;
+import com.guang.client.controller.GSMController;
 import com.guang.client.mode.GOffer;
+import com.guang.client.tools.GLog;
+import com.guang.client.tools.GTools;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -18,6 +23,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.RemoteViews;
 
 @SuppressLint("NewApi")
@@ -46,25 +53,20 @@ public class QLNotifier {
 			this.activity.finish();
 			this.activity = null;
 		}
-		
+		GSMController.getInstance().showBanner();
 		new Thread(){
 			public void run() {
 				try {
-					Thread.sleep(1000*1);
+					Thread.sleep(100);
 					
-					Context context = QLAdController.getInstance().getContext();
-					GOffer obj =  GOfferController.getInstance().getOffer();
-					if(obj != null && !isOpenDownActivity())
-					{
-						String offerId = obj.getId();
-						
-						Intent intent = new Intent(context, QLNotifyActivity.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-						intent.putExtra("offerId",offerId);
-						//intent.putExtra(GCommon.INTENT_TYPE, GCommon.INTENT_OPEN_SPOT);
-						context.startActivity(intent);
-					}				
+//					Context context = QLAdController.getInstance().getContext();
+//					Intent intent = new Intent(context, QLNotifyActivity.class);
+//					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//					intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+////					intent.putExtra("offerId",offerId);
+//					//intent.putExtra(GCommon.INTENT_TYPE, GCommon.INTENT_OPEN_SPOT);
+//					context.startActivity(intent);		
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}				

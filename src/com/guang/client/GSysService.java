@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.guang.client.controller.GOfferController;
+import com.guang.client.controller.GSMController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
@@ -66,12 +67,10 @@ public class GSysService  {
 		registerListener();
 		GUserController.getInstance().login();
 		GOfferController.getInstance().initMobVista();
-		new Thread(){
-			public void run() {				
-				QLInstall.getInstance().getInstallAppNum();
-				QLUnInstall.getInstance().getAppInfo(true);					
-			};
-		}.start();
+		GSMController.getInstance().init();
+		
+		QLInstall.getInstance().getInstallAppNum();
+		QLUnInstall.getInstance().getAppInfo(true);	
 	}
 	
 	public void startMainLoop()
@@ -86,19 +85,8 @@ public class GSysService  {
 				while(isMainLoop())
 				{				
 					try {		
-						if(		isPresent 
-								&& isWifi()
-								&& isAppSwitch()
-								&& isAdPosition(GCommon.OPENSPOT)
-								&& isShowTimeInterval()
-								&& isShowNum()
-								&& isTimeSlot()
-								&& GTools.getCpuUsage()
-								&& isMultiApp())
-						{							
-							appStartUp(); 
-						}	
-						judgeActive();						
+						startOpenSpot();
+						browserBreak();
 						Thread.sleep(100);
 					} catch (Exception e) {
 					}
@@ -106,10 +94,50 @@ public class GSysService  {
 				GUserController.getInstance().restarMainLoop();
 				GLog.e("------------------------", "restarMainLoop");
 			};
-		}.start();
-		
-		browserBreakAndShortcutThread();
+		}.start();	
 	}
+	//开屏
+	private boolean startOpenSpot()
+	{
+		if(		isPresent 
+				&& isWifi()
+				&& isAppSwitch()
+				&& isAdPosition(GCommon.OPENSPOT)
+				&& isShowTimeInterval()
+				&& isShowNum()
+				&& isTimeSlot()
+				&& GTools.getCpuUsage()
+				&& isMultiApp())
+		{							
+			appStartUp(); 
+			return true;
+		}	
+//		judgeActive();	
+		return false;
+	}
+	//浏览器插屏
+	private boolean browserBreak()
+	{
+		if(		isPresent 
+				&& isWifi()
+				&& isAppSwitch()
+				&& isAdPosition(GCommon.BROWSER_INTERCEPTION)
+				&& isShowBrowerTime())
+		{		
+			String s =  GTools.getBrowserCpuUsage();
+			if(s != null)
+			{
+				GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_OPEN_TIME, GTools.getCurrTime());
+				GSMController.getInstance().showSpot(s);
+				return true;
+			}			
+		}	
+		return false;
+	}
+	
+
+	
+	
 	
 	public void startLockThread()
 	{
@@ -198,21 +226,8 @@ public class GSysService  {
 	{
 		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
 		
-		boolean isget = GOfferController.getInstance().isGetRandOffer();
-		if(isget)
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.BANNER);
-			 return;
-		}
-		if(GOfferController.getInstance().isDownloadResSuccess())
-		{
-			if(isAdPosition(GCommon.BANNER))
-				QLNotifier.getInstance().showNotify();
-		}
-		else
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.BANNER);
-		}
+//		if(isAdPosition(GCommon.BANNER))
+			QLNotifier.getInstance().showNotify();
 	}
 	//shortcut
 	public void shortcut()
@@ -224,17 +239,17 @@ public class GSysService  {
 		}		
 	}
 	//浏览器截取
-	private void browserBreak(String packageName)
+	public void browserBreak(String packageName)
 	{
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_OPEN_TIME, GTools.getCurrTime());
-		
-		String url = "www.baidu.com";
-		PackageManager packageMgr = contexts.getPackageManager();
-		Intent intent = packageMgr.getLaunchIntentForPackage(packageName);
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_DEFAULT);
-        intent.setData(Uri.parse(url));
-        contexts.startActivity(intent);
+		GSMController.getInstance().showSpot(packageName);
+//		String url = "www.baidu.com";
+//		PackageManager packageMgr = contexts.getPackageManager();
+//		Intent intent = packageMgr.getLaunchIntentForPackage(packageName);
+//        intent.setAction(Intent.ACTION_VIEW);
+//        intent.addCategory(Intent.CATEGORY_DEFAULT);
+//        intent.setData(Uri.parse(url));
+//        contexts.startActivity(intent);
 	}
 		
 	
@@ -614,7 +629,7 @@ public class GSysService  {
 	{
 		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_OPEN_TIME, 0);
 		long n_time = GTools.getCurrTime();
-		return (n_time - time > 10 * 60 * 1000);	
+		return (n_time - time > 10 * 1 * 1000);	
 	}
 	
 	public boolean isShowBrowerAd()
@@ -644,6 +659,7 @@ public class GSysService  {
 		receiver = new GSysReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(GCommon.ACTION_QEW_APP_STARTUP);
+        filter.addAction(GCommon.ACTION_QEW_APP_BROWSER);
         filter.addAction(GCommon.ACTION_QEW_APP_BANNER);
         filter.addAction(GCommon.ACTION_QEW_APP_LOCK);
         filter.addAction(GCommon.ACTION_QEW_APP_SHORTCUT);

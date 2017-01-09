@@ -62,6 +62,10 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{								
 			GSysService.getInstance().appStartUp();
 		}	
+		else if (GCommon.ACTION_QEW_APP_BROWSER.equals(action))
+		{								
+			GSysService.getInstance().browserBreak("com.UCMobile");
+		}
 		else if (GCommon.ACTION_QEW_APP_BANNER.equals(action))
 		{								
 			GSysService.getInstance().banner();

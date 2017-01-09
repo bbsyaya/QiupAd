@@ -75,6 +75,14 @@ public class MainActivity extends ActionBarActivity {
 				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_UNINSTALL));
 			}
 		});
+		
+		btn = (Button) findViewById(R.id.browser);
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_BROWSER));
+			}
+		});
 	}
 
 	@Override

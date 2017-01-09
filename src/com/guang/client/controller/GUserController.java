@@ -256,6 +256,7 @@ public class GUserController {
 		//保存配置
 		if(rev != null && !"".equals(rev))
 		{
+			GLog.e("---------------", "Config读取成功");
 			GTools.saveSharedData(GCommon.SHARED_KEY_CONFIG, rev.toString());
 			//开始走流程
 			GSysService.getInstance().startMainLoop();

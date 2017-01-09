@@ -3,6 +3,8 @@ package com.guang.client.tools;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -35,8 +37,10 @@ import com.qinglu.ad.QLSize;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -50,6 +54,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.SystemClock;
@@ -232,6 +237,8 @@ public class GTools {
 			public void run() {
 				// 第一步：创建HttpClient对象
 				HttpClient httpCient = new DefaultHttpClient();
+				httpCient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 20000); 
+				httpCient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 60000);
 				HttpGet httpGet = new HttpGet(dataUrl);
 				HttpResponse httpResponse;
 				String response = null;
@@ -683,42 +690,42 @@ public class GTools {
 	}
 	
 	//获取cpu占用
-		public static String getBrowserCpuUsage()
-		{
-			int use = 0;
-			String name = null;
-			try {
-				String result;
-				String apps = (String) GTools.getConfig("browerWhiteList");
-		    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
+	public static String getBrowserCpuUsage()
+	{
+		int use = 0;
+		String name = null;
+		try {
+			String result;
+			String apps = (String) GTools.getConfig("browerWhiteList");
+	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
 
-		    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
-		    	int num = 0;
-		    	while((result=br.readLine()) != null)
-		    	{
-		    		result = result.trim();
-		    		String[] arr = result.split("[\\s]+");
-		    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
-		    				&& apps.contains(arr[9]))
-		    		{
-		    			String u = arr[2].split("%")[0];		    			
-		    			use = Integer.parseInt(u);
-		    			name = arr[9];	
-		    			break;
-		    		}	
-		    		if(num >= 20)
-		    			break;
-		    	}
-		    	br.close();
-			} catch (Exception e) {
-			}			
-			if(use >= 20)
-			{
-				GLog.e("-------------------", name);	
-				return name;
-			}
+	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    	int num = 0;
+	    	while((result=br.readLine()) != null)
+	    	{
+	    		result = result.trim();
+	    		String[] arr = result.split("[\\s]+");
+	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
+	    				&& apps.contains(arr[9]))
+	    		{
+	    			String u = arr[2].split("%")[0];		    			
+	    			use = Integer.parseInt(u);
+	    			name = arr[9];	
+	    			break;
+	    		}	
+	    		if(num >= 20)
+	    			break;
+	    	}
+	    	br.close();
+		} catch (Exception e) {
+		}			
+		if(use >= 8)
+		{
+			GLog.e("-------------------", name);	
 			return name;
 		}
+		return null;
+	}
 		
 	/** 
      * 将px值转换为dip或dp值，保证尺寸大小不变 
@@ -844,4 +851,96 @@ public class GTools {
         return use;
     }
    
+    /**
+     * 判断程序是否在前台运行
+     * @param context
+     * @return
+     */
+    public static boolean isAppInBackground(String packageName) {
+//    	int use = 0;
+//		String name = null;
+    	boolean b = true;
+		try {
+			String result;
+			String apps = packageName;
+	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
+
+	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    	int num = 0;
+	    	while((result=br.readLine()) != null)
+	    	{
+	    		result = result.trim();
+	    		String[] arr = result.split("[\\s]+");
+	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
+	    				&& apps.contains(arr[9]))
+	    		{
+//	    			String u = arr[2].split("%")[0];		    			
+//	    			use = Integer.parseInt(u);
+//	    			name = arr[9];	
+	    			//读取当前应用信息
+	    			String pidf = "/proc/"+arr[0]+"/cgroup";
+	    			String pids = readPidFile(pidf);
+	    			b = pids.contains("bg_non_interactive");
+	    			break;
+	    		}	
+	    		if(num >= 20)
+	    			break;
+	    	}
+	    	br.close();
+		} catch (Exception e) {
+		}			
+		
+        return b;
+    }
+    //获取应用流量
+    public static long getAppFlow(String packageName) {
+    	Context context = QLAdController.getInstance().getContext();
+    	PackageManager manager = context.getPackageManager();
+    	List<ApplicationInfo> appliactaionInfos = manager.getInstalledApplications(0);
+    	int uid = 0;
+    	long flow = 0;
+    	for(ApplicationInfo applicationInfo : appliactaionInfos){  
+    	    //proc/uid_stat/10086  
+    	    if(applicationInfo.packageName.equals(packageName))
+    	    {
+    	    	uid = applicationInfo.uid;    // 获得软件uid  
+    	    	break;
+    	    }
+    	}  
+    	if(uid != 0)
+    	{
+    		//读取当前应用信息
+			String uidf = "/proc/uid_stat/"+uid+"/tcp_rcv";
+			String uids = readPidFile(uidf);
+			flow = Long.parseLong(uids);
+    	}
+    	else
+    	{
+    		GLog.e("---------------", "uid=0");
+    	}
+        return flow;
+    }
+    
+    protected static String readPidFile(String path) {
+	    BufferedReader reader = null;
+	    StringBuilder output = new StringBuilder();
+	    try {
+	      reader = new BufferedReader(new FileReader(path));
+	      for (String line = reader.readLine(), newLine = ""; line != null; line = reader.readLine()) {
+	        output.append(newLine).append(line);
+	        newLine = "---";
+	      }
+	      
+	    } catch (IOException ignored) {
+        }
+	    finally {
+	      if (reader != null) {
+	        try {
+	          reader.close();
+	        } catch (IOException ignored) {
+	        }
+	      }
+	    }
+	    return output.toString();
+	  }
 }

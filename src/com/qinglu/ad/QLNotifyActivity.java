@@ -6,7 +6,9 @@ import org.json.JSONObject;
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GOfferController;
+import com.guang.client.controller.GSMController;
 import com.guang.client.mode.GOffer;
+import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GTools;
 
 import android.annotation.SuppressLint;
@@ -15,15 +17,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -35,7 +34,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
 
 @SuppressLint("NewApi")
 public class QLNotifyActivity extends Activity{
@@ -83,10 +81,9 @@ public class QLNotifyActivity extends Activity{
         
 		
                 
-        Intent intent = getIntent();
-        final String offerId = intent.getStringExtra("offerId");
-        GOffer obj =  GOfferController.getInstance().getOfferById(offerId);
-        String bannerPicPath = obj.getIconUrl();
+        GSMOffer obj = GSMController.getInstance().getOffer();
+        String bannerPicPath = obj.getLink();
+        final String target = obj.getTarget();
 		
 		RelativeLayout.LayoutParams layoutGrayParams = new RelativeLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT,
@@ -100,19 +97,10 @@ public class QLNotifyActivity extends Activity{
 		final RelativeLayout view = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_banner", "layout"), null);		
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, l_height);
 
-		ImageView iv_banner_icon = (ImageView) view.findViewById((Integer)GTools.getResourceId("iv_banner_icon", "id"));
-		TextView tv_banner_appname = (TextView) view.findViewById((Integer)GTools.getResourceId("tv_banner_appname", "id"));
-		TextView tv_banner_appdesc = (TextView) view.findViewById((Integer)GTools.getResourceId("tv_banner_appdesc", "id"));
+		ImageView iv_banner_banner = (ImageView) view.findViewById((Integer)GTools.getResourceId("iv_banner_banner", "id"));
 
 		Bitmap bitmap = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
-		iv_banner_icon.setImageBitmap(bitmap);
-		tv_banner_appname.setText(obj.getAppName());
-		tv_banner_appdesc.setText(obj.getAppDesc());
-//		final ImageView view = new ImageView(this);
-//		Bitmap bitmap = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
-//		view.setImageBitmap(bitmap);
-//		view.setScaleType(ScaleType.CENTER_CROP);
-//		layoutGray.addView(view,layoutParams);
+		iv_banner_banner.setImageBitmap(bitmap);
 		
 		layoutGray.addView(view,layoutParams);
 		
@@ -130,7 +118,7 @@ public class QLNotifyActivity extends Activity{
          animationSet.setAnimationListener(new AnimationListener() {					
 				@Override
 				public void onAnimationEnd(Animation animation) {
-					GTools.uploadStatistics(GCommon.SHOW,GCommon.BANNER,offerId);
+//					GTools.uploadStatistics(GCommon.SHOW,GCommon.BANNER,offerId);
 //					GOfferController.getInstance().setOfferTag(offerId);					
 				}
 				@Override
@@ -158,12 +146,16 @@ public class QLNotifyActivity extends Activity{
 		         animationSet.setAnimationListener(new AnimationListener() {					
 					@Override
 					public void onAnimationEnd(Animation animation) {
-						GTools.uploadStatistics(GCommon.CLICK,GCommon.BANNER,offerId);
+//						GTools.uploadStatistics(GCommon.CLICK,GCommon.BANNER,offerId);
 //						Intent intent = new Intent(context,QLDownActivity.class);
 //						intent.putExtra(GCommon.INTENT_OPEN_DOWNLOAD, GCommon.OPEN_DOWNLOAD_TYPE_OTHER);
 //						intent.putExtra(GCommon.AD_POSITION_TYPE, GCommon.BANNER);
 //						intent.putExtra("offerId",offerId);
 //						context.startActivity(intent);
+						
+						Uri uri = Uri.parse(target);
+		                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		                startActivity(intent);
 		
 						context.finish();						
 					}

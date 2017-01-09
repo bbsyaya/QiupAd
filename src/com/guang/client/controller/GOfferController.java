@@ -22,6 +22,7 @@ import com.mobvista.msdk.out.MvNativeHandler;
 import com.mobvista.msdk.out.PreloadListener;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
+import com.qinglu.ad.QLInstall;
 
 public class GOfferController {
 
@@ -75,7 +76,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign));  
                       
-                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
+//                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
                     }
                 }
                 isRequesting = false;              
@@ -87,7 +88,7 @@ public class GOfferController {
             }
             @Override
             public void onAdClick(Campaign campaign){         
-            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
+//            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
             	GOfferController.getInstance().deleteOfferById(campaign.getId());
             	if(GCommon.CHARGLOCK == clickAdPositionType)
             	{
@@ -98,6 +99,11 @@ public class GOfferController {
             		{
             			lock.hide();
             		}
+            	}
+            	else if(GCommon.INSTALL == clickAdPositionType)
+            	{
+            		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
+            		QLInstall.getInstance().hide();
             	}
             }
             @Override
