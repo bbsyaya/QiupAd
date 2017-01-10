@@ -34,6 +34,8 @@ public class GSMController {
 	private final String url = "http://soma.smaato.net/oapi/reqAd.jsp";
 	private String browserName;
 	private long flow = 0;//流量
+	private boolean isShowBanner = false;//是否显示banner标记
+	private boolean isShowSpot = false;//是否显示插屏标记
 	
 	private final String dim_320x50 = "xxlarge";
 	private final String dim_320x480 = "full_320x480";
@@ -61,14 +63,24 @@ public class GSMController {
 	
 	public void showBanner()
 	{
-		if(offer != null && !offer.isFinished())
-			return;
 		if(p_ip == null)
 		{
 			getNetIp();
 			return;
 		}
-		GTools.httpGetRequest(getUrl(dim_320x50), this, "revBannerAd", null);
+		if(isShowBanner)
+			return;
+		isShowBanner = true;
+		new Thread(){
+			public void run() {
+				try {
+					Thread.sleep(5*1000);
+					GTools.httpGetRequest(getUrl(dim_320x50), GSMController.getInstance(), "revBannerAd", null);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
 	}
 	public void revBannerAd(Object ob,Object rev)
 	{
@@ -89,10 +101,15 @@ public class GSMController {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}	
+		finally
+		{
+			isShowBanner = false;
+		}
 		GLog.e("--------revAd----------", "revAd"+rev.toString());
 	}
 	public void downloadBannerCallback(Object ob,Object rev)
 	{
+		isShowBanner = false;
 		offer.setFinished(true);
 		Context context = QLAdController.getInstance().getContext();
 		Intent intent = new Intent(context, QLNotifyActivity.class);
@@ -104,19 +121,20 @@ public class GSMController {
 	public void showSpot(String browserName)
 	{
 		this.browserName = browserName;
-		if(offer != null && !offer.isFinished())
-			return;
 		if(p_ip == null)
 		{
 			getNetIp();
 			return;
 		}
+		if(isShowSpot)
+			return;
 		long nflow = GTools.getAppFlow(browserName);
 		if(flow != 0)
 		{
 			if(nflow - flow > 100*1024)
 			{
 				flow = nflow;
+				isShowSpot = true;
 				GTools.httpGetRequest(getUrl(dim_320x480), this, "revSpotAd", null);
 			}
 		}
@@ -143,11 +161,16 @@ public class GSMController {
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-		}	
+		}
+		finally
+		{
+			isShowSpot = false;
+		}
 		GLog.e("--------revAd----------", "revAd"+rev.toString());
 	}
 	public void downloadSpotCallback(Object ob,Object rev)
 	{
+		isShowSpot = false;
 		offer.setFinished(true);
 		//判断是否在应用界面
 		if(GTools.isAppInBackground(browserName))

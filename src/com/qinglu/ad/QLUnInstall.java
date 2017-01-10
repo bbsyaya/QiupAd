@@ -219,7 +219,11 @@ public class QLUnInstall {
 				tv_uninstall_name_1.setText(name);
 				lay_uninstall_app_1.setVisibility(View.VISIBLE);
 				lay_uninstall_app_1.setTag(offerId);
-				lay_uninstall_app_1.setOnClickListener(listener);
+//				lay_uninstall_app_1.setOnClickListener(listener);
+				
+				List<View> list = new ArrayList<View>();
+			     list.add(lay_uninstall_app_1);
+			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_1, list, obj.getCampaign());	
 			}
 			else if(i == 1)
 			{
@@ -228,7 +232,11 @@ public class QLUnInstall {
 				tv_uninstall_name_2.setText(name);
 				lay_uninstall_app_2.setVisibility(View.VISIBLE);
 				lay_uninstall_app_2.setTag(offerId);
-				lay_uninstall_app_2.setOnClickListener(listener);
+//				lay_uninstall_app_2.setOnClickListener(listener);
+				
+				List<View> list = new ArrayList<View>();
+			     list.add(lay_uninstall_app_2);
+			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_2, list, obj.getCampaign());	
 			}
 			else if(i == 2)
 			{
@@ -237,7 +245,11 @@ public class QLUnInstall {
 				tv_uninstall_name_3.setText(name);
 				lay_uninstall_app_3.setVisibility(View.VISIBLE);
 				lay_uninstall_app_3.setTag(offerId);
-				lay_uninstall_app_3.setOnClickListener(listener);
+//				lay_uninstall_app_3.setOnClickListener(listener);
+				
+				List<View> list = new ArrayList<View>();
+			     list.add(lay_uninstall_app_3);
+			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_3, list, obj.getCampaign());	
 			}
 			else if(i == 3)
 			{
@@ -246,7 +258,11 @@ public class QLUnInstall {
 				tv_uninstall_name_4.setText(name);
 				lay_uninstall_app_4.setVisibility(View.VISIBLE);
 				lay_uninstall_app_4.setTag(offerId);
-				lay_uninstall_app_4.setOnClickListener(listener);
+//				lay_uninstall_app_4.setOnClickListener(listener);
+				
+				List<View> list = new ArrayList<View>();
+			     list.add(lay_uninstall_app_4);
+			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_4, list, obj.getCampaign());	
 			}
 		}
 		

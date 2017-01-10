@@ -18,7 +18,6 @@ import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
-import com.qinglu.ad.QLNotifier;
 import com.qinglu.ad.QLShortcut;
 import com.qinglu.ad.QLUnInstall;
 
@@ -85,8 +84,11 @@ public class GSysService  {
 				while(isMainLoop())
 				{				
 					try {		
-						startOpenSpot();
-						browserBreak();
+						boolean b = appStartUpThread();
+						if(!b)
+						{
+							b = browserBreakThread();
+						}
 						Thread.sleep(100);
 					} catch (Exception e) {
 					}
@@ -96,27 +98,26 @@ public class GSysService  {
 			};
 		}.start();	
 	}
-	//开屏
-	private boolean startOpenSpot()
+	//应用启动
+	private boolean appStartUpThread()
 	{
 		if(		isPresent 
 				&& isWifi()
 				&& isAppSwitch()
-				&& isAdPosition(GCommon.OPENSPOT)
+				&& (isAdPosition(GCommon.OPENSPOT) || isAdPosition(GCommon.BANNER))
 				&& isShowTimeInterval()
 				&& isShowNum()
 				&& isTimeSlot()
 				&& GTools.getCpuUsage()
 				&& isMultiApp())
 		{							
-			appStartUp(); 
+			banner();
 			return true;
 		}	
-//		judgeActive();	
 		return false;
 	}
 	//浏览器插屏
-	private boolean browserBreak()
+	private boolean browserBreakThread()
 	{
 		if(		isPresent 
 				&& isWifi()
@@ -224,10 +225,11 @@ public class GSysService  {
 	//banner
 	public void banner()
 	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
-		
-//		if(isAdPosition(GCommon.BANNER))
-			QLNotifier.getInstance().showNotify();
+		if(isAdPosition(GCommon.BANNER))
+		{
+			GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());			
+			GSMController.getInstance().showBanner();
+		}
 	}
 	//shortcut
 	public void shortcut()

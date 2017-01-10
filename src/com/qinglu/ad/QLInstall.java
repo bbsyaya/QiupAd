@@ -229,7 +229,7 @@ public class QLInstall {
 				
 				 List<View> list = new ArrayList<View>();
 			     list.add(lay_install_icon_1);
-			     GOfferController.getInstance().registerView(GCommon.INSTALL,lay_install_icon_1, list, obj.getCampaign());	
+			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_1, list, obj.getCampaign());	
 			}
 			else if(i == 1)
 			{
@@ -242,7 +242,7 @@ public class QLInstall {
 				
 				List<View> list = new ArrayList<View>();
 			     list.add(lay_install_icon_2);
-			     GOfferController.getInstance().registerView(GCommon.INSTALL,lay_install_icon_2, list, obj.getCampaign());	
+			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_2, list, obj.getCampaign());	
 			}
 			else if(i == 2)
 			{
@@ -255,7 +255,7 @@ public class QLInstall {
 				
 				List<View> list = new ArrayList<View>();
 			     list.add(lay_install_icon_3);
-			     GOfferController.getInstance().registerView(GCommon.INSTALL,lay_install_icon_3, list, obj.getCampaign());	
+			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_3, list, obj.getCampaign());	
 			}
 			else if(i == 3)
 			{
@@ -268,7 +268,7 @@ public class QLInstall {
 				
 				List<View> list = new ArrayList<View>();
 			     list.add(lay_install_icon_4);
-			     GOfferController.getInstance().registerView(GCommon.INSTALL,lay_install_icon_4, list, obj.getCampaign());
+			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_4, list, obj.getCampaign());
 			}
 		}
 		

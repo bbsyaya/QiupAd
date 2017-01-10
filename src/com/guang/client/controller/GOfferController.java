@@ -23,6 +23,7 @@ import com.mobvista.msdk.out.PreloadListener;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
+import com.qinglu.ad.QLUnInstall;
 
 public class GOfferController {
 
@@ -100,10 +101,15 @@ public class GOfferController {
             			lock.hide();
             		}
             	}
-            	else if(GCommon.INSTALL == clickAdPositionType)
+            	else if(GCommon.APP_INSTALL == clickAdPositionType)
             	{
             		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
             		QLInstall.getInstance().hide();
+            	}
+            	else if(GCommon.APP_UNINSTALL == clickAdPositionType)
+            	{
+            		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
+            		QLUnInstall.getInstance().hide();
             	}
             }
             @Override

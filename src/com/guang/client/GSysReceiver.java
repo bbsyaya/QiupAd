@@ -11,7 +11,6 @@ import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
-import com.qinglu.ad.QLNotifier;
 import com.qinglu.ad.QLUnInstall;
 
 import android.annotation.SuppressLint;
