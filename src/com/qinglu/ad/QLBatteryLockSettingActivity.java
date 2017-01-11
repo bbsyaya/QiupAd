@@ -42,12 +42,10 @@ public class QLBatteryLockSettingActivity extends Activity{
 		final RadioButton rb_set_2 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_2", "id"));
 		final RadioButton rb_set_3 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_3", "id"));
 		final RadioButton rb_set_4 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_4", "id"));
-		final RadioButton rb_set_5 = (RadioButton) view_setting.findViewById((Integer)GTools.getResourceId("rb_set_5", "id"));
 		rb_set_1.setTag(2);
 		rb_set_2.setTag(3);
 		rb_set_3.setTag(4);
 		rb_set_4.setTag(5);
-		rb_set_5.setTag(0);
 		rb_set_0.setTag(1);
 		
 		iv_return.setOnClickListener(new OnClickListener() {			
@@ -65,7 +63,6 @@ public class QLBatteryLockSettingActivity extends Activity{
 				rb_set_2.setChecked(false);
 				rb_set_3.setChecked(false);
 				rb_set_4.setChecked(false);
-				rb_set_5.setChecked(false);
 				rb_set_0.setChecked(false);
 				
 				RadioButton btn = (RadioButton) v;	
@@ -86,15 +83,10 @@ public class QLBatteryLockSettingActivity extends Activity{
 		rb_set_2.setOnClickListener(listener);
 		rb_set_3.setOnClickListener(listener);
 		rb_set_4.setOnClickListener(listener);
-		rb_set_5.setOnClickListener(listener);	
 		rb_set_0.setOnClickListener(listener);	
 		
 		int type = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_LOCK_SAVE_TYPE, 1);	
-		if(type == 0)
-		{
-			rb_set_5.setChecked(true);
-		}
-		else if(type == 2)
+		if(type == 2)
 		{
 			rb_set_1.setChecked(true);
 		}

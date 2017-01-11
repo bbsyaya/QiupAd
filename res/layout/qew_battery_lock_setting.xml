@@ -3,55 +3,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:background="#ffffff">
+    android:background="#152b4a">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_height="40dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal" >
+        android:background="#203351" >
 
         <ImageView
             android:id="@+id/iv_return"
             android:layout_width="20dp"
-            android:layout_height="30dp"
+            android:layout_height="20dp"
             android:layout_marginLeft="10dp"
             android:src="@drawable/qew_lock_set_return" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
+            android:layout_centerHorizontal="true"
             android:text="Setting"
-            android:textColor="#000000"
+            android:textColor="#ffffff"
             android:textSize="16sp" />
-    </LinearLayout>
+    </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:background="#000000" />
+    
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:gravity="center_vertical"
-        android:orientation="vertical" >
+        android:orientation="vertical" 
+        android:background="#203351">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
                 android:layout_marginLeft="20dp"
-                android:text="显示"
-                android:textColor="#000000"
+                android:layout_centerVertical="true"
+                android:text="Show Charging Locker"
+                android:textColor="#ffffff"
                 android:textSize="16sp" />
 
             <RadioButton
@@ -65,21 +63,22 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginBottom="10dp"
-            android:alpha="0.4"
-            android:background="#000000" />
+            android:alpha="0.1"
+            android:background="#ffffff" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+               android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
-                android:text="今日不再显示"
-                android:textColor="#000000"
+                android:text="Don't show today"
+                android:textColor="#ffffff"
                 android:textSize="16sp" />
 
             <RadioButton
@@ -93,21 +92,22 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginBottom="10dp"
-            android:alpha="0.4"
-            android:background="#000000" />
+            android:alpha="0.1"
+            android:background="#ffffff" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
-                android:text="3天内不再显示"
-                android:textColor="#000000"
+                android:text="Don't show in 3 days"
+                android:textColor="#ffffff"
                 android:textSize="16sp" />
 
             <RadioButton
@@ -121,21 +121,22 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginBottom="10dp"
-            android:alpha="0.4"
-            android:background="#000000" />
+            android:alpha="0.1"
+            android:background="#ffffff" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content" 
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
-                android:text="本周不再显示"
-                android:textColor="#000000"
+                android:text="Don't show in 1 week"
+                android:textColor="#ffffff"
                 android:textSize="16sp" />
 
             <RadioButton
@@ -149,21 +150,22 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginBottom="10dp"
-            android:alpha="0.4"
-            android:background="#000000" />
+            android:alpha="0.1"
+            android:background="#ffffff" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
-                android:text="本月不再显示"
-                android:textColor="#000000"
+                android:text="Don't show in 1 month"
+                android:textColor="#ffffff"
                 android:textSize="16sp" />
 
             <RadioButton
@@ -174,40 +176,8 @@
                 android:layout_marginRight="20dp" />
         </RelativeLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="10dp"
-            android:alpha="0.4"
-            android:background="#000000" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="20dp"
-                android:text="不再显示"
-                android:textColor="#000000"
-                android:textSize="16sp" />
-
-            <RadioButton
-                android:id="@+id/rb_set_5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="20dp" />
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="10dp"
-            android:alpha="0.4"
-            android:background="#000000" />
+       
+        
     </LinearLayout>
 
 </LinearLayout>

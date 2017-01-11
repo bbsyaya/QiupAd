@@ -123,7 +123,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="26dp"
                 android:layout_marginBottom="10dp"
-                android:text="耗电排行榜"
+                android:text="Battery use"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
         </RelativeLayout>

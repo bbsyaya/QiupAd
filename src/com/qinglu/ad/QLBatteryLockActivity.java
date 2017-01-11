@@ -23,6 +23,7 @@ import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.view.GCircleProgressView;
 
+import android.R;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Service;
@@ -186,6 +187,7 @@ public class QLBatteryLockActivity extends Activity{
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 				context.startActivity(intent);
+				overridePendingTransition(R.anim.fade_in, R.anim.fade_out); 
 			}
 		});
 		  

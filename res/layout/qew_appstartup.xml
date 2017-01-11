@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:alpha="0.5"
+    android:background="#000000" >
+
+    <Button
+        android:id="@+id/bt_appstartup_close"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/qew_browser_close" />
+    
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:layout_marginLeft="20dp"
+    	android:layout_marginRight="20dp"
+    	android:layout_marginTop="80dp">
+        
+        <ImageView
+            android:id="@+id/iv_appstartup_icon"
+            android:layout_width="60dp"
+    		android:layout_height="60dp"
+    		android:src="@drawable/qew_lock_icon"/>
+        
+        <RelativeLayout 
+            android:layout_width="match_parent"
+    		android:layout_height="60dp"
+    		android:layout_toRightOf="@id/iv_appstartup_icon"
+    		android:layout_marginLeft="20dp">
+    		
+            <TextView
+                android:id="@+id/tv_appstartup_appName"
+                android:layout_width="match_parent"
+    			android:layout_height="match_parent"
+    			android:textColor="#ffffff"
+    			android:textSize="20sp"
+    			android:text="My Snake"/>
+
+            <ProgressBar
+                android:id="@+id/pb_appstartup_eval"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="150dp"
+                android:layout_height="20dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="5dp"
+                android:progress="30"
+                android:progressDrawable="@drawable/qew_barcolor" />
+
+        </RelativeLayout>
+        
+    </RelativeLayout>
+
+</RelativeLayout>
