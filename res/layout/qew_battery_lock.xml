@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/lay_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,7 +15,8 @@
     <RelativeLayout
         android:id="@+id/lay_1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="30dp" 
+        android:layout_y="0dp">
 
         <TextView
             android:id="@+id/tv_time"
@@ -38,77 +39,77 @@
             android:layout_marginTop="10dp"
             android:src="@drawable/qew_lock_setting" />
     </RelativeLayout>
-
+    
     <RelativeLayout
-        android:id="@+id/lay_2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/lay_1"
-        android:layout_marginTop="20dp" >
+     android:id="@+id/lay_cicle"
+     android:layout_width="80dp"
+     android:layout_height="80dp"
+     android:layout_x="100dp"
+     android:layout_y="40dp" >
 
-        <RelativeLayout
-            android:id="@+id/lay_cicle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp" >
+     <ImageView
+         android:id="@+id/iv_cicle"
+         android:layout_width="80dp"
+         android:layout_height="80dp"
+         android:layout_centerHorizontal="true"
+         android:src="@drawable/qew_lock_cicle" />
 
-            <ImageView
-                android:id="@+id/iv_cicle"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/qew_lock_cicle" />
-
-            <com.qinglu.ad.view.GCircleProgressView
-                android:id="@+id/iv_lightning"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_centerHorizontal="true" />
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/tv_pro"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/lay_cicle"
-            android:layout_marginTop="-40dp"
-            android:layout_toRightOf="@id/lay_cicle"
-            android:text="37%"
-            android:textColor="#ffffff"
-            android:textSize="16sp" />
-
-        <LinearLayout
-            android:id="@+id/lay_sur_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/lay_cicle"
-            android:layout_centerHorizontal="true"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:alpha="0.6"
-                android:text="Charging remaining "
-                android:textColor="#ffffff"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_sur_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1 h 27 min"
-                android:textColor="#ffffff"
-                android:textSize="16sp" />
-        </LinearLayout>
+     <com.qinglu.ad.view.GCircleProgressView
+         android:id="@+id/iv_lightning"
+         android:layout_width="80dp"
+         android:layout_height="80dp"
+         android:layout_centerHorizontal="true" />
     </RelativeLayout>
+    
+    <TextView
+       android:id="@+id/tv_pro"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_x="175dp"
+       android:layout_y="80dp"
+       android:text="37%"
+       android:textColor="#ffffff"
+       android:textSize="16sp" />
+
+    <LinearLayout
+       android:id="@+id/lay_sur_time"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_x="70dp"
+       android:layout_y="110dp"
+       android:orientation="horizontal" >
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:alpha="0.6"
+           android:text="Charging remaining "
+           android:textColor="#ffffff"
+           android:textSize="16sp" />
+
+       <TextView
+           android:id="@+id/tv_sur_time"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="1 h 27 min"
+           android:textColor="#ffffff"
+           android:textSize="16sp" />
+    </LinearLayout>
+    
+    <ImageView
+       android:id="@+id/iv_hand"
+       android:layout_width="11dp"
+       android:layout_height="16dp"
+       android:layout_x="100dp"
+       android:layout_y="120dp"
+       android:src="@drawable/qew_lock_hand" />
 
     <LinearLayout
         android:id="@+id/lay_hand"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/lay_2"
+        android:layout_x="20dp"
+        android:layout_y="120dp"
         android:orientation="vertical" >
 
         <RelativeLayout
@@ -121,6 +122,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="26dp"
+                android:layout_marginBottom="10dp"
                 android:text="耗电排行榜"
                 android:textColor="#ffffff"
                 android:textSize="16sp" />
@@ -145,7 +147,7 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dip"
-                android:alpha="0.4"
+                android:alpha="0.1"
                 android:background="#ffffff" />
 
             <TextView
@@ -159,7 +161,7 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dip"
-                android:alpha="0.6"
+                android:alpha="0.1"
                 android:background="#ffffff" />
 
             <TextView
@@ -173,7 +175,7 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dip"
-                android:alpha="0.4"
+                android:alpha="0.1"
                 android:background="#ffffff" />
 
             <TextView
@@ -188,7 +190,7 @@
                 android:id="@+id/v_paihang_line"
                 android:layout_width="fill_parent"
                 android:layout_height="1dip"
-                android:alpha="0.6"
+                android:alpha="0.3"
                 android:background="#ffffff" />
 
             <FrameLayout
@@ -231,22 +233,19 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:orientation="vertical" >
 
                     <ImageView
                         android:id="@+id/iv_icon"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_centerInParent="true" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp" />
 
                     <TextView
                         android:id="@+id/tv_paihang_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/iv_icon"
-                        android:layout_centerInParent="true"
                         android:layout_marginTop="2dp"
                         android:text="应用名字"
                         android:textColor="#ffffff"
@@ -256,22 +255,19 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:orientation="vertical" >
 
                     <ImageView
                         android:id="@+id/iv_icon2"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_centerInParent="true" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"/>
 
                     <TextView
                         android:id="@+id/tv_paihang_name2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/iv_icon2"
-                        android:layout_centerInParent="true"
                         android:layout_marginTop="2dp"
                         android:text="应用名字"
                         android:textColor="#ffffff"
@@ -281,22 +277,19 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:orientation="vertical" >
 
                     <ImageView
                         android:id="@+id/iv_icon3"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_centerInParent="true" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp" />
 
                     <TextView
                         android:id="@+id/tv_paihang_name3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/iv_icon3"
-                        android:layout_centerInParent="true"
                         android:layout_marginTop="2dp"
                         android:text="应用名字"
                         android:textColor="#ffffff"
@@ -304,29 +297,21 @@
                 </LinearLayout>
             </TableRow>
         </TableLayout>
-
-        <RelativeLayout
+    </LinearLayout>
+    
+    <RelativeLayout
             android:id="@+id/lay_ad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp" >
 
-            <ImageView
-                android:id="@+id/iv_hand"
-                android:layout_width="11dp"
-                android:layout_height="16dp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="14dp"
-                android:src="@drawable/qew_lock_hand" />
-
             <View
                 android:id="@+id/iv_hand_line"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/iv_hand"
                 android:layout_marginTop="5dp"
-                android:alpha="0.5"
+                android:alpha="0.1"
                 android:background="#ffffff" />
 
             <LinearLayout
@@ -350,6 +335,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
+                    android:maxWidth="150dp"
                     android:text="今日头条"
                     android:textColor="#ffffff"
                     android:textSize="14sp" />
@@ -380,14 +366,13 @@
                 android:scaleType="centerCrop"
                android:src="@drawable/qew_lock_hand" />
         </RelativeLayout>
-    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/lay_bottom"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:layout_alignParentBottom="true"
-        android:background="#00ff00" >
+        android:layout_y="400dp"
+        android:background="@drawable/qew_lock_bottom" >
 
         <TextView
             android:id="@+id/tv_lock"
@@ -400,4 +385,4 @@
             android:textSize="18sp" />
     </RelativeLayout>
 
-</RelativeLayout>
+</AbsoluteLayout>

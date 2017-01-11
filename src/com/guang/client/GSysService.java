@@ -145,16 +145,15 @@ public class GSysService  {
 		if(		
 				isAppSwitch()
 				&& isAdPosition(GCommon.CHARGLOCK)
-				&& isOpenLock())
-//				&& !QLBatteryLock.getInstance().isShow()
-//				&& QLBatteryLock.getInstance().isFirst())
+				&& isOpenLock()
+				&& !QLBatteryLockActivity.isShow()
+				&& QLBatteryLockActivity.isFirst())
 		{
 			QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
 			if(lock == null)
 			{
 				QLBatteryLockActivity.show();
 			}
-//			QLBatteryLock.getInstance().show();
 		}	
 	}
 	

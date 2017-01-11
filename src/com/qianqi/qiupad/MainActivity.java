@@ -1,7 +1,6 @@
 package com.qianqi.qiupad;
 
 import com.guang.client.GCommon;
-import com.qinglu.ad.QIUPActivity;
 import com.qinglu.ad.QLActivity;
 import com.xugu.qewadlib.GService;
 
@@ -100,10 +99,7 @@ public class MainActivity extends ActionBarActivity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
-			Intent intent = new Intent(this, QIUPActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-			this.startActivity(intent);
+			
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

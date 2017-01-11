@@ -262,12 +262,10 @@ public final class GSysReceiver extends BroadcastReceiver {
         	}
             break;
         default:
-//        	QLBatteryLock.getInstance().hide();
-//        	QLBatteryLock.getInstance().setFirst(true);
+        	QLBatteryLockActivity.setFirst(true);
         	QLBatteryLockActivity lock3 = QLBatteryLockActivity.getInstance();
         	if(lock3 != null)
         	{
-        		lock3.setFirst(true);
         		lock3.hide();
         	}
             break;

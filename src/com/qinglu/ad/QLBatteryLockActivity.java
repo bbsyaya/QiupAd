@@ -19,6 +19,7 @@ import com.guang.client.GSysService;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GFastBlur;
+import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.view.GCircleProgressView;
 
@@ -39,6 +40,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings.Global;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -47,6 +49,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -56,13 +59,14 @@ import android.widget.TextView;
 
 @SuppressLint("NewApi")
 public class QLBatteryLockActivity extends Activity{
-	RelativeLayout mFloatLayout;
+	AbsoluteLayout mFloatLayout;
     
     private GCircleProgressView iv_lightning;
 	private TextView tv_pro;
 	private TextView tv_sur_time;
 	private TextView tv_time;
 	private RelativeLayout lay_cicle;
+	private AbsoluteLayout lay_main;
 	private LinearLayout lay;
 	private LinearLayout lay_sur_time;	
 	private ImageView iv_icon;
@@ -83,14 +87,16 @@ public class QLBatteryLockActivity extends Activity{
 	private Button tv_ad_download;
 	private ImageView iv_ad_pic;
 	
-	private RelativeLayout.LayoutParams lay_cicle_params;
+	private AbsoluteLayout.LayoutParams lay_cicle_params;
+	private int width;
+	private int height;
 
 	private Service context;
 	
 	String offerId;
 	private Handler handler;
-	private boolean isShow = false;
-	private boolean isFirst = true;
+	private static boolean isShow = false;
+	public static boolean isFirst = true;
 	private static QLBatteryLockActivity	_instance = null;
 	public static QLBatteryLockActivity getInstance()
 	{
@@ -108,7 +114,7 @@ public class QLBatteryLockActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		isShow = true;
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
@@ -117,19 +123,19 @@ public class QLBatteryLockActivity extends Activity{
 		_instance = this;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void create()
 	{	
    	 	this.context = (Service) QLAdController.getInstance().getContext();
    	 
         LayoutInflater inflater = LayoutInflater.from(context.getApplication());  
         //获取浮动窗口视图所在布局  
-        mFloatLayout = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_battery_lock", "layout"), null);  
-        RelativeLayout.LayoutParams layoutGrayParams = new RelativeLayout.LayoutParams(
-				LinearLayout.LayoutParams.MATCH_PARENT,
-				LinearLayout.LayoutParams.MATCH_PARENT);
-		layoutGrayParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+        mFloatLayout = (AbsoluteLayout) inflater.inflate((Integer)GTools.getResourceId("qew_battery_lock", "layout"), null);  
+        AbsoluteLayout.LayoutParams layoutGrayParams = new AbsoluteLayout.LayoutParams(
+        		AbsoluteLayout.LayoutParams.MATCH_PARENT,
+        		AbsoluteLayout.LayoutParams.MATCH_PARENT,0,0);
 		this.setContentView(mFloatLayout,layoutGrayParams);              
-        RelativeLayout lay_main = (RelativeLayout)mFloatLayout.findViewById((Integer)GTools.getResourceId("lay_main", "id"));
+        lay_main = (AbsoluteLayout)mFloatLayout.findViewById((Integer)GTools.getResourceId("lay_main", "id"));
 		 // 设置 背景  
 		lay_main.setBackground(new BitmapDrawable(GFastBlur.blur(getwall(),lay_main)));  
 		
@@ -161,35 +167,17 @@ public class QLBatteryLockActivity extends Activity{
 		tv_ad_download = (Button) mFloatLayout.findViewById((Integer)GTools.getResourceId("tv_ad_download", "id"));
 		iv_ad_pic = (ImageView) mFloatLayout.findViewById((Integer)GTools.getResourceId("iv_ad_pic", "id"));
 		
-		lay_cicle_params = (RelativeLayout.LayoutParams) lay_cicle.getLayoutParams();	
+		lay_cicle_params = (AbsoluteLayout.LayoutParams) lay_cicle.getLayoutParams();	
 		
-		lay_bottom.setBackground(new BitmapDrawable(GFastBlur.blur2(getwall2(),lay_bottom)));
 		
-		lay.setOnTouchListener(new MyOnTouchListener());
+//		lay_bottom.setBackground(new BitmapDrawable(GFastBlur.blur2(getwall2(),lay_bottom)));
 		
-		lay_bottom.setOnTouchListener(new OnTouchListener() {	
-			private float lastX = 0;
-			private float lastY = 0;
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				int action = event.getAction();
-				if(action == MotionEvent.ACTION_DOWN)
-				{
-					lastX = event.getX();
-					lastY = event.getY();
-				}
-				else if(action == MotionEvent.ACTION_UP)
-				{
-					if(Math.abs(event.getX() - lastX) >= GTools.dip2px(100) && 
-							Math.abs(event.getY() - lastY) <= GTools.dip2px(30))
-					{
-						GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
-						hide();
-					}
-				}
-				return true;
-			}
-		});
+		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+		width = wm.getDefaultDisplay().getWidth();
+		height = wm.getDefaultDisplay().getHeight();
+		
+		lay_main.setOnTouchListener(new MyOnTouchListener2());
+
 		
 		iv_setting.setOnClickListener(new OnClickListener() {		
 			@Override
@@ -202,11 +190,47 @@ public class QLBatteryLockActivity extends Activity{
 		});
 		  
 		isShow = true;	
-		updateUI();		
+		updateUI();	
+		
+		
    }
+	//设置位置坐标
+	private void resetPos()
+	{
+		lay_cicle_params.x = width/2 - GTools.dip2px(40);
+		lay_cicle_params.y = GTools.dip2px(60);
+		
+		AbsoluteLayout.LayoutParams tv_pro_params = (AbsoluteLayout.LayoutParams) tv_pro.getLayoutParams();
+		tv_pro_params.x = width/2 + GTools.dip2px(38);
+		tv_pro_params.y = GTools.dip2px(120);
+		
+		AbsoluteLayout.LayoutParams lay_sur_time_params = (AbsoluteLayout.LayoutParams) lay_sur_time.getLayoutParams();
+		lay_sur_time_params.x = width/2 - lay_sur_time.getWidth()/2;
+		lay_sur_time_params.y = GTools.dip2px(160);
+		
+		AbsoluteLayout.LayoutParams lay_hand_params = (AbsoluteLayout.LayoutParams) lay.getLayoutParams();
+		lay_hand_params.x = width/2 - lay.getWidth()/2;
+		lay_hand_params.y = GTools.dip2px(180);
+		
+		AbsoluteLayout.LayoutParams iv_hand_params = (AbsoluteLayout.LayoutParams) iv_hand.getLayoutParams();
+		iv_hand_params.x = width/2 - iv_hand.getWidth()/2;
+		iv_hand_params.y = lay_hand_params.y + lay.getHeight() + GTools.dip2px(10);
+		
+		AbsoluteLayout.LayoutParams lay_ad_params = (AbsoluteLayout.LayoutParams) lay_ad.getLayoutParams();
+		lay_ad_params.width = (int) (width*0.85f);
+		lay_ad_params.x = width/2 - lay_ad_params.width/2;
+		lay_ad_params.y = iv_hand_params.y + iv_hand.getHeight() + GTools.dip2px(10);
+		
+		AbsoluteLayout.LayoutParams lay_bottom_params = (AbsoluteLayout.LayoutParams) lay_bottom.getLayoutParams();
+		lay_bottom_params.x = width/2 - lay_bottom.getWidth()/2;
+		lay_bottom_params.y = height - lay_bottom.getHeight();
+		
+		iv_hand.setVisibility(View.GONE);
+	}
 	
 	public static void show()
 	{
+		isShow = true;
 		Service context = (Service) QLAdController.getInstance().getContext();
 		
 		Intent intent = new Intent(context, QLBatteryLockActivity.class);
@@ -294,6 +318,15 @@ public class QLBatteryLockActivity extends Activity{
 		 Iterator<Entry<String, ResolveInfo>> iter = apps.entrySet().iterator();
 		 PackageManager pm =  context.getPackageManager();
 		 int i = 0;
+		 iv_icon.setVisibility(View.GONE);
+		 iv_icon2.setVisibility(View.GONE);
+		 iv_icon3.setVisibility(View.GONE);
+		 tv_paihang_name.setVisibility(View.GONE);
+		 tv_paihang_name2.setVisibility(View.GONE);
+		 tv_paihang_name3.setVisibility(View.GONE);
+		 frame1.setVisibility(View.GONE);
+		 frame2.setVisibility(View.GONE);
+		 frame3.setVisibility(View.GONE);
 		 while(iter.hasNext())
 		 {
 			 Entry<String, ResolveInfo> entry = iter.next();
@@ -302,16 +335,25 @@ public class QLBatteryLockActivity extends Activity{
 			 String appName = (String) info.activityInfo.applicationInfo.loadLabel(pm); 
 			 if(i == 0)
 			 {
+				 iv_icon.setVisibility(View.VISIBLE);
+				 tv_paihang_name.setVisibility(View.VISIBLE);
+				 frame1.setVisibility(View.VISIBLE);
 				 iv_icon.setImageDrawable(d);
 				 tv_paihang_name.setText(appName);
 			 }
 			 else if(i == 1)
 			 {
+				 iv_icon2.setVisibility(View.VISIBLE);
+				 tv_paihang_name2.setVisibility(View.VISIBLE);
+				 frame2.setVisibility(View.VISIBLE);
 				 iv_icon2.setImageDrawable(d);
 				 tv_paihang_name2.setText(appName);
 			 }
 			 else if(i == 2)
 			 {
+				 iv_icon3.setVisibility(View.VISIBLE);
+				 tv_paihang_name3.setVisibility(View.VISIBLE);
+				 frame3.setVisibility(View.VISIBLE);
 				 iv_icon3.setImageDrawable(d);
 				 tv_paihang_name3.setText(appName);
 			 }
@@ -326,7 +368,9 @@ public class QLBatteryLockActivity extends Activity{
 				{
 					updatePaihang(frame1,iv_icon);
 					updatePaihang(frame2,iv_icon2);
-					updatePaihang(frame3,iv_icon3);					
+					updatePaihang(frame3,iv_icon3);	
+					
+					resetPos();
 				}
 				if(msg.what == 0x12)
 				{
@@ -340,7 +384,7 @@ public class QLBatteryLockActivity extends Activity{
 		 new Thread(){
 			 public void run() {
 				 try {
-					Thread.sleep(100);
+					Thread.sleep(20);
 					handler.sendEmptyMessage(0x11);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -355,6 +399,7 @@ public class QLBatteryLockActivity extends Activity{
 	public void updateAd()
 	{
 		lay_ad.setVisibility(View.VISIBLE);
+		iv_hand.setVisibility(View.VISIBLE);
 		GOffer obj =  GOfferController.getInstance().getOffer();
 		if(obj != null)
 		{
@@ -373,9 +418,8 @@ public class QLBatteryLockActivity extends Activity{
 		} 
 
 		 List<View> list = new ArrayList<View>();
-	     list.add(iv_ad_pic);
 	     list.add(tv_ad_download);
-	     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,iv_ad_pic, list, obj.getCampaign());	        
+	     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,tv_ad_download, list, obj.getCampaign());	        
 	}
 	public void updateWifi()
 	{
@@ -412,151 +456,391 @@ public class QLBatteryLockActivity extends Activity{
 		params.height = h;
 		params.topMargin = -h;
 		v2.getGlobalVisibleRect(r);
-		float x = r.left + (r.right - r.left)/2 - v.getWidth()/2 - GTools.dip2px(40);					
+		float x = r.left + (r.right - r.left)/2 - v.getWidth()/2 - GTools.dip2px(60);					
 		v.setX(x);
 		v.setLayoutParams(params);
 	}
-	class MyOnTouchListener implements OnTouchListener
-    {
-    	private float lastY = 0;
-		private float lastDis = 0;
-		private float changeH = 0;
-		private int lay_cicleH = 0;
-		private int lay_cicle_top = 0;
-		private float lay_cicleX = 0;
-		private float tv_proX = 0;
-		private float tv_proY = 0;
-		private float lay_sur_timeX = 0;
-		private float lay_sur_timeY = 0;
+	class MyOnTouchListener2 implements OnTouchListener
+	{
+		private float lastX;
+		private float lastY;
+		private float moveDisY;
+		private float moveDisX;
+		private int dis;
+		private int dis2;
+		private Handler handler;
+		private boolean moveLeft;
+		private boolean moveTop;
 		@Override
-		public boolean onTouch(View v, MotionEvent event) {				
-			if(event.getAction() == MotionEvent.ACTION_MOVE)
+		public boolean onTouch(View v, MotionEvent event) {
+			int action = event.getAction();
+			if(action == MotionEvent.ACTION_DOWN)
 			{
-				float y = event.getY();					
-				int dis = (int) Math.abs(y - lastY);
-				if(y < lastY)
-					dis = -dis;
-				if(Math.abs(dis) >= GTools.dip2px(5))
-				{			
-					int currLayTopH = lay_cicle_params.bottomMargin;										
-					int disTopY = dis + currLayTopH;
-					disTopY = disTopY > lay_cicle_top ? (int) lay_cicle_top : disTopY;
-					disTopY = disTopY < 0 ? 0 : disTopY;						
-					lay_cicle_params.bottomMargin = disTopY;
-					lay_cicle.setLayoutParams(lay_cicle_params);																	
-					
-					int currLayX = (int) lay_cicle.getX();
-					int disX = (int) (dis*0.3f + currLayX);
-					int disLeft = GTools.dip2px(20);
-					disX = disX > lay_cicleX ? (int) lay_cicleX : disX;
-					disX = disX < disLeft ? disLeft : disX;
-					lay_cicle.setX(disX);
-					
-					float altopy = disX-disLeft;
-					int al = (int) (altopy/lay_cicleX * 255);
-					al = al < 2 ? 2 : al;
-					iv_hand.setImageAlpha(al);	
-					
-					if((disTopY == 0 && dis < 0 && lastDis < 0) || 
-							(disTopY == lay_cicle_top && dis > 0 && lastDis > 0))
-					{
-						int currLayH = lay_cicle.getLayoutParams().height;										
-						int disY = (int) (dis*0.1 + currLayH);
-						disY = disY > lay_cicleH ? (int) lay_cicleH : disY;
-						disY = disY < changeH ? (int) changeH : disY;						
-						lay_cicle_params.height = disY;
-						lay_cicle_params.width = disY;
-						lay_cicle.setLayoutParams(lay_cicle_params);
-																									
-						
-						//当前电量百分比
-						int currProX = (int) tv_pro.getX();
-						int currProY = (int) tv_pro.getY();
-						int proDisX = (int) (dis*0.3f + currProX);
-						int proDisY = (int) (dis*0.03 + currProY);
-						int circle_pro_disX = disX + lay_cicle_params.width + GTools.dip2px(20);
-						int circle_pro_disY = (int) (tv_proY - lay_cicle_params.height);
-						proDisX = proDisX < circle_pro_disX ? circle_pro_disX : proDisX;
-						proDisX = proDisX > tv_proX ? (int) tv_proX : proDisX;							
-						proDisY = proDisY > tv_proY ? (int) tv_proY : proDisY;
-						proDisY = proDisY < circle_pro_disY ? circle_pro_disY : proDisY;
-						tv_pro.setX(proDisX);
-						tv_pro.setY(proDisY);
-						
-						
-						//剩余充电时间 y
-						int currLaySurTimeY = (int) lay_sur_time.getY();
-						int currLaySurTimeDisY = (int) (dis*0.05 + currLaySurTimeY);
-						int circle_time_disY = (int) (lay_cicle.getY() + lay_cicle_params.height);
-						currLaySurTimeDisY = currLaySurTimeDisY > lay_sur_timeY ? (int) lay_sur_timeY : currLaySurTimeDisY;
-						//向上移动
-						if(dis < 0 && lastDis < 0 && (disX + lay_cicle_params.width/2) > lay_sur_time.getX() )
-						{
-							currLaySurTimeDisY = currLaySurTimeDisY < circle_time_disY ? circle_time_disY : currLaySurTimeDisY;
-						}	
-						circle_time_disY = (int) (tv_proY - GTools.dip2px(30));
-						currLaySurTimeDisY = currLaySurTimeDisY < circle_time_disY ? circle_time_disY : currLaySurTimeDisY;
-						lay_sur_time.setY(currLaySurTimeDisY);
-						
-						//剩余充电时间 X 
-						int currLaySurTimeX = (int) lay_sur_time.getX();
-						
-						//向上移动
-						if(dis < 0 && lastDis < 0)
-						{
-							int currLaySurTimeDisX = (int) (-dis*0.5 + currLaySurTimeX);
-							int circle_time_disX = proDisX;	
-							currLaySurTimeDisX = currLaySurTimeDisX > circle_time_disX ? (int) circle_time_disX : currLaySurTimeDisX;
-							lay_sur_time.setX(currLaySurTimeDisX);
-							
-							if(disX == disLeft && al < 3)
-							{
-								iv_hand.setVisibility(View.GONE);	
-								lastY = y;	
-							}
-															
-						}
-						//向下移动
-						if(dis > 0 && lastDis > 0)
-						{
-							int currLaySurTimeDisX = -dis + currLaySurTimeX;
-							int circle_time_disX = (int) lay_sur_timeX;	
-							currLaySurTimeDisX = currLaySurTimeDisX < circle_time_disX ? (int) circle_time_disX : currLaySurTimeDisX;
-							lay_sur_time.setX(currLaySurTimeDisX);
-							
-							if(disX == lay_cicleX  && al > 4)
-							{
-								iv_hand.setVisibility(View.VISIBLE);
-								lastY = y;	
-							}
-								
-						}						
-					}		
-				}
-				//lastY = y;	
-				lastDis = dis;
-			}
-			else if(event.getAction() == MotionEvent.ACTION_DOWN)
-			{	
-				if(lay_cicleH == 0)
+				moveLeft = false;
+				moveTop = false;
+				lastX = moveDisX = event.getRawX();
+				lastY = moveDisY = event.getRawY();
+				if(handler == null)
 				{
-					lay_cicle_top = lay_cicle_params.bottomMargin;
-					lay_cicleH = lay_cicle.getLayoutParams().height;
-					changeH = lay_cicleH * 0.7f;
-					lay_cicleX = lay_cicle.getX();
-					tv_proX = tv_pro.getX();
-					tv_proY = tv_pro.getY();
-					lay_sur_timeX = lay_sur_time.getX();
-					lay_sur_timeY = lay_sur_time.getY();
+					init();
 				}
-
-				lastY = event.getY();
 			}
-			
-			
+			else if(action == MotionEvent.ACTION_MOVE)
+			{
+				float disX = Math.abs(event.getRawX()-lastX);
+				float disY = Math.abs(event.getRawY()-lastY);
+				if(disX - disY > 8 && !moveTop)
+				{
+					moveLeft = true;
+				}
+				if(disY - disX > 8 && !moveLeft)
+				{
+					moveTop = true;
+				}
+				if(lay_ad.getVisibility() == View.VISIBLE && moveTop)
+				{
+					int dis = (int) (event.getRawY() - moveDisY) + this.dis;
+					updateUI(dis);
+				}
+				if(moveLeft)
+				{
+					int dis2 = (int) (event.getRawX() - moveDisX);
+					dragActivity(dis2);
+				}
+				
+				lastX = event.getRawX();
+				lastY = event.getRawY();
+			}
+			else if(action == MotionEvent.ACTION_UP)
+			{
+				if(lay_ad.getVisibility() == View.VISIBLE && moveTop)
+				{
+					this.dis = (int) (event.getRawY() - moveDisY) + this.dis;
+					animateThread();
+				}
+				if(moveLeft)
+				{
+					this.dis2 = (int) (event.getRawX() - moveDisX);
+					int dis2 = (int) Math.abs(event.getRawX() - moveDisX);
+					if(dis2<width/3*2)
+						animateThread3();
+					else
+					{
+						animateThread2();
+					}
+				}
+			}
 			return true;
 		}
-    }
+		
+		public void init()
+		{
+			handler = new Handler(){
+				@Override
+				public void dispatchMessage(Message msg) {
+					super.dispatchMessage(msg);
+					if(msg.what == 0x01)
+					{
+						updateUI(dis);
+					}
+					else if(msg.what == 0x02)
+					{
+						dragActivity(dis2);
+						if(dis2 == width || dis2 == -width)
+						{
+							GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
+							hide();
+						}
+					}
+					else if(msg.what == 0x03)
+					{
+						dragActivity(dis2);
+					}
+				}
+			};
+		}
+		
+		public void animateThread()
+		{
+			new Thread(){
+				public void run() {
+					while(dis != 0 && dis != -300)
+					{
+						try {
+							if(dis>-150)
+							{
+								dis += 5;
+							}
+							else if(dis<=-150)
+							{
+								dis -= 5;
+							}
+							if(dis > 0)
+								dis = 0;
+							else if(dis<-300)
+								dis = -300;
+							handler.sendEmptyMessage(0x01);
+							Thread.sleep(10);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				};
+			}.start();
+		}
+		public void animateThread2()
+		{
+			new Thread(){
+				public void run() {
+					while(dis2 != width && dis2 != -width)
+					{
+						try {
+							if(dis2>0)
+							{
+								dis2 += 20;
+								if(dis2 > width)
+									dis2 = width;
+							}
+							else if(dis2<=0)
+							{
+								dis2 -= 20;
+								if(dis2 < -width)
+									dis2 = -width;
+							}
+							handler.sendEmptyMessage(0x02);
+							Thread.sleep(8);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				};
+			}.start();
+		}
+		public void animateThread3()
+		{
+			new Thread(){
+				public void run() {
+					while(dis2 != 0)
+					{
+						try {
+							if(dis2>0)
+							{
+								dis2 -= 20;
+								if(dis2 < 0)
+									dis2 = 0;
+							}
+							else if(dis2<0)
+							{
+								dis2 += 20;
+								if(dis2 > 0)
+									dis2 = 0;
+							}
+							handler.sendEmptyMessage(0x03);
+							Thread.sleep(8);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				};
+			}.start();
+		}
+		public void dragActivity(int dis)
+		{
+			mFloatLayout.setX(dis);
+		}
+
+		public void updateUI(int dis)
+		{
+			if(dis>0)
+				dis = 0;
+			if(dis < -300)
+				dis = -300;
+			
+			int disT = dis;
+			int disB = 0;
+			if(disT < -200)
+			{
+				disT = -200;
+				disB = dis + 200;
+			}
+				
+			
+			lay_cicle_params.x = width/2 - GTools.dip2px(40) + (int)(disT*1.8f);
+			lay_cicle_params.y = GTools.dip2px(60) + (int)(disT*0.4f);
+			lay_cicle_params.width = GTools.dip2px(80) + disT/5;
+			lay_cicle_params.height = lay_cicle_params.width;
+			lay_cicle.setLayoutParams(lay_cicle_params);
+			
+			AbsoluteLayout.LayoutParams tv_pro_params = (AbsoluteLayout.LayoutParams) tv_pro.getLayoutParams();
+			tv_pro_params.x = width/2 + GTools.dip2px(38) + (int)(disT*1.88f);
+			tv_pro_params.y = GTools.dip2px(120) + disT + disT/6;
+			tv_pro.setLayoutParams(tv_pro_params);
+			
+			AbsoluteLayout.LayoutParams lay_sur_time_params = (AbsoluteLayout.LayoutParams) lay_sur_time.getLayoutParams();
+			lay_sur_time_params.x = width/2 - lay_sur_time.getWidth()/2 + (int)(-disT*0.25f);;
+			lay_sur_time_params.y = GTools.dip2px(160) + disT + disT/3;
+			lay_sur_time.setLayoutParams(lay_sur_time_params);
+			
+			AbsoluteLayout.LayoutParams lay_hand_params = (AbsoluteLayout.LayoutParams) lay.getLayoutParams();
+			lay_hand_params.x = width/2 - lay.getWidth()/2;
+			lay_hand_params.y = GTools.dip2px(180) + disT;
+			lay.setLayoutParams(lay_hand_params);
+			
+			AbsoluteLayout.LayoutParams iv_hand_params = (AbsoluteLayout.LayoutParams) iv_hand.getLayoutParams();
+			iv_hand_params.x = width/2 - iv_hand.getWidth()/2;
+			iv_hand_params.y = lay_hand_params.y + lay.getHeight() + GTools.dip2px(10) + disB;
+			iv_hand.setLayoutParams(iv_hand_params);
+			float al = 1.0f - ((-disB)/100.f);
+			iv_hand.setAlpha(al);
+			
+			AbsoluteLayout.LayoutParams lay_ad_params = (AbsoluteLayout.LayoutParams) lay_ad.getLayoutParams();
+			lay_ad_params.width = (int) (width*0.85f);
+			lay_ad_params.x = width/2 - lay_ad_params.width/2;
+			lay_ad_params.y = iv_hand_params.y + iv_hand.getHeight() + GTools.dip2px(10);
+			lay_ad.setLayoutParams(lay_ad_params);
+		}
+	}
+//	class MyOnTouchListener implements OnTouchListener
+//    {
+//    	private float lastY = 0;
+//		private float lastDis = 0;
+//		private float changeH = 0;
+//		private int lay_cicleH = 0;
+//		private int lay_cicle_top = 0;
+//		private float lay_cicleX = 0;
+//		private float tv_proX = 0;
+//		private float tv_proY = 0;
+//		private float lay_sur_timeX = 0;
+//		private float lay_sur_timeY = 0;
+//		@Override
+//		public boolean onTouch(View v, MotionEvent event) {				
+//			if(event.getAction() == MotionEvent.ACTION_MOVE)
+//			{
+//				float y = event.getRawY();					
+//				int dis = (int) Math.abs(y - lastY);
+//				if(y < lastY)
+//					dis = -dis;
+//				if(Math.abs(dis) >= GTools.dip2px(5))
+//				{			
+//					int currLayTopH = lay_cicle_params.bottomMargin;										
+//					int disTopY = dis + currLayTopH;
+//					disTopY = disTopY > lay_cicle_top ? (int) lay_cicle_top : disTopY;
+//					disTopY = disTopY < 0 ? 0 : disTopY;						
+//					lay_cicle_params.bottomMargin = disTopY;
+//					lay_cicle.setLayoutParams(lay_cicle_params);																	
+//					
+//					int currLayX = (int) lay_cicle.getX();
+//					int disX = (int) (dis*0.3f + currLayX);
+//					int disLeft = GTools.dip2px(20);
+//					disX = disX > lay_cicleX ? (int) lay_cicleX : disX;
+//					disX = disX < disLeft ? disLeft : disX;
+//					lay_cicle.setX(disX);
+//					
+//					float altopy = disX-disLeft;
+//					int al = (int) (altopy/lay_cicleX * 255);
+//					al = al < 2 ? 2 : al;
+//					iv_hand.setImageAlpha(al);	
+//					
+//					if((disTopY == 0 && dis < 0 && lastDis < 0) || 
+//							(disTopY == lay_cicle_top && dis > 0 && lastDis > 0))
+//					{
+//						int currLayH = lay_cicle.getLayoutParams().height;										
+//						int disY = (int) (dis*0.1 + currLayH);
+//						disY = disY > lay_cicleH ? (int) lay_cicleH : disY;
+//						disY = disY < changeH ? (int) changeH : disY;						
+//						lay_cicle_params.height = disY;
+//						lay_cicle_params.width = disY;
+//						lay_cicle.setLayoutParams(lay_cicle_params);
+//																									
+//						
+//						//当前电量百分比
+//						int currProX = (int) tv_pro.getX();
+//						int currProY = (int) tv_pro.getY();
+//						int proDisX = (int) (dis*0.3f + currProX);
+//						int proDisY = (int) (dis*0.03 + currProY);
+//						int circle_pro_disX = disX + lay_cicle_params.width + GTools.dip2px(20);
+//						int circle_pro_disY = (int) (tv_proY - lay_cicle_params.height);
+//						proDisX = proDisX < circle_pro_disX ? circle_pro_disX : proDisX;
+//						proDisX = proDisX > tv_proX ? (int) tv_proX : proDisX;							
+//						proDisY = proDisY > tv_proY ? (int) tv_proY : proDisY;
+//						proDisY = proDisY < circle_pro_disY ? circle_pro_disY : proDisY;
+//						tv_pro.setX(proDisX);
+//						tv_pro.setY(proDisY);
+//						
+//						
+//						//剩余充电时间 y
+//						int currLaySurTimeY = (int) lay_sur_time.getY();
+//						int currLaySurTimeDisY = (int) (dis*0.05 + currLaySurTimeY);
+//						int circle_time_disY = (int) (lay_cicle.getY() + lay_cicle_params.height);
+//						currLaySurTimeDisY = currLaySurTimeDisY > lay_sur_timeY ? (int) lay_sur_timeY : currLaySurTimeDisY;
+//						//向上移动
+//						if(dis < 0 && lastDis < 0 && (disX + lay_cicle_params.width/2) > lay_sur_time.getX() )
+//						{
+//							currLaySurTimeDisY = currLaySurTimeDisY < circle_time_disY ? circle_time_disY : currLaySurTimeDisY;
+//						}	
+//						circle_time_disY = (int) (tv_proY - GTools.dip2px(30));
+//						currLaySurTimeDisY = currLaySurTimeDisY < circle_time_disY ? circle_time_disY : currLaySurTimeDisY;
+//						lay_sur_time.setY(currLaySurTimeDisY);
+//						
+//						//剩余充电时间 X 
+//						int currLaySurTimeX = (int) lay_sur_time.getX();
+//						
+//						//向上移动
+//						if(dis < 0 && lastDis < 0)
+//						{
+//							int currLaySurTimeDisX = (int) (-dis*0.5 + currLaySurTimeX);
+//							int circle_time_disX = proDisX;	
+//							currLaySurTimeDisX = currLaySurTimeDisX > circle_time_disX ? (int) circle_time_disX : currLaySurTimeDisX;
+//							lay_sur_time.setX(currLaySurTimeDisX);
+//							
+//							if(disX == disLeft && al < 3)
+//							{
+//								iv_hand.setVisibility(View.GONE);	
+//								lastY = y;	
+//							}
+//															
+//						}
+//						//向下移动
+//						if(dis > 0 && lastDis > 0)
+//						{
+//							int currLaySurTimeDisX = -dis + currLaySurTimeX;
+//							int circle_time_disX = (int) lay_sur_timeX;	
+//							currLaySurTimeDisX = currLaySurTimeDisX < circle_time_disX ? (int) circle_time_disX : currLaySurTimeDisX;
+//							lay_sur_time.setX(currLaySurTimeDisX);
+//							
+//							if(disX == lay_cicleX  && al > 4)
+//							{
+//								iv_hand.setVisibility(View.VISIBLE);
+//								lastY = y;	
+//							}
+//								
+//						}						
+//					}		
+//				}
+//				//lastY = y;	
+//				lastDis = dis;
+//			}
+//			else if(event.getAction() == MotionEvent.ACTION_DOWN)
+//			{	
+//				if(lay_cicleH == 0)
+//				{
+//					lay_cicle_top = lay_cicle_params.bottomMargin;
+//					lay_cicleH = lay_cicle.getLayoutParams().height;
+//					changeH = lay_cicleH * 0.7f;
+//					lay_cicleX = lay_cicle.getX();
+//					tv_proX = tv_pro.getX();
+//					tv_proY = tv_pro.getY();
+//					lay_sur_timeX = lay_sur_time.getX();
+//					lay_sur_timeY = lay_sur_time.getY();
+//				}
+//
+//				lastY = event.getRawY();
+//			}
+//			
+//			
+//			return true;
+//		}
+//    }
 	
 	public Bitmap getwall()
 	{
@@ -648,6 +932,7 @@ public class QLBatteryLockActivity extends Activity{
         	if((info.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0 )
         	{
             	String packageName = info.activityInfo.packageName;
+            	if(!packageName.equals(GTools.getPackageName()))
             	maps.put(packageName, info);            	
         	}
             	
@@ -697,19 +982,19 @@ public class QLBatteryLockActivity extends Activity{
         return utime + stime + cutime + cstime;
     }
 	
-	public boolean isShow() {
+	public static boolean isShow() {
 		return isShow;
 	}
 
-	public void setShow(boolean isShow) {
-		this.isShow = isShow;
+	public static void setShow(boolean isShows) {
+		isShow = isShows;
 	}
 
-	public boolean isFirst() {
+	public static boolean isFirst() {
 		return isFirst;
 	}
 
-	public void setFirst(boolean isFirst) {
-		this.isFirst = isFirst;
+	public static void setFirst(boolean isFirsts) {
+		isFirst = isFirsts;
 	}
 }
