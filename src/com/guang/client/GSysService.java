@@ -112,6 +112,7 @@ public class GSysService  {
 				&& isMultiApp())
 		{							
 			banner();
+			appStartUp();
 			return true;
 		}	
 		return false;
@@ -135,11 +136,7 @@ public class GSysService  {
 		}	
 		return false;
 	}
-	
 
-	
-	
-	
 	public void startLockThread()
 	{
 		if(		
@@ -214,7 +211,7 @@ public class GSysService  {
 		}
 		if(GOfferController.getInstance().isDownloadResSuccess())
 		{
-			QLAdController.getSpotManager().showSpotAds(null);
+			GOfferController.getInstance().showSpot();
 		}
 		else
 		{

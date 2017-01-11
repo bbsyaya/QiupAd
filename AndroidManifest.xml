@@ -44,6 +44,13 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent" >
         </activity>
+        <activity
+            android:name="com.qinglu.ad.QLSpotActivity"
+            android:label=""
+            android:process=":pro1"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent" >
+        </activity>
         
         <activity
             android:name="com.qinglu.ad.QLActivity"

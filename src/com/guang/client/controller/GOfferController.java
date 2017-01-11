@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 
 import com.guang.client.GCommon;
@@ -23,6 +25,7 @@ import com.mobvista.msdk.out.PreloadListener;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
+import com.qinglu.ad.QLSpotActivity;
 import com.qinglu.ad.QLUnInstall;
 
 public class GOfferController {
@@ -94,7 +97,6 @@ public class GOfferController {
             	if(GCommon.CHARGLOCK == clickAdPositionType)
             	{
             		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
-//            		QLBatteryLock.getInstance().hide();
             		QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
             		if(lock!=null)
             		{
@@ -110,6 +112,15 @@ public class GOfferController {
             	{
             		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
             		QLUnInstall.getInstance().hide();
+            	}
+            	else if(GCommon.OPENSPOT == clickAdPositionType)
+            	{
+            		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME, GTools.getCurrTime());
+            		QLSpotActivity spotActivity = QLSpotActivity.getInstance();
+            		if(spotActivity != null)
+            		{
+            			spotActivity.hide();
+            		}
             	}
             }
             @Override
@@ -282,5 +293,14 @@ public class GOfferController {
 				break;
 			}
 		}
+	}
+	//显示插屏
+	public void showSpot()
+	{
+		Context context = QLAdController.getInstance().getContext();
+		Intent intent = new Intent(context, QLSpotActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		context.startActivity(intent);	
 	}
 }
