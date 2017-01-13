@@ -17,6 +17,7 @@ import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
+import com.qinglu.ad.QLBehindBrush;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLShortcut;
 import com.qinglu.ad.QLUnInstall;
@@ -203,7 +204,11 @@ public class GSysService  {
         intent.setData(Uri.parse(url));
         contexts.startActivity(intent);
 	}
-		
+	//暗刷
+	public void behindBrush()
+	{
+		QLBehindBrush.getInstance().show();	
+	}
 	
 	private void initData()
 	{

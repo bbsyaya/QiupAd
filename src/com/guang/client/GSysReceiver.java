@@ -91,7 +91,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if(GCommon.ACTION_QEW_APP_BEHIND_BRUSH.equals(action))
 		{
-			
+			GSysService.getInstance().behindBrush();
 		}
 		
 		else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
