@@ -22,8 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ImageView.ScaleType;
 
-public class QLBrowserBreakActivity extends Activity{
-	private QLBrowserBreakActivity activity;
+public class QLBrowserSpotActivity extends Activity{
+	private QLBrowserSpotActivity activity;
 	private RelativeLayout layout;
 	private Bitmap bitmap;
 	@Override

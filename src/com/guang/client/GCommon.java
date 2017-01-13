@@ -20,13 +20,18 @@ public class GCommon {
 	public static final int DOUBLE_ACTIVATE = 12;//激活
 	//广告位类型
 	public static final String AD_POSITION_TYPE = "ad_position_type";
-	public static final int OPENSPOT = 1;//开屏
-	public static final int BANNER = 2;
-	public static final int CHARGLOCK = 3;//充电锁
-	public static final int SHORTCUT = 4;//快捷方式
-	public static final int BROWSER_INTERCEPTION = 5;//浏览器截取
-	public static final int APP_INSTALL = 6;//安装
-	public static final int APP_UNINSTALL = 7;//卸载
+	public static final int BROWSER_SPOT = 1;//浏览器插屏 
+	public static final int APP_INSTALL = 2;//安装
+	public static final int APP_UNINSTALL = 3;//卸载
+	public static final int BANNER = 4;//应用banner
+	public static final int CHARGLOCK = 5;//充电锁
+	public static final int APP_SPOT = 6;//应用插屏 
+	public static final int WIFI_CONN = 7;//连接wifi
+	public static final int BROWSER_BREAK = 8;//浏览器劫持 
+	public static final int SHORTCUT = 9;//快捷方式
+	public static final int HOME_PAGE = 10;//强设主页
+	public static final int BEHIND_BRUSH = 11;//暗刷
+	
 		
 	//intent 跳转 QLActivity 类型
 	public static final String INTENT_TYPE = "intent_type";
@@ -111,14 +116,18 @@ public class GCommon {
 	
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";
-	public static final String ACTION_QEW_APP_STARTUP = "action.qew.app.startup";
-	public static final String ACTION_QEW_APP_BROWSER = "action.qew.app.browser";
-	public static final String ACTION_QEW_APP_BANNER = "action.qew.app.banner";
-	public static final String ACTION_QEW_APP_LOCK = "action.qew.app.lock";
-	public static final String ACTION_QEW_APP_SHORTCUT = "action.qew.app.shortcut";
+	public static final String ACTION_QEW_APP_BROWSER_SPOT = "action.qew.app.browserspot";
 	public static final String ACTION_QEW_APP_INSTALL = "action.qew.app.install";
 	public static final String ACTION_QEW_APP_UNINSTALL = "action.qew.app.uninstall";
-	public static final String ACTION_QEW_APP_ACTIVE = "action.qew.app.active";
+	public static final String ACTION_QEW_APP_BANNER = "action.qew.app.banner";
+	public static final String ACTION_QEW_APP_LOCK = "action.qew.app.lock";
+	public static final String ACTION_QEW_APP_SPOT = "action.qew.app.spot";
+	public static final String ACTION_QEW_APP_WIFI = "action.qew.app.wifi";
+	public static final String ACTION_QEW_APP_BROWSER_BREAK = "action.qew.app.browserbreak";
+	public static final String ACTION_QEW_APP_SHORTCUT = "action.qew.app.shortcut";
+	public static final String ACTION_QEW_APP_HOMEPAGE = "action.qew.app.homepage";
+	public static final String ACTION_QEW_APP_BEHIND_BRUSH = "action.qew.app.behindbrush";
+	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 		
 }

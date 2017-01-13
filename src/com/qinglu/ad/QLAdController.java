@@ -6,7 +6,6 @@ import com.guang.client.GSysService;
 import com.guang.client.GCommon;
 import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GTools;
-import com.qinglu.ad.impl.qinglu.QLSpotManagerQingLu;
 
 import android.content.Context;
 
@@ -14,7 +13,6 @@ import android.content.Context;
 
 public class QLAdController {
 	private static QLAdController controller;
-	public static QLSpotManager spotManager;
 	private static Context context;
 	
 	private QLAdController()
@@ -31,16 +29,7 @@ public class QLAdController {
 		return controller;
 	}
 	
-	public static QLSpotManager getSpotManager()
-	{
-		if(spotManager == null)
-			spotManager = new QLSpotManagerQingLu(context);
-		spotManager.updateContext(context);
-		return spotManager;
-	}
-	
-	
-		
+
 	public void init(Context context,Boolean isTestModel)
 	{
 		this.context = context;

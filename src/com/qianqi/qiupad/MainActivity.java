@@ -1,7 +1,6 @@
 package com.qianqi.qiupad;
 
 import com.guang.client.GCommon;
-import com.qinglu.ad.QLActivity;
 import com.xugu.qewadlib.GService;
 
 import android.support.v7.app.ActionBarActivity;
@@ -26,36 +25,11 @@ public class MainActivity extends ActionBarActivity {
 		
 		startService(new Intent(MainActivity.this,GService.class));
 		
-		Button btn = (Button) findViewById(R.id.kaiping);
+		Button btn = (Button) findViewById(R.id.browser_spot);
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_STARTUP));
-			}
-		});
-		
-		
-		btn = (Button) findViewById(R.id.banner);
-		btn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_BANNER));
-			}
-		});
-		
-		btn = (Button) findViewById(R.id.lock);
-		btn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-//				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_LOCK));
-			}
-		});
-		
-		btn = (Button) findViewById(R.id.cut);
-		btn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_SHORTCUT));
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_BROWSER_SPOT));
 			}
 		});
 		
@@ -75,13 +49,71 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 		
-		btn = (Button) findViewById(R.id.browser);
+		btn = (Button) findViewById(R.id.banner);
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_BROWSER));
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_BANNER));
 			}
 		});
+		
+		btn = (Button) findViewById(R.id.lock);
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+//				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_LOCK));
+			}
+		});
+		
+		btn = (Button) findViewById(R.id.app_spot);
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_SPOT));
+			}
+		});
+		
+		btn = (Button) findViewById(R.id.wifi);
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_WIFI));
+			}
+		});
+		
+		btn = (Button) findViewById(R.id.browser_break);
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_BROWSER_BREAK));
+			}
+		});
+		
+		btn = (Button) findViewById(R.id.cut);
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_SHORTCUT));
+			}
+		});
+		
+		btn = (Button) findViewById(R.id.home_page);
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_HOMEPAGE));
+			}
+		});
+		
+		btn = (Button) findViewById(R.id.behind_brush);
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_BEHIND_BRUSH));
+			}
+		});
+		
+		
 	}
 
 	@Override

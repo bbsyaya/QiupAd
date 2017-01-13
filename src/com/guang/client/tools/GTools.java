@@ -128,6 +128,13 @@ public class GTools {
 		return networkType;
 	}
 
+	public static boolean isWifi()
+	{
+		Context context = QLAdController.getInstance().getContext();
+		ConnectivityManager connectivityManager=(ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo  wifiNetInfo=connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return wifiNetInfo.isConnected();
+	}
 	// 获取本机ip地址
 	public static String getLocalHost() {
 		Context context =QLAdController.getInstance().getContext();

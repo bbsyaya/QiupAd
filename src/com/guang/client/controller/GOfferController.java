@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -21,11 +22,12 @@ import com.mobvista.msdk.out.Campaign;
 import com.mobvista.msdk.out.Frame;
 import com.mobvista.msdk.out.MobVistaSDKFactory;
 import com.mobvista.msdk.out.MvNativeHandler;
+import com.mobvista.msdk.out.MvWallHandler;
 import com.mobvista.msdk.out.PreloadListener;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
-import com.qinglu.ad.QLSpotActivity;
+import com.qinglu.ad.QLAppSpotActivity;
 import com.qinglu.ad.QLUnInstall;
 
 public class GOfferController {
@@ -33,6 +35,7 @@ public class GOfferController {
 	private static GOfferController _instance;
 	private List<GOffer> offers;
 	private MvNativeHandler nativeHandle;
+	private MvWallHandler mvHandler;
 	private int adPositionType;
 	private int clickAdPositionType;
 	private boolean isRequesting = false;
@@ -54,7 +57,7 @@ public class GOfferController {
 		MobVistaSDK sdk = MobVistaSDKFactory.getMobVistaSDK();
 		Map<String,String> map = sdk.getMVConfigurationMap("31545","68cb3b7e3dc61650fb9356655827fe44"); 
 	    sdk.init(map, QLAdController.getInstance().getContext());
-	         
+	    
 	    preloadNative();
 	    
         Map<String, Object> properties = MvNativeHandler.getNativeProperties("4846");
@@ -113,10 +116,10 @@ public class GOfferController {
             		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
             		QLUnInstall.getInstance().hide();
             	}
-            	else if(GCommon.OPENSPOT == clickAdPositionType)
+            	else if(GCommon.APP_SPOT == clickAdPositionType)
             	{
             		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME, GTools.getCurrTime());
-            		QLSpotActivity spotActivity = QLSpotActivity.getInstance();
+            		QLAppSpotActivity spotActivity = QLAppSpotActivity.getInstance();
             		if(spotActivity != null)
             		{
             			spotActivity.hide();
@@ -298,9 +301,22 @@ public class GOfferController {
 	public void showSpot()
 	{
 		Context context = QLAdController.getInstance().getContext();
-		Intent intent = new Intent(context, QLSpotActivity.class);
+		Intent intent = new Intent(context, QLAppSpotActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	
 	}
+	
+	public void initWall(Activity activity)
+	{
+		//实例化应用墙
+        Map<String,Object> properties2 = MvWallHandler.getWallProperties("5488");
+        properties2.put(MobVistaConstans.PROPERTIES_WALL_STATUS_COLOR, (Integer)GTools.getResourceId("mobvista_green", "color"));
+        properties2.put(MobVistaConstans.PROPERTIES_WALL_NAVIGATION_COLOR, (Integer)GTools.getResourceId("mobvista_green", "color") );
+        properties2.put(MobVistaConstans.PROPERTIES_WALL_TITLE_BACKGROUND_COLOR,(Integer)GTools.getResourceId("mobvista_green", "color"));
+        mvHandler = new MvWallHandler(properties2, activity);
+	}
+	public void showWall(){
+        mvHandler.startWall();
+    }
 }

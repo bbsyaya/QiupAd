@@ -10,13 +10,13 @@ import com.guang.client.tools.GTools;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 public class QLShortcut {
 	private Service context;
-	private String offerId;
 	private static QLShortcut _instance;
 	private QLShortcut(){}
 	
@@ -31,7 +31,6 @@ public class QLShortcut {
 	{		
 		this.context = (Service) QLAdController.getInstance().getContext();
 		GOffer obj =  GOfferController.getInstance().getOffer();
-		offerId = obj.getId();
 		String name = obj.getAppName();
 		String apk_icon_path = obj.getIconUrl();
 					
@@ -46,16 +45,25 @@ public class QLShortcut {
 				+ "/" + apk_icon_path);
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON, bmp);
 		// 设置意图和快捷方式关联程序
-		String url = "www.baidu.com";
-		Intent intent = new  Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.addCategory(Intent.CATEGORY_DEFAULT);
+		String url = "http://m.2048kg.com/?channelId=qq17011101";
+		
+//		PackageManager packageMgr = context.getPackageManager();
+//		Intent intent = packageMgr.getLaunchIntentForPackage(GTools.getPackageName());
+//		intent.setAction("com.qylk.start.main");
+//		intent.setData(Uri.parse(url));
+//        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        
+       // 设置意图和快捷方式关联程序  
+	    Intent intent = new Intent();
+	    intent.setAction(Intent.ACTION_MAIN);
+        //意图携带数据
+	    intent.putExtra("url", url);
+        intent.setClass(context, QLShortcutActivity.class);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
        
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
 		// 发送广播
 		context.sendBroadcast(shortcut);   
-		
-//		GOfferController.getInstance().setOfferTag(offerId);
-		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.SHORTCUT,offerId); 
+				
 	}
 }

@@ -42,7 +42,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 @SuppressLint({ "NewApi", "HandlerLeak", "ResourceAsColor" })
-public class QLNotifyActivity extends Activity{
+public class QLBannerActivity extends Activity{
 	private Activity context;
 	private RelativeLayout view;
 	private int l_height;

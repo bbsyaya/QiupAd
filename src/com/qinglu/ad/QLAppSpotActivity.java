@@ -27,8 +27,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class QLSpotActivity extends Activity{
-	private static QLSpotActivity activity;
+public class QLAppSpotActivity extends Activity{
+	private static QLAppSpotActivity activity;
 	private RelativeLayout layout;
 	private Button bt_appstartup_close;
 	private ImageView iv_appstartup_pic;
@@ -44,7 +44,7 @@ public class QLSpotActivity extends Activity{
 		
 	}
 	
-	public static QLSpotActivity getInstance()
+	public static QLAppSpotActivity getInstance()
 	{
 		return activity;
 	}
@@ -103,7 +103,7 @@ public class QLSpotActivity extends Activity{
 		        List<View> list = new ArrayList<View>();
 			    list.add(iv_appstartup_pic);
 			    list.add(bt_appstartup_detail);
-			    GOfferController.getInstance().registerView(GCommon.OPENSPOT,iv_appstartup_pic, list, obj.getCampaign());	
+			    GOfferController.getInstance().registerView(GCommon.APP_SPOT,iv_appstartup_pic, list, obj.getCampaign());	
 			}
 			@Override
 			public void onAnimationStart(Animation animation) {}

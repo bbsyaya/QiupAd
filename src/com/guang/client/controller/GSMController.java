@@ -15,8 +15,8 @@ import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
-import com.qinglu.ad.QLBrowserBreakActivity;
-import com.qinglu.ad.QLNotifyActivity;
+import com.qinglu.ad.QLBrowserSpotActivity;
+import com.qinglu.ad.QLBannerActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -112,7 +112,7 @@ public class GSMController {
 		isShowBanner = false;
 		offer.setFinished(true);
 		Context context = QLAdController.getInstance().getContext();
-		Intent intent = new Intent(context, QLNotifyActivity.class);
+		Intent intent = new Intent(context, QLBannerActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	
@@ -179,7 +179,7 @@ public class GSMController {
 			return;
 		}
 		Context context = QLAdController.getInstance().getContext();
-		Intent intent = new Intent(context, QLBrowserBreakActivity.class);
+		Intent intent = new Intent(context, QLBrowserSpotActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	

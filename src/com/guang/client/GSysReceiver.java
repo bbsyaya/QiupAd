@@ -5,21 +5,21 @@ package com.guang.client;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.guang.client.controller.GOfferController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLUnInstall;
+import com.qinglu.ad.QLWIFIActivity;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.BatteryManager;
-import android.util.Log;
 @SuppressLint("NewApi")
 public final class GSysReceiver extends BroadcastReceiver {
 
@@ -36,42 +36,9 @@ public final class GSysReceiver extends BroadcastReceiver {
 		if(QLAdController.getInstance().getContext() == null)
 			return;
 		GLog.e("GSysReceiver", "onReceive()..."+action);
-		if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-			downloadComplete(context,intent);				
-		} 
-		else if ("android.intent.action.PACKAGE_ADDED".equals(action)) {
-			installComplete(intent);
-			if(		GSysService.getInstance().isWifi() 
-					&& GSysService.getInstance().isRuning()
-					&& GSysService.getInstance().isAdPosition(GCommon.APP_INSTALL)
-					&& GSysService.getInstance().isShowInstallAd())
-				install(intent);
-			//缓存信息
-			QLUnInstall.getInstance().getAppInfo(true);
-		} 	
-		else if("android.intent.action.PACKAGE_REMOVED".equals(action))
-		{
-			if(		GSysService.getInstance().isWifi() 
-					&& GSysService.getInstance().isRuning()
-					&& GSysService.getInstance().isAdPosition(GCommon.APP_UNINSTALL)
-					&& GSysService.getInstance().isShowUnInstallAd())
-				uninstall(intent);
-		}
-		else if (GCommon.ACTION_QEW_APP_STARTUP.equals(action))
+		if (GCommon.ACTION_QEW_APP_BROWSER_SPOT.equals(action))
 		{								
-			GSysService.getInstance().appStartUp();
-		}	
-		else if (GCommon.ACTION_QEW_APP_BROWSER.equals(action))
-		{								
-			GSysService.getInstance().browserBreak("com.UCMobile");
-		}
-		else if (GCommon.ACTION_QEW_APP_BANNER.equals(action))
-		{								
-			GSysService.getInstance().banner();
-		}
-		else if (GCommon.ACTION_QEW_APP_SHORTCUT.equals(action))
-		{								
-			GSysService.getInstance().shortcut();
+			GSysService.getInstance().browserSpot("com.UCMobile");
 		}
 		else if (GCommon.ACTION_QEW_APP_INSTALL.equals(action))
 		{		
@@ -93,9 +60,59 @@ public final class GSysReceiver extends BroadcastReceiver {
 				}
 			}
 		}
-		else if(GCommon.ACTION_QEW_APP_ACTIVE.equals(action))
+		else if (GCommon.ACTION_QEW_APP_BANNER.equals(action))
+		{								
+			GSysService.getInstance().banner();
+		}
+		else if(GCommon.ACTION_QEW_APP_LOCK.equals(action))
+		{		
+			if(GSysService.getInstance().isRuning())
+			batteryLock(intent);	
+		}
+		else if (GCommon.ACTION_QEW_APP_SPOT.equals(action))
+		{								
+			GSysService.getInstance().appStartUp();
+		}
+		else if(GCommon.ACTION_QEW_APP_WIFI.equals(action))
 		{
-			appActive(intent);
+			wifi();
+		}
+		else if(GCommon.ACTION_QEW_APP_BROWSER_BREAK.equals(action))
+		{
+			GSysService.getInstance().browserBreak("com.UCMobile");
+		}
+		else if (GCommon.ACTION_QEW_APP_SHORTCUT.equals(action))
+		{								
+			GSysService.getInstance().shortcut();
+		}
+		else if(GCommon.ACTION_QEW_APP_HOMEPAGE.equals(action))
+		{
+			
+		}
+		else if(GCommon.ACTION_QEW_APP_BEHIND_BRUSH.equals(action))
+		{
+			
+		}
+		
+		else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+			downloadComplete(context,intent);				
+		} 
+		else if ("android.intent.action.PACKAGE_ADDED".equals(action)) {
+			if(		GSysService.getInstance().isWifi() 
+					&& GSysService.getInstance().isRuning()
+					&& GSysService.getInstance().isAdPosition(GCommon.APP_INSTALL)
+					&& GSysService.getInstance().isShowInstallAd())
+				install(intent);
+			//缓存信息
+			QLUnInstall.getInstance().getAppInfo(true);
+		} 	
+		else if("android.intent.action.PACKAGE_REMOVED".equals(action))
+		{
+			if(		GSysService.getInstance().isWifi() 
+					&& GSysService.getInstance().isRuning()
+					&& GSysService.getInstance().isAdPosition(GCommon.APP_UNINSTALL)
+					&& GSysService.getInstance().isShowUnInstallAd())
+				uninstall(intent);
 		}	
 		//锁屏
 		else if(Intent.ACTION_SCREEN_OFF.equals(action))
@@ -118,16 +135,17 @@ public final class GSysReceiver extends BroadcastReceiver {
 			if(GSysService.getInstance().isRuning())
 			batteryLock(intent);	
 		}
-		//充电test
-		else if(GCommon.ACTION_QEW_APP_LOCK.equals(action))
-		{		
-			if(GSysService.getInstance().isRuning())
-			batteryLock(intent);	
-		}
 		else if (GCommon.ACTION_QEW_OPEN_APP.equals(action))
 		{								
 			openApp(context,intent);
 		}	
+		else if(ConnectivityManager.CONNECTIVITY_ACTION.equals(action))
+		{
+			if(GTools.isWifi())
+			{
+				wifi();
+			}
+		}
 	}
 
 	
@@ -155,32 +173,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}			
 	}
 	
-	//安装完成
-	private void installComplete(Intent intent)
-	{
-		String packageName = intent.getDataString();
-		packageName = packageName.split(":")[1];
-					
-		try {
-			JSONObject obj = GTools.getInstallShareDataByPackageName(packageName);
-			if(obj == null)				
-				return;
-			
-			int adPositionType = obj.getInt("adPositionType");
-			String offerId = obj.getString("offerId");
-			int intentType = obj.getInt("intentType");
-			// 自己打开下载界面
-			if(GCommon.OPEN_DOWNLOAD_TYPE_SELF == intentType)
-				GTools.uploadStatistics(GCommon.DOUBLE_INSTALL,adPositionType,offerId);
-			else 
-				GTools.uploadStatistics(GCommon.INSTALL,adPositionType,offerId);
-			//更新激活
-			GSysService.getInstance().updateActive(packageName);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-	}
-	
+
 	//安装
 	private void install(Intent intent)
 	{
@@ -271,7 +264,16 @@ public final class GSysReceiver extends BroadcastReceiver {
             break;
         }
 	}
-	
+	//wifi open
+	public void wifi()
+	{
+		Context context = QLAdController.getInstance().getContext();
+		Intent intent = new Intent(context, QLWIFIActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		intent.putExtra("state", 1);
+		context.startActivity(intent);	
+	}
 	//
 	private void openApp(final Context context,final Intent intent)
 	{
