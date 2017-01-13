@@ -256,16 +256,6 @@ public class GSysService  {
 				}
 			}
 		}
-//		String adPositionSwitch = (String) GTools.getConfig("adPositionSwitch");
-//		if(adPositionSwitch != null)
-//		{
-//			String []adPositions = adPositionSwitch.split(",");
-//			for(String p : adPositions)
-//			{
-//				if(Integer.parseInt(p) == adPositionType)
-//					return true;
-//			}
-//		}
 		return false;
 	}
 	

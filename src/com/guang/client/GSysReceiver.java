@@ -2,9 +2,6 @@ package com.guang.client;
 
 
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
@@ -95,7 +92,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		
 		else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-			downloadComplete(context,intent);				
+							
 		} 
 		else if ("android.intent.action.PACKAGE_ADDED".equals(action)) {
 			if(		GSysService.getInstance().isWifi() 
@@ -148,32 +145,6 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 	}
 
-	
-	//下载完成
-	private void downloadComplete(Context context, Intent intent)
-	{
-		long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);			
-		try {
-			JSONObject obj = GTools.getDownloadApkShareDataById(id);
-			if(obj == null)
-				return;
-			String name = obj.getString("name");
-			String offerId = obj.getString("offerId");
-			int adPositionType = obj.getInt("adPositionType");
-			int intentType = obj.getInt("intentType");
-			// 自己打开下载界面
-			if(GCommon.OPEN_DOWNLOAD_TYPE_SELF == intentType)
-				GTools.uploadStatistics(GCommon.DOUBLE_DOWNLOAD_SUCCESS,adPositionType,offerId);
-			else
-				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,adPositionType,offerId);
-			
-			GTools.install(context, name,adPositionType,offerId,intentType);				
-			
-		} catch (Exception e) {				
-		}			
-	}
-	
-
 	//安装
 	private void install(Intent intent)
 	{
@@ -196,29 +167,6 @@ public final class GSysReceiver extends BroadcastReceiver {
 			QLUnInstall.getInstance().show(packageName);
 		}
 	}
-		
-	//app 激活
-	private void appActive(Intent intent)
-	{
-		String packageName = intent.getStringExtra("activePackageName");
-		JSONObject obj = GTools.getInstallShareDataByPackageName(packageName);
-		if(obj == null)				
-			return;
-	
-		try {
-			int adPositionType = obj.getInt("adPositionType");
-			String offerId = obj.getString("offerId");
-			int intentType = obj.getInt("intentType");
-			
-			// 是否二次界面
-			if(GCommon.OPEN_DOWNLOAD_TYPE_SELF == intentType)
-				GTools.uploadStatistics(GCommon.DOUBLE_ACTIVATE,adPositionType,offerId);
-			else
-				GTools.uploadStatistics(GCommon.ACTIVATE,adPositionType,offerId);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}			
-	}
 	
 	//充电
 	private void batteryLock(Intent intent)
@@ -236,8 +184,6 @@ public final class GSysReceiver extends BroadcastReceiver {
         case BatteryManager.BATTERY_STATUS_CHARGING:
             // 充电
         	GSysService.getInstance().startLockThread();
-//        	QLBatteryLock.getInstance().setFirst(false);
-//            QLBatteryLock.getInstance().updateBattery(mBatteryLevel, usbCharge);
         	QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
         	if(lock != null)
         	{
@@ -247,7 +193,6 @@ public final class GSysReceiver extends BroadcastReceiver {
             break;       
         case BatteryManager.BATTERY_STATUS_FULL:
             // 充满        	  	
-//             QLBatteryLock.getInstance().updateBattery(mBatteryLevel, usbCharge);
         	QLBatteryLockActivity lock2 = QLBatteryLockActivity.getInstance();
         	if(lock2 != null)
         	{

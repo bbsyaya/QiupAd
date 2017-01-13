@@ -38,10 +38,6 @@ public class GCommon {
 	public static final String INTENT_OPEN_SPOT = "intent_open_spot";	
 	public static final String INTENT_OPEN_DOWNLOAD = "intent_open_download";
 	
-	//别的界面打开下载界面
-	public static final int OPEN_DOWNLOAD_TYPE_OTHER = 0;
-	//自己打开下载界面
-	public static final int OPEN_DOWNLOAD_TYPE_SELF = 1;
 	
 	//SharedPreferences
 	public static final String SHARED_PRE = "guangclient";
@@ -49,14 +45,6 @@ public class GCommon {
 	public static final String SHARED_KEY_PASSWORD = "password";
 	public static final String SHARED_KEY_TESTMODEL = "testmodel";
 	
-	//下载id
-	public static final String SHARED_KEY_DOWNLOAD_ID = "downloadad_id";
-	//安装id
-	public static final String SHARED_KEY_INSTALL_ID = "install_id";;
-	//notify id
-	public static final String SHARED_KEY_NOTIFY_ID = "notify_id";
-	//adapp 详细数据
-	public static final String SHARED_KEY_AD_APP_DATA = "ad_app_data";
 	//------------------------------------------------------------------------------------
 	//配置
 	public static final String SHARED_KEY_CONFIG = "config";

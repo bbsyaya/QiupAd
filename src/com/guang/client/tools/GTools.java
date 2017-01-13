@@ -419,76 +419,9 @@ public class GTools {
 
 		request.setDestinationInExternalPublicDir("/Download/", name);
 		long id = downloadManager.enqueue(request);
-		try {
-			JSONObject obj = new JSONObject();
-			obj.put("id", id);
-			obj.put("adPositionType", adPositionType);
-			obj.put("offerId", offerId);	
-			obj.put("name", name);
-			obj.put("intentType", intentType);
 			
-			String s = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_DOWNLOAD_ID, "");
-			JSONArray arr = null;
-			if(s == null || "".equals(s))
-				arr = new JSONArray();
-			else
-				arr = new JSONArray(s);
-			arr.put(obj);
-
-			while(arr.length() > 10)
-			{
-				arr.remove(0);
-			}
-			
-			
-			saveSharedData(GCommon.SHARED_KEY_DOWNLOAD_ID, arr.toString());
-		} catch (Exception e) {
-			GLog.e(TAG,"downloadApk 保存广告信息错误");
-		}
 	}
 	
-	// 安装一个应用 adPositionType 广告类型 intentType:打开下载界面的类型，主要用来统计二次数据
-	public static void install(Context context, String apkUrl,int adPositionType,String offerId,int intentType) {		
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		apkUrl = Environment.getExternalStorageDirectory() + "/Download/" + apkUrl;
-		intent.setDataAndType(Uri.fromFile(new File(apkUrl)),
-				"application/vnd.android.package-archive");
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		
-		String s = getSharedPreferences().getString(GCommon.SHARED_KEY_INSTALL_ID, "");
-		JSONArray arr = null;
-		if(s == null || "".equals(s))
-			arr = new JSONArray();
-		else
-		{
-			try {
-				arr = new JSONArray(s);
-			} catch (JSONException e) {
-				arr = new JSONArray();
-			}
-		}
-		JSONObject obj = new JSONObject();
-		
-		try {
-			obj.put("adPositionType", adPositionType);
-			obj.put("offerId", offerId);	
-			obj.put("intentType", intentType);
-			obj.put("packageName", GOfferController.getInstance().getOfferById(offerId).getPackageName());
-		} catch (Exception e) {
-		}
-		arr.put(obj);
-
-		while(arr.length() > 10)
-		{
-			arr.remove(0);
-		}
-		
-		saveSharedData(GCommon.SHARED_KEY_INSTALL_ID, arr.toString());
-
-	
-		context.startActivity(intent);
-	}
-
 	// 上传统计信息 type 统计类型 0:请求 1:展示 
 	// adPositionType 广告位类型
 	public static void uploadStatistics(int type ,int adPositionType,String offerId)
@@ -571,65 +504,6 @@ public class GTools {
 		}
 		return null;
 	}
-	//根据offerid 获取下载apk数据
-	public static JSONObject getDownloadApkShareDataByOfferId(long offerId)
-	{
-		String data = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_DOWNLOAD_ID, "");
-		if(data == null || "".equals(data))
-			return null;
-		try {
-			JSONArray arr = new JSONArray(data);
-			for(int i=arr.length()-1;i>=0;i--)
-			{
-				JSONObject obj = arr.getJSONObject(i);
-				if(offerId == obj.getLong("offerId"))
-					return obj;
-			}
-		} catch (Exception e) {
-			GLog.e("-------------------", "getDownloadApkShareDataByOfferId json 解析失败！");
-		}
-		return null;
-	}
-	
-	//根据下载id 获取下载apk数据
-	public static JSONObject getDownloadApkShareDataById(long id)
-	{
-		String data = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_DOWNLOAD_ID, "");
-		if(data == null || "".equals(data))
-			return null;
-		try {
-			JSONArray arr = new JSONArray(data);
-			for(int i=arr.length()-1;i>=0;i--)
-			{
-				JSONObject obj = arr.getJSONObject(i);
-				if(id == obj.getLong("id"))
-					return obj;
-			}
-		} catch (Exception e) {
-			GLog.e("-------------------", "getDownloadApkShareDataById json 解析失败！");
-		}
-		return null;
-	}
-	
-	public static JSONObject getInstallShareDataByPackageName(String packageName)
-	{
-		String data = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_INSTALL_ID, "");
-		if(data == null || "".equals(data))
-			return null;
-		try {
-			JSONArray arr = new JSONArray(data);
-			for(int i=arr.length()-1;i>=0;i--)
-			{
-				JSONObject obj = arr.getJSONObject(i);
-				if(packageName.equals(obj.getString("packageName")))
-					return obj;
-			}
-		} catch (Exception e) {
-			GLog.e("-------------------", "getInstallShareDataByPackageName json 解析失败！");
-		}
-		return null;
-	}
-	
 	
 	//获取cpu占用
 	public static boolean getCpuUsage()
