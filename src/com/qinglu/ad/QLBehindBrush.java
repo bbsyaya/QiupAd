@@ -18,8 +18,6 @@ import android.view.WindowManager.LayoutParams;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class QLBehindBrush{ 

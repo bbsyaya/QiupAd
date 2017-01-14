@@ -490,18 +490,7 @@ public class GTools {
 	//根据key获取配置信息
 	public static Object getConfig(String key)
 	{
-		String data = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CONFIG, "");
-		if(data == null || "".equals(data))
-			return null;
-		try {
-			JSONObject obj = new JSONObject(data);			
-			if(obj  != null && obj.has(key))
-			{
-				return obj.get(key);
-			}			
-		} catch (Exception e) {
-			GLog.e("-------------------", "getConfig json 解析失败！");
-		}
+		
 		return null;
 	}
 	

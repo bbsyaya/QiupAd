@@ -62,25 +62,22 @@ public class GSysService  {
 		
 		QLInstall.getInstance().getInstallAppNum();
 		QLUnInstall.getInstance().getAppInfo(true);	
+		
 	}
 	
 	public void startMainLoop()
 	{		
-		//boolean open = (Boolean) GTools.getConfig("open");		
 		new Thread() {
 			public void run() {
 				Context context = contexts;
 				if(context == null)
 					context = QLAdController.getInstance().getContext();
 				initData();
-				while(isMainLoop())
+				while(isMainLoop() && GUserController.getMedia().getOpen())
 				{				
 					try {		
-						boolean b = appStartUpThread();
-						if(!b)
-						{
-							b = browserThread();
-						}
+						boolean b = browserThread();
+						
 						Thread.sleep(100);
 					} catch (Exception e) {
 					}
@@ -90,6 +87,31 @@ public class GSysService  {
 			};
 		}.start();	
 	}
+
+	//浏览器插屏
+	private boolean browserThread()
+	{
+		if(		isPresent 
+				&& isWifi()
+				&& GUserController.getMedia().isAdPosition(GCommon.BROWSER_SPOT)
+				&& GUserController.getMedia().isShowNum(GCommon.BROWSER_SPOT)
+				&& GUserController.getMedia().isShowTimeInterval(GCommon.BROWSER_SPOT)
+				&& GUserController.getMedia().isTimeSlot(GCommon.BROWSER_SPOT))
+		{		
+			String s =  GUserController.getMedia().getCpuUsage(GCommon.BROWSER_SPOT);
+			if(s != null)
+			{
+//				//浏览器劫持
+//				browserBreak(s);
+				
+				//浏览器插屏
+				browserSpot(s);
+				return true;
+			}			
+		}	
+		return false;
+	}
+		
 	//应用启动
 	private boolean appStartUpThread()
 	{
@@ -109,28 +131,7 @@ public class GSysService  {
 		}	
 		return false;
 	}
-	//浏览器插屏
-	private boolean browserThread()
-	{
-		if(		isPresent 
-				&& isWifi()
-				&& isAppSwitch()
-				&& (isAdPosition(GCommon.BROWSER_SPOT) || isAdPosition(GCommon.BROWSER_BREAK))
-				&& isShowBrowerTime())
-		{		
-			String s =  GTools.getBrowserCpuUsage();
-			if(s != null)
-			{
-				//浏览器劫持
-				browserBreak(s);
-				
-				//浏览器插屏
-				browserSpot(s);
-				return true;
-			}			
-		}	
-		return false;
-	}
+	
 
 	public void startLockThread()
 	{
@@ -190,7 +191,7 @@ public class GSysService  {
 	//浏览器插屏
 	public void browserSpot(String packageName)
 	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_OPEN_TIME, GTools.getCurrTime());
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, GTools.getCurrTime());
 		GSMController.getInstance().showSpot(packageName);
 	}
 	//浏览器截取
@@ -216,8 +217,8 @@ public class GSysService  {
 		isRuning = true;
 		long n_time = GTools.getCurrTime();
 		GTools.saveSharedData(GCommon.SHARED_KEY_MAIN_LOOP_TIME, n_time);
-		GTools.saveSharedData(GCommon.SHARED_KEY_OFFER_SAVE_TIME, 0l);
-		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_SHOW_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, 0l);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
 	}
 	
 	private boolean isMainLoop()
@@ -261,7 +262,7 @@ public class GSysService  {
 	
 	public boolean isWifi()
 	{
-		return "WIFI".equals(GTools.getNetworkType());
+		return GTools.isWifi();
 	}
 	//时间间隔
 	private boolean isShowTimeInterval()

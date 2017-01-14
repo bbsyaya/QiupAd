@@ -1,5 +1,9 @@
 package com.guang.client.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -8,6 +12,8 @@ import android.telephony.TelephonyManager;
 
 import com.guang.client.GCommon;
 import com.guang.client.GSysService;
+import com.guang.client.mode.GAdPositionConfig;
+import com.guang.client.mode.GMedia;
 import com.guang.client.mode.GUser;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
@@ -16,6 +22,7 @@ import com.guang.client.tools.GTools;
 public class GUserController {
 	public static final String TAG = "GUserController";
 	private static GUserController instance;
+	private static GMedia media;
 	public static boolean isLogin = false;
 	private GUserController(){}
 	
@@ -237,9 +244,9 @@ public class GUserController {
 			GUserController.getInstance().uploadAppInfos();		
 			
 			//获取最新配置信息
-			GTools.httpGetRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",null);
-			//上传所有app信息
-			GUserController.getInstance().uploadAllAppInfos();
+			GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",GTools.getPackageName());
+//			//上传所有app信息
+//			GUserController.getInstance().uploadAllAppInfos();
 			GLog.e("---------------", "登录成功");
 		}						
 	}
@@ -248,19 +255,67 @@ public class GUserController {
 	public void restarMainLoop()
 	{
 		//获取最新配置信息
-		GTools.httpGetRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",null);
+		GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",GTools.getPackageName());
 	}
 	
 	public void revFindCurrConfig(Object ob,Object rev)
 	{
 		//保存配置
-		if(rev != null && !"".equals(rev))
+		if(rev != null && !"".equals(rev) && !"0".equals(rev))
 		{
-			GLog.e("---------------", "Config读取成功");
-			GTools.saveSharedData(GCommon.SHARED_KEY_CONFIG, rev.toString());
-			//开始走流程
-			GSysService.getInstance().startMainLoop();
+			//解析配置
+			try {
+				JSONObject obj = new JSONObject(rev.toString());
+				
+				String name = obj.getString("name");
+				String packageName = obj.getString("packageName");
+				boolean open = obj.getBoolean("open");
+				String adPosition = obj.getString("adPosition");
+
+				List<GAdPositionConfig> list_configs = new ArrayList<GAdPositionConfig>();
+				
+				JSONArray configs = obj.getJSONArray("configs");
+				for(int i=0;i<configs.length();i++)
+				{
+					JSONObject config = configs.getJSONObject(i);
+					long adPositionId = config.getLong("adPositionId");
+					int adPositionType = config.getInt("adPositionType");
+					float bannerDelyTime = (float) config.getDouble("bannerDelyTime");
+					String behindBrushUrls = config.getString("behindBrushUrls");
+					float browerSpotTwoTime = (float) config.getDouble("browerSpotTwoTime");
+					float browerSpotFlow = (float) config.getDouble("browerSpotFlow");
+					String shortcutIconPath = config.getString("shortcutIconPath");
+					String shortcutName = config.getString("shortcutName");
+					String shortcutUrl = config.getString("shortcutUrl");
+					int showNum = config.getInt("showNum");
+					float showTimeInterval = (float) config.getDouble("showTimeInterval");
+					String timeSlot = config.getString("timeSlot");
+					String whiteList = config.getString("whiteList");
+					
+					GAdPositionConfig adConfig = new GAdPositionConfig(adPositionId,adPositionType, timeSlot, showNum, showTimeInterval,
+							whiteList, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath, 
+							shortcutName, shortcutUrl, behindBrushUrls);
+					list_configs.add(adConfig);
+				}
+				
+				media = new GMedia(name, packageName, open, adPosition, list_configs);
+				GLog.e("---------------", "Config读取成功");
+				//开始走流程
+				GSysService.getInstance().startMainLoop();
+			} catch (JSONException e) {
+				GLog.e("---------------", "Config 解析失败！");
+			} 
+		}
+		else
+		{
+			media = new GMedia();
+			media.setOpen(false);
+			media.setConfigs(new ArrayList<GAdPositionConfig>());
 		}
 	}
 		
+	public static GMedia getMedia()
+	{
+		return media;
+	}
 }

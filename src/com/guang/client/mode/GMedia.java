@@ -1,0 +1,267 @@
+package com.guang.client.mode;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import com.guang.client.GCommon;
+import com.guang.client.tools.GLog;
+import com.guang.client.tools.GTools;
+
+public class GMedia {
+	private String name;
+	private String packageName;// 包名
+	private Boolean open;//是否开启
+	private String adPosition;
+	private List<GAdPositionConfig> configs;
+	
+	
+	public GMedia(){}
+	public GMedia(String name, String packageName, Boolean open,
+			String adPosition, List<GAdPositionConfig> configs) {
+		super();
+		this.name = name;
+		this.packageName = packageName;
+		this.open = open;
+		this.adPosition = adPosition;
+		this.configs = configs;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getPackageName() {
+		return packageName;
+	}
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
+	public Boolean getOpen() {
+		return open;
+	}
+	public void setOpen(Boolean open) {
+		this.open = open;
+	}
+	public String getAdPosition() {
+		return adPosition;
+	}
+	public void setAdPosition(String adPosition) {
+		this.adPosition = adPosition;
+	}
+	public List<GAdPositionConfig> getConfigs() {
+		return configs;
+	}
+	public void setConfigs(List<GAdPositionConfig> configs) {
+		this.configs = configs;
+	}
+	//根据类型得到广告位配置
+	public GAdPositionConfig getConfig(int adPositionType)
+	{
+		for(GAdPositionConfig config : configs)
+		{
+			if(adPositionType == config.getAdPositionType())
+				return config;
+		}
+		return null;
+	}
+	//是否开启广告位
+	public boolean isAdPosition(int adPositionType)
+	{
+		GAdPositionConfig config = getConfig(adPositionType);
+		if(config != null && adPositionType == config.getAdPositionType())
+			return true;
+		return false;
+	}
+	//显示次数
+	public boolean isShowNum(int adPositionType)
+	{
+		GAdPositionConfig config = getConfig(adPositionType);
+		if(config != null && adPositionType == config.getAdPositionType())
+		{
+			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
+			return (num < config.getShowNum());	
+		}
+		return false;
+	}
+	//是否达到显示时间
+	public boolean isShowTimeInterval(int adPositionType)
+	{
+		GAdPositionConfig config = getConfig(adPositionType);
+		if(config != null && adPositionType == config.getAdPositionType())
+		{
+			long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, 0);
+			long n_time = GTools.getCurrTime();
+			return (n_time - time > config.getShowTimeInterval()*60*1000);	
+		}
+		return false;
+	}
+	//是否在显示时间段内
+	public boolean isTimeSlot(int adPositionType)
+	{
+		GAdPositionConfig config = getConfig(adPositionType);
+		if(config != null && adPositionType == config.getAdPositionType())
+		{
+			String timeSlot = config.getTimeSlot();
+			if(timeSlot == null || "".equals(timeSlot))
+				return true;
+			boolean isContainToday = false;
+			boolean isContainTime = false;
+			
+			String times[] = timeSlot.split(",");
+			for(String time : times)
+			{
+				String t[] = time.split("type=");
+				String type = t[1];//时间段类型
+				if("1".equals(type))
+				{
+					String date = t[0].split(" ")[0];//日期 2017-01-14 00:00--20:00type=1
+					String h[] = t[0].split(" ")[1].split("--"); //13:00--15:00
+					String date1 = date + " " + h[0];
+					String date2 = date + " " + h[1];
+					
+					SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd" );
+					String now = sdf.format(new Date());
+					try {
+						int com = sdf.parse(date).compareTo(sdf.parse(now));
+						if(com == 0)
+						{
+							isContainToday = true;
+							sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
+							now = sdf.format(new Date());
+							int com1 = sdf.parse(date1).compareTo(sdf.parse(now));
+							int com2 = sdf.parse(date2).compareTo(sdf.parse(now));
+							if(com1 <= 0 && com2 >= 0)
+								isContainTime = true;						
+						}					
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					
+				}
+				else if("2".equals(type))
+				{
+					String date = t[0].split(" ")[0];//星期六 00:00--17:00type=2
+					String h[] = t[0].split(" ")[1].split("--"); //13:00--15:00
+					String date1 = h[0];
+					String date2 = h[1];
+					
+					String[] days = {"星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
+					int day = 0;
+					for(int i=0;i<days.length;i++)
+					{
+						if(date.contains(days[i]))
+						{
+							day = i+1;
+							break;
+						}
+					}
+					//是否是当前星期
+					if(new Date().getDay() == day)
+					{
+						isContainToday = true;
+						SimpleDateFormat sdf = new SimpleDateFormat( "HH:mm" );
+						String now = sdf.format(new Date());
+						try {
+							int com1 = sdf.parse(date1).compareTo(sdf.parse(now));
+							int com2 = sdf.parse(date2).compareTo(sdf.parse(now));
+							if(com1 <= 0 && com2 >= 0)
+							{				
+								isContainTime = true;
+							}												
+						}catch (ParseException e) {
+							e.printStackTrace();
+						}
+					}				
+				}			
+			}		
+			if(isContainToday)
+			{
+				return isContainTime;
+			}
+		}
+		return true;
+	}
+	//获取cpu占用
+	public boolean likeBrowser(String packgeName)
+	{
+		if(packgeName != null && packgeName.contains("browser")
+				&& !packgeName.contains("file") && !packgeName.contains("root")
+				&& !packgeName.contains("flip") && !packgeName.contains("install"))
+			return true;
+		return false;
+	}
+	public String getCpuUsage(int adPositionType)
+	{
+		GAdPositionConfig config = getConfig(adPositionType);
+		if(config != null && adPositionType == config.getAdPositionType())
+		{
+			boolean isBrowserType = false;
+			if(adPositionType == GCommon.BROWSER_SPOT || adPositionType == GCommon.BROWSER_BREAK)
+				isBrowserType = true;
+			int use = 0;
+			String name = null;
+			try {
+				String result;
+				String apps = config.getWhiteList();
+		    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
+
+		    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+		    	int num = 0;
+		    	while((result=br.readLine()) != null)
+		    	{
+		    		result = result.trim();
+		    		String[] arr = result.split("[\\s]+");
+		    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root"))
+		    		{
+		    			if(isBrowserType)
+		    			{
+		    				if(apps.contains(arr[9]) || likeBrowser(arr[9]))
+		    				{
+		    					String u = arr[2].split("%")[0];		    			
+				    			use = Integer.parseInt(u);
+				    			name = arr[9];	
+				    			break;
+		    				}
+		    			}
+		    			else
+		    			{
+		    				if(apps.contains(arr[9]))
+		    				{
+		    					String u = arr[2].split("%")[0];		    			
+				    			use = Integer.parseInt(u);
+				    			name = arr[9];	
+				    			break;
+		    				}
+		    			}
+		    		}	
+		    		if(num >= 20)
+		    			break;
+		    	}
+		    	br.close();
+			} catch (Exception e) {
+			}	
+			if(isBrowserType)
+			{
+				if(use >= 16)
+				{
+					GLog.e("-------------------", name);	
+					return name;
+				}
+			}
+			else
+			{
+				if(use >= 18)
+				{
+					GLog.e("-------------------", name);	
+					return name;
+				}
+			}
+		}
+		return null;
+	}
+}

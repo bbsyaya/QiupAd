@@ -11,6 +11,7 @@ import java.net.URLConnection;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.guang.client.GCommon;
 import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
@@ -128,20 +129,36 @@ public class GSMController {
 		}
 		if(isShowSpot)
 			return;
-		long nflow = GTools.getAppFlow(browserName);
-		if(flow != 0)
-		{
-			if(nflow - flow > 100*1024)
-			{
-				flow = nflow;
-				isShowSpot = true;
-				GTools.httpGetRequest(getUrl(dim_320x480), this, "revSpotAd", null);
-			}
-		}
-		else
-		{
-			flow = nflow;
-		}
+		isShowSpot = true;
+		flow = GTools.getAppFlow(browserName);
+		appFlowThread();
+	}
+	public void appFlowThread()
+	{
+		new Thread(){
+			public void run() {
+				while(isShowSpot)
+				{
+					try {
+						Thread.sleep(2000);
+						long nflow = GTools.getAppFlow(browserName);
+						long flows = (long) (GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT).getBrowerSpotFlow()*1024*1024);
+						if(nflow - flow > flows)
+						{
+							flow = nflow;
+							GTools.httpGetRequest(getUrl(dim_320x480), GSMController.getInstance(), "revSpotAd", null);
+							break;
+						}
+						if(GTools.isAppInBackground(browserName))
+						{
+							return;
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
 	}
 	public void revSpotAd(Object ob,Object rev)
 	{
@@ -184,14 +201,19 @@ public class GSMController {
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	
 		
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, num+1);
+
+		if(!GUserController.getMedia().isShowNum(GCommon.BROWSER_SPOT))
+			return;
 		//如果没有退出浏览器，一段时间后继续弹出广告
 		final String packageName = browserName;
-		final long time = 10*1000;
+		final long time = (long) (GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT).getBrowerSpotTwoTime()*60*1000);
 		
 		new Thread(){
 			long currTime = time;
 			public void run() {
-				while(currTime>0)
+				while(currTime>0 && !isShowSpot)
 				{
 					try {		
 						long dt = time/5;
@@ -209,9 +231,12 @@ public class GSMController {
 				if(!GTools.isAppInBackground(packageName))
 				{
 					long nflow = GTools.getAppFlow(packageName);
-					if(nflow - flow > 100*1024)
+					long flows = (long) (GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT).getBrowerSpotFlow()*1024*1024);
+					if(nflow - flow > flows && !isShowSpot)
 					{
-						showSpot(packageName);
+						isShowSpot = true;
+						flow = nflow;
+						GTools.httpGetRequest(getUrl(dim_320x480), GSMController.getInstance(), "revSpotAd", null);
 					}
 				}
 			};

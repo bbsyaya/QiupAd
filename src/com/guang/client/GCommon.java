@@ -46,12 +46,15 @@ public class GCommon {
 	public static final String SHARED_KEY_TESTMODEL = "testmodel";
 	
 	//------------------------------------------------------------------------------------
-	//配置
-	public static final String SHARED_KEY_CONFIG = "config";
 	//服务启动时间
 	public static final String SHARED_KEY_SERVICE_RUN_TIME = "service_run_time";
 	//主循环运行的时间
 	public static final String SHARED_KEY_MAIN_LOOP_TIME = "main_loop_time";
+	//浏览器开屏时间
+	public static final String SHARED_KEY_BROWSER_SPOT_TIME = "browser_spot_time";
+	//浏览器开屏次数
+	public static final String SHARED_KEY_BROWSER_SPOT_NUM = "browser_spot_num";
+	
 	//请求offer的时间
 	public static final String SHARED_KEY_OFFER_SAVE_TIME = "offer_save_time";
 	//上次开屏时间
