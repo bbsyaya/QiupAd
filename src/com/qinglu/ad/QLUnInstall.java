@@ -204,7 +204,7 @@ public class QLUnInstall {
 		lay_uninstall_app_3.setVisibility(View.GONE);
 		lay_uninstall_app_4.setVisibility(View.GONE);
 		MyOnClickListener listener = new MyOnClickListener();
-		List<GOffer> arr = GOfferController.getInstance().getOffers();
+		List<GOffer> arr = GOfferController.getInstance().getUnInstallOffer();
 		for (int i = 0; i < arr.size(); i++)
 		{
 			GOffer obj = arr.get(i);

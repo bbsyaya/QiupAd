@@ -239,6 +239,8 @@ public class QLBatteryLockActivity extends Activity{
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);
+		
+		GOfferController.getInstance().showLock();
 	}
 	
 	public void hide()
@@ -247,10 +249,7 @@ public class QLBatteryLockActivity extends Activity{
 		{
 			_instance = null;
 			isShow = false;
-			if(offerId != null)
-			{
-				GOfferController.getInstance().deleteOfferById(offerId);
-			}
+			
 			this.finish();
 		}		
 	}
@@ -386,7 +385,7 @@ public class QLBatteryLockActivity extends Activity{
 		 new Thread(){
 			 public void run() {
 				 try {
-					Thread.sleep(20);
+					Thread.sleep(30);
 					handler.sendEmptyMessage(0x11);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -402,7 +401,7 @@ public class QLBatteryLockActivity extends Activity{
 	{
 		lay_ad.setVisibility(View.VISIBLE);
 		iv_hand.setVisibility(View.VISIBLE);
-		GOffer obj =  GOfferController.getInstance().getOffer();
+		GOffer obj =  GOfferController.getInstance().getLockOffer();
 		if(obj != null)
 		{
 			offerId = obj.getId();
@@ -416,12 +415,11 @@ public class QLBatteryLockActivity extends Activity{
 			iv_ad_pic.setImageBitmap(bitmap);
 			tv_ad_name.setText(name);
 						
-			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,offerId);
-		} 
-
-		 List<View> list = new ArrayList<View>();
-	     list.add(tv_ad_download);
-	     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,tv_ad_download, list, obj.getCampaign());	        
+			 List<View> list = new ArrayList<View>();
+		     list.add(tv_ad_download);
+		     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,tv_ad_download, list, obj.getCampaign());
+//			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,offerId);
+		} 	        
 	}
 	public void updateWifi()
 	{
@@ -435,15 +433,16 @@ public class QLBatteryLockActivity extends Activity{
 						e.printStackTrace();
 					}
 				}
-				while(isShow && GSysService.getInstance().isWifi() && !GSysService.getInstance().isShowLockAd())
+				while(isShow && GSysService.getInstance().isWifi() && !GOfferController.getInstance().isCanShowLock())
 				{
 					try {
+						GOfferController.getInstance().showLock();
 						Thread.sleep(1000*5);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				if(isShow && GSysService.getInstance().isWifi() && GSysService.getInstance().isShowLockAd())
+				if(isShow && GSysService.getInstance().isWifi() && GOfferController.getInstance().isCanShowLock())
 				{					 
 					handler.sendEmptyMessage(0x12);
 				}

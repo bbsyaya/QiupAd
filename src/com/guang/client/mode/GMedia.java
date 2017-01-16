@@ -83,7 +83,13 @@ public class GMedia {
 		GAdPositionConfig config = getConfig(adPositionType);
 		if(config != null && adPositionType == config.getAdPositionType())
 		{
-			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
+			int num = 0;
+			if(adPositionType == GCommon.BROWSER_SPOT)
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
+			else if(adPositionType == GCommon.BANNER)
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM, 0);
+			else if(adPositionType == GCommon.APP_SPOT)
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
 			return (num < config.getShowNum());	
 		}
 		return false;
@@ -94,7 +100,13 @@ public class GMedia {
 		GAdPositionConfig config = getConfig(adPositionType);
 		if(config != null && adPositionType == config.getAdPositionType())
 		{
-			long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, 0);
+			long time = 0;
+			if(adPositionType == GCommon.BROWSER_SPOT)
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, 0);
+			else if(adPositionType == GCommon.BANNER)
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BANNER_TIME, 0);
+			else if(adPositionType == GCommon.APP_SPOT)
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_APP_SPOT_TIME, 0);
 			long n_time = GTools.getCurrTime();
 			return (n_time - time > config.getShowTimeInterval()*60*1000);	
 		}

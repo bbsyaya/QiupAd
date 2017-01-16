@@ -52,9 +52,17 @@ public class GCommon {
 	public static final String SHARED_KEY_MAIN_LOOP_TIME = "main_loop_time";
 	//浏览器开屏时间
 	public static final String SHARED_KEY_BROWSER_SPOT_TIME = "browser_spot_time";
+	//BANNER时间
+	public static final String SHARED_KEY_BANNER_TIME = "banner_time";
+	//应用插屏时间
+	public static final String SHARED_KEY_APP_SPOT_TIME = "app_spot_time";
 	//浏览器开屏次数
 	public static final String SHARED_KEY_BROWSER_SPOT_NUM = "browser_spot_num";
-	
+	//BANNER次数
+	public static final String SHARED_KEY_BANNER_NUM = "banner_num";
+	//应用插屏次数
+	public static final String SHARED_KEY_APP_SPOT_NUM = "app_spot_num";
+		
 	//请求offer的时间
 	public static final String SHARED_KEY_OFFER_SAVE_TIME = "offer_save_time";
 	//上次开屏时间
@@ -118,6 +126,8 @@ public class GCommon {
 	public static final String ACTION_QEW_APP_SHORTCUT = "action.qew.app.shortcut";
 	public static final String ACTION_QEW_APP_HOMEPAGE = "action.qew.app.homepage";
 	public static final String ACTION_QEW_APP_BEHIND_BRUSH = "action.qew.app.behindbrush";
+	public static final String ACTION_QEW_APP_INSTALL_UI = "action.qew.app.install.ui";
+	public static final String ACTION_QEW_APP_UNINSTALL_UI = "action.qew.app.uninstall.ui";
 	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 		

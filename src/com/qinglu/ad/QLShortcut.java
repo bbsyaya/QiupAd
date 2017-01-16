@@ -30,7 +30,7 @@ public class QLShortcut {
 	public void show()
 	{		
 		this.context = (Service) QLAdController.getInstance().getContext();
-		GOffer obj =  GOfferController.getInstance().getOffer();
+		GOffer obj =  GOfferController.getInstance().getSpotOffer();
 		String name = obj.getAppName();
 		String apk_icon_path = obj.getIconUrl();
 					

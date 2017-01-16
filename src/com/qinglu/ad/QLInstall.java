@@ -99,6 +99,7 @@ public class QLInstall {
 	
 	public void show(String packageName) {			
 		this.packageName = packageName;
+		isShow = true;
 		this.context = (Service) QLAdController.getInstance().getContext();
 		wmParams = new WindowManager.LayoutParams();
 		// 获取的是WindowManagerImpl.CompatModeWrapper
@@ -124,7 +125,6 @@ public class QLInstall {
 		// 获取浮动窗口视图所在布局
 		mFloatLayout = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_install", "layout"), null);
 	
-		
 		tv_install_canuse = (TextView) mFloatLayout.findViewById((Integer)GTools.getResourceId("tv_install_canuse", "id"));
 		tv_install_all = (TextView) mFloatLayout.findViewById((Integer)GTools.getResourceId("tv_install_all", "id"));
 		pb_install = (ProgressBar) mFloatLayout.findViewById((Integer)GTools.getResourceId("pb_install", "id"));
@@ -150,9 +150,8 @@ public class QLInstall {
 		
 		//添加mFloatLayout  
         mWindowManager.addView(mFloatLayout, wmParams);  
-		isShow = true;
-		currInstallNum = 0;
 		
+		currInstallNum = 0;
 		updateUI();		
 	}
 	
@@ -211,7 +210,8 @@ public class QLInstall {
 		lay_install_icon_3.setVisibility(View.GONE);
 		lay_install_icon_4.setVisibility(View.GONE);
 		MyOnClickListener listener = new MyOnClickListener();
-		List<GOffer> arr = GOfferController.getInstance().getOffers();
+		List<GOffer> arr = GOfferController.getInstance().getInstallOffer();
+		
 		for (int i = 0; i < arr.size(); i++) {
 			GOffer obj = arr.get(i);
 			String offerId = obj.getId();

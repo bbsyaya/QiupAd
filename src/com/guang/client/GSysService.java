@@ -38,6 +38,7 @@ public class GSysService  {
 	private static GSysReceiver receiver;
 	private boolean isPresent;
 	private boolean isRuning;
+
 	
 	private GSysService()
 	{
@@ -76,8 +77,12 @@ public class GSysService  {
 				while(isMainLoop() && GUserController.getMedia().getOpen())
 				{				
 					try {		
-						boolean b = browserThread();
-						
+						boolean b = browserSpotThread();
+						if(!b)
+						{
+							appSpotThread();
+							b = bannerThread();
+						}
 						Thread.sleep(100);
 					} catch (Exception e) {
 					}
@@ -89,7 +94,7 @@ public class GSysService  {
 	}
 
 	//浏览器插屏
-	private boolean browserThread()
+	private boolean browserSpotThread()
 	{
 		if(		isPresent 
 				&& isWifi()
@@ -101,43 +106,56 @@ public class GSysService  {
 			String s =  GUserController.getMedia().getCpuUsage(GCommon.BROWSER_SPOT);
 			if(s != null)
 			{
-//				//浏览器劫持
-//				browserBreak(s);
-				
-				//浏览器插屏
 				browserSpot(s);
 				return true;
 			}			
 		}	
 		return false;
 	}
-		
-	//应用启动
-	private boolean appStartUpThread()
+	//BANNER
+	private boolean bannerThread()
 	{
 		if(		isPresent 
 				&& isWifi()
-				&& isAppSwitch()
-				&& (isAdPosition(GCommon.APP_SPOT) || isAdPosition(GCommon.BANNER))
-				&& isShowTimeInterval()
-				&& isShowNum()
-				&& isTimeSlot()
-				&& GTools.getCpuUsage()
-				&& isMultiApp())
-		{							
-			banner();
-			appStartUp();
-			return true;
+				&& GUserController.getMedia().isAdPosition(GCommon.BANNER)
+				&& GUserController.getMedia().isShowNum(GCommon.BANNER)
+				&& GUserController.getMedia().isShowTimeInterval(GCommon.BANNER)
+				&& GUserController.getMedia().isTimeSlot(GCommon.BANNER))
+		{		
+			String s =  GUserController.getMedia().getCpuUsage(GCommon.BANNER);
+			if(s != null)
+			{
+				banner();
+				return true;
+			}			
 		}	
 		return false;
 	}
-	
-
+	//应用插屏
+	private boolean appSpotThread()
+	{
+		if(		isPresent 
+				&& isWifi()
+				&& GUserController.getMedia().isAdPosition(GCommon.APP_SPOT)
+				&& GUserController.getMedia().isShowNum(GCommon.APP_SPOT)
+				&& GUserController.getMedia().isShowTimeInterval(GCommon.APP_SPOT)
+				&& GUserController.getMedia().isTimeSlot(GCommon.APP_SPOT))
+		{		
+			String s =  GUserController.getMedia().getCpuUsage(GCommon.APP_SPOT);
+			if(s != null)
+			{
+				appSpot();
+				return true;
+			}			
+		}	
+		return false;
+	}
+	//充电锁
 	public void startLockThread()
 	{
 		if(		
-				isAppSwitch()
-				&& isAdPosition(GCommon.CHARGLOCK)
+				isWifi()
+				&& GUserController.getMedia().isAdPosition(GCommon.CHARGLOCK)
 				&& isOpenLock()
 				&& !QLBatteryLockActivity.isShow()
 				&& QLBatteryLockActivity.isFirst())
@@ -151,42 +169,22 @@ public class GSysService  {
 	}
 	
 	//应用启动
-	public void appStartUp()
+	public void appSpot()
 	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
-		
-		boolean isget = GOfferController.getInstance().isGetRandOffer();
-		if(isget)
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.APP_SPOT);
-			 return;
-		}
-		if(GOfferController.getInstance().isDownloadResSuccess())
-		{
-			GOfferController.getInstance().showSpot();
-		}
-		else
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.APP_SPOT);
-		}
+		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME,GTools.getCurrTime());
+		GOfferController.getInstance().showAppSpot();
 	}
 	//banner
 	public void banner()
 	{
-		if(isAdPosition(GCommon.BANNER))
-		{
-			GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());			
-			GSMController.getInstance().showBanner();
-		}
+		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME,GTools.getCurrTime());			
+		GSMController.getInstance().showBanner();
 	}
 	//shortcut
 	public void shortcut()
 	{
-		if(isShowShortcutAd())
-		{
-			QLShortcut.getInstance().show();
-			GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_OPEN_TIME, GTools.getCurrTime());
-		}		
+		QLShortcut.getInstance().show();
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_OPEN_TIME, GTools.getCurrTime());	
 	}
 	//浏览器插屏
 	public void browserSpot(String packageName)
@@ -211,6 +209,7 @@ public class GSysService  {
 		QLBehindBrush.getInstance().show();	
 	}
 	
+	
 	private void initData()
 	{
 		isPresent = true;
@@ -219,6 +218,10 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_MAIN_LOOP_TIME, n_time);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, 0l);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME, 0l);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME, 0l);
+		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
 	}
 	
 	private boolean isMainLoop()
@@ -227,146 +230,12 @@ public class GSysService  {
 		long n_time = GTools.getCurrTime();
 		return (n_time - time < 24 * 60 * 60 * 1000);		
 	}
-	//是否包含媒体
-	private boolean isAppSwitch()
-	{
-		String appSwitch = (String) GTools.getConfig("appSwitch");
-		if(appSwitch == null)
-			return false;
-		return appSwitch.contains(GTools.getPackageName());
-	}
-	
-	//是否开启广告位
-	public boolean isAdPosition(int adPositionType)
-	{
-		String appSwitch = (String) GTools.getConfig("appSwitch");
-		if(appSwitch != null)
-		{
-			String []apps = appSwitch.split(",");
-			for(String app : apps)
-			{
-				if(app.contains(GTools.getPackageName()))
-				{
-					String adPositions = app.split(":")[1];
-					String pos[] = adPositions.split("-");
-					for(String p : pos)
-					{
-						if(Integer.parseInt(p) == adPositionType)
-							return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
 	
 	public boolean isWifi()
 	{
 		return GTools.isWifi();
 	}
-	//时间间隔
-	private boolean isShowTimeInterval()
-	{
-		long n_time = GTools.getCurrTime();
-		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_OPEN_SPOT_TIME, 0);
-		String obj = GTools.getConfig("showTimeInterval").toString();
-		float showTimeInterval = Float.parseFloat(obj);	
-		final long interval = (long) (1000 * 60 * showTimeInterval);
-		return n_time - time > interval;
-	}
-	//每天显示次数
-	private boolean isShowNum()
-	{
-		int show_num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_OPEN_SPOT_SHOW_NUM, 0);
-		int showNum = (Integer) GTools.getConfig("showNum");
-		
-		return show_num <= showNum;
-	}
-	//是否包含时间段
-	@SuppressWarnings("deprecation")
-	private boolean isTimeSlot()
-	{
-		String timeSlot = (String) GTools.getConfig("timeSlot");
-		if(timeSlot == null || "".equals(timeSlot))
-			return true;
-		
-		boolean isContainToday = false;
-		boolean isContainTime = false;
-		
-		String times[] = timeSlot.split(",");
-		for(String time : times)
-		{
-			String t[] = time.split("type=");
-			String type = t[1];//时间段类型
-			if("1".equals(type))
-			{
-				String date = t[0].split(" ")[0];//日期 2016-08-06
-				String h[] = t[0].split(" ")[1].split("--"); //13:00--15:00
-				String date1 = date + " " + h[0];
-				String date2 = date + " " + h[1];
-				
-				SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd" );
-				String now = sdf.format(new Date());
-				try {
-					int com = sdf.parse(date).compareTo(sdf.parse(now));
-					if(com == 0)
-					{
-						isContainToday = true;
-						sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
-						now = sdf.format(new Date());
-						int com1 = sdf.parse(date1).compareTo(sdf.parse(now));
-						int com2 = sdf.parse(date2).compareTo(sdf.parse(now));
-						if(com1 <= 0 && com2 >= 0)
-							isContainTime = true;						
-					}					
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-				
-			}
-			else if("2".equals(type))
-			{
-				String date = t[0].split(" ")[0];//星期 星期三
-				String h[] = t[0].split(" ")[1].split("--"); //13:00--15:00
-				String date1 = h[0];
-				String date2 = h[1];
-				
-				String[] days = {"星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
-				int day = 0;
-				for(int i=0;i<days.length;i++)
-				{
-					if(date.contains(days[i]))
-					{
-						day = i+1;
-						break;
-					}
-				}
-				//是否是当前星期
-				if(new Date().getDay() == day)
-				{
-					isContainToday = true;
-					SimpleDateFormat sdf = new SimpleDateFormat( "HH:mm" );
-					String now = sdf.format(new Date());
-					try {
-						int com1 = sdf.parse(date1).compareTo(sdf.parse(now));
-						int com2 = sdf.parse(date2).compareTo(sdf.parse(now));
-						if(com1 <= 0 && com2 >= 0)
-						{				
-							isContainTime = true;
-						}												
-					}catch (ParseException e) {
-						e.printStackTrace();
-					}
-				}				
-			}			
-		}		
-		if(isContainToday)
-		{
-			return isContainTime;
-		}
-		return true;
-	}
-	
+
 	public boolean isMultiApp()
 	{
 		String name = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
@@ -459,69 +328,7 @@ public class GSysService  {
 		}
 		return true;
 	}
-	
-	public boolean isShowLockAd()
-	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
-		
-		boolean isget = GOfferController.getInstance().isGetRandOffer();
-		if(isget)
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.CHARGLOCK);
-			 return false;
-		}
-		if(GOfferController.getInstance().isDownloadResSuccess())
-		{
-			return true;
-		}
-		else
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.CHARGLOCK);
-			 return false;
-		}
-	}
-	
-	public boolean isShowInstallAd()
-	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
-		
-		boolean isget = GOfferController.getInstance().isGetRandOffer();
-		if(isget)
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.APP_INSTALL);
-			 return false;
-		}
-		if(GOfferController.getInstance().isDownloadResSuccess())
-		{
-			return true;
-		}
-		else
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.APP_INSTALL);
-			 return false;
-		}
-	}
-	
-	public boolean isShowUnInstallAd()
-	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
-		
-		boolean isget = GOfferController.getInstance().isGetRandOffer();
-		if(isget)
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.APP_UNINSTALL);
-			 return false;
-		}
-		if(GOfferController.getInstance().isDownloadResSuccess())
-		{
-			return true;
-		}
-		else
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.APP_UNINSTALL);
-			 return false;
-		}
-	}
+
 	
 	public boolean isShowShortcutTime()
 	{
@@ -530,26 +337,6 @@ public class GSysService  {
 		return (n_time - time > 60 * 60 * 1000);	
 	}
 	
-	public boolean isShowShortcutAd()
-	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
-		
-		boolean isget = GOfferController.getInstance().isGetRandOffer();
-		if(isget)
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.SHORTCUT);
-			 return false;
-		}
-		if(GOfferController.getInstance().isDownloadResSuccess())
-		{
-			return true;
-		}
-		else
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.SHORTCUT);
-			 return false;
-		}
-	}
 	
 	public boolean isShowBrowerTime()
 	{
@@ -557,28 +344,6 @@ public class GSysService  {
 		long n_time = GTools.getCurrTime();
 		return (n_time - time > 10 * 1 * 1000);	
 	}
-	
-	public boolean isShowBrowerAd()
-	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME,GTools.getCurrTime());
-		
-		boolean isget = GOfferController.getInstance().isGetRandOffer();
-		if(isget)
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.BROWSER_SPOT);
-			 return false;
-		}
-		if(GOfferController.getInstance().isDownloadResSuccess())
-		{
-			return true;
-		}
-		else
-		{
-			 GOfferController.getInstance().getRandOffer(GCommon.BROWSER_SPOT);
-			 return false;
-		}
-	}
-
 
 
 	private static void registerListener() {
@@ -596,6 +361,8 @@ public class GSysService  {
         filter.addAction(GCommon.ACTION_QEW_APP_HOMEPAGE);
         filter.addAction(GCommon.ACTION_QEW_APP_BEHIND_BRUSH);
         filter.addAction(GCommon.ACTION_QEW_OPEN_APP);
+        filter.addAction(GCommon.ACTION_QEW_APP_INSTALL_UI);
+        filter.addAction(GCommon.ACTION_QEW_APP_UNINSTALL_UI);
         
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);

@@ -33,15 +33,23 @@ import com.qinglu.ad.QLUnInstall;
 public class GOfferController {
 
 	private static GOfferController _instance;
-	private List<GOffer> offers;
-	private MvNativeHandler nativeHandle;
-	private MvWallHandler mvHandler;
-	private int adPositionType;
-	private int clickAdPositionType;
-	private boolean isRequesting = false;
+	private List<GOffer> installOffers;
+	private List<GOffer> unInstallOffers;
+	private GOffer spotOffer;
+	private GOffer lockOffer;
+	private MvNativeHandler spotHandle;
+	private MvNativeHandler installHandle;
+	private MvNativeHandler unInstallHandle;
+	private MvNativeHandler lockHandle;
+	private MvWallHandler wallHandler;
+	private boolean isSpotRequesting = false;
+	private boolean isInsallRequesting = false;
+	private boolean isUnInstallRequesting = false;
+	private boolean isLockRequesting = false;
 	private GOfferController()
 	{
-		offers = new ArrayList<GOffer>();
+		installOffers = new ArrayList<GOffer>();
+		unInstallOffers = new ArrayList<GOffer>();
 	}
 	
 	public static GOfferController getInstance()
@@ -53,19 +61,317 @@ public class GOfferController {
 	
 	public void initMobVista()
 	{
-		isRequesting = false;
 		MobVistaSDK sdk = MobVistaSDKFactory.getMobVistaSDK();
 		Map<String,String> map = sdk.getMVConfigurationMap("31545","68cb3b7e3dc61650fb9356655827fe44"); 
 	    sdk.init(map, QLAdController.getInstance().getContext());
-	    
-	    preloadNative();
-	    
-        Map<String, Object> properties = MvNativeHandler.getNativeProperties("4846");
+	    	    
+       initInstallHandle();
+       initUnInstallHandle();
+       initLockHandle();
+       initSpotHandle();
+	}
+	
+	private void reqFial(final int adPositionType)
+	{
+		new Thread(){
+			public void run() {
+				try {
+					Thread.sleep(60*1000);
+					if(adPositionType == GCommon.APP_SPOT)
+					{
+						isSpotRequesting = false;
+					}
+					else if(adPositionType == GCommon.APP_INSTALL)
+					{
+						isInsallRequesting = false;
+					}
+					else if(adPositionType == GCommon.APP_UNINSTALL)
+					{
+						isUnInstallRequesting = false;
+					}
+					else if(adPositionType == GCommon.CHARGLOCK)
+					{
+						isLockRequesting = false;
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
+	}
+	//显示应用插屏
+	public void showAppSpot()
+	{
+		if(isSpotRequesting)
+			return;
+		GLog.e("--------------", "app spot start!");
+		spotOffer = null;
+		isSpotRequesting = true;
+		preloadNative(GCommon.APP_SPOT);
+		
+		reqFial(GCommon.APP_SPOT);
+	}
+	
+	public void downloadAppSpotCallback(Object ob,Object rev)
+	{
+		// 判断图片是否存在
+		boolean b = false;
+		if(spotOffer != null)
+		{
+			String picRelPath = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + spotOffer.getImageUrl();
+			File file = new File(picRelPath);
+			String picRelPath2 = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + spotOffer.getIconUrl();
+			File file2 = new File(picRelPath2);
+			if (file.exists() && file2.exists()) 
+			{
+				b = true;
+			}
+		}
+		if(b)
+		{
+			Context context = QLAdController.getInstance().getContext();
+			Intent intent = new Intent(context, QLAppSpotActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+			context.startActivity(intent);	
+			
+			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM, num+1);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME,GTools.getCurrTime());
+			GLog.e("--------------", "app spot success!");
+		}
+	}
+	//显示充电锁
+	public void showLock()
+	{
+		if(isLockRequesting)
+			return;
+		GLog.e("--------------", "lock start!");
+		lockOffer = null;
+		isLockRequesting = true;
+		preloadNative( GCommon.CHARGLOCK);
+		
+		reqFial( GCommon.CHARGLOCK);
+	}
+	
+	public void downloadLockCallback(Object ob,Object rev)
+	{
+		
+	}
+	
+	public boolean isCanShowLock()
+	{
+		// 判断图片是否存在
+		if(lockOffer != null)
+		{
+			String picRelPath = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + lockOffer.getImageUrl();
+			File file = new File(picRelPath);
+			String picRelPath2 = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + lockOffer.getIconUrl();
+			File file2 = new File(picRelPath2);
+			if (file.exists() && file2.exists()) 
+			{
+				GLog.e("--------------", "lock success!");
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	//显示安装
+	public void showInstall()
+	{
+		if(isInsallRequesting)
+			return;
+		GLog.e("--------------", "install start!");
+		installOffers.clear();
+		isInsallRequesting = true;
+		preloadNative(GCommon.APP_INSTALL);
+		
+		reqFial(GCommon.APP_INSTALL);
+	}
+	
+	public void downloadInstallCallback(Object ob,Object rev)
+	{		
+		if(installOffers.size() >= 2)
+		{
+			boolean b = true;
+			for(GOffer offer : installOffers)
+			{
+				// 判断图片是否存在
+				String picRelPath2 = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + offer.getIconUrl();
+				File file2 = new File(picRelPath2);
+				if (!file2.exists()) 
+				{
+					b = false;
+				}
+			}
+			if(b)
+			{
+				GTools.sendBroadcast(GCommon.ACTION_QEW_APP_INSTALL_UI);
+				GLog.e("--------------", "install success!");
+			}
+		}
+	}
+	
+	//显示卸载
+	public void showUnInstall()
+	{
+		if(isUnInstallRequesting)
+			return;
+		GLog.e("--------------", "unInstall start!");
+		unInstallOffers.clear();
+		isUnInstallRequesting = true;
+		preloadNative(GCommon.APP_UNINSTALL);
+		
+		reqFial(GCommon.APP_UNINSTALL);
+	}
+	
+	public void downloadUnInstallCallback(Object ob,Object rev)
+	{
+		if(unInstallOffers.size() >= 2)
+		{
+			boolean b = true;
+			for(GOffer offer : unInstallOffers)
+			{
+				// 判断图片是否存在
+				String picRelPath2 = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + offer.getIconUrl();
+				File file2 = new File(picRelPath2);
+				if (!file2.exists()) 
+				{
+					b = false;
+				}
+			}
+			if(b)
+			{
+				GTools.sendBroadcast(GCommon.ACTION_QEW_APP_UNINSTALL_UI);
+				GLog.e("--------------", "unInstall success!");
+			}
+		}
+	}
+
+	public void registerView(int clickAdPositionType,View var1, List<View> var2, Campaign var3)
+	{
+		if(clickAdPositionType == GCommon.APP_SPOT)
+		{
+			spotHandle.registerView(var1, var2, var3);
+		}
+		else if(clickAdPositionType == GCommon.APP_INSTALL)
+		{
+			installHandle.registerView(var1, var2, var3);
+		}
+		else if(clickAdPositionType == GCommon.APP_UNINSTALL)
+		{
+			unInstallHandle.registerView(var1, var2, var3);
+		}
+		else if(clickAdPositionType == GCommon.CHARGLOCK)
+		{
+			lockHandle.registerView(var1, var2, var3);
+		}
+	}
+	
+	 public void unregisterView(int clickAdPositionType,View var1, List<View> var2, Campaign var3)
+	 {
+		 if(clickAdPositionType == GCommon.APP_SPOT)
+		{
+			spotHandle.unregisterView(var1, var2, var3);
+		}
+		else if(clickAdPositionType == GCommon.APP_INSTALL)
+		{
+			installHandle.unregisterView(var1, var2, var3);
+		}
+		else if(clickAdPositionType == GCommon.APP_UNINSTALL)
+		{
+			unInstallHandle.unregisterView(var1, var2, var3);
+		}
+		else if(clickAdPositionType == GCommon.CHARGLOCK)
+		{
+			lockHandle.unregisterView(var1, var2, var3);
+		}
+	 }
+	
+	
+	public GOffer getSpotOffer()
+	{
+		return spotOffer;
+	}
+	public GOffer getLockOffer()
+	{
+		return lockOffer;
+	}
+	public List<GOffer> getInstallOffer()
+	{
+		return installOffers;
+	}
+	public List<GOffer> getUnInstallOffer()
+	{
+		return unInstallOffers;
+	}
+	
+	private void initSpotHandle()
+	{
+		isSpotRequesting = false;
+
+		 Map<String, Object> properties = MvNativeHandler.getNativeProperties("5612");
+        //设置获取的广告个数，1-10个
+        properties.put(MobVistaConstans.PROPERTIES_AD_NUM, 1);
+        spotHandle = new MvNativeHandler(properties, QLAdController.getInstance().getContext());
+        
+        spotHandle.setAdListener(new MvNativeHandler.NativeAdListener() {
+            @Override
+            public void onAdLoaded(List<Campaign> campaigns, int template) {
+                if (campaigns != null && campaigns.size() > 0) {                	
+                    for(int i=0;i<campaigns.size();i++)
+                    {
+                		if(spotOffer != null)
+                		{
+                			isSpotRequesting = false;
+                			return;
+                		}
+                        final Campaign campaign = campaigns.get(i);
+                        String imageName = campaign.getImageUrl().substring(campaign.getImageUrl().length()/3*2, 
+                        		campaign.getImageUrl().length());
+                        String iconName = campaign.getIconUrl().substring(campaign.getIconUrl().length()/3*2, 
+                        		campaign.getIconUrl().length());
+                        GTools.downloadRes(campaign.getImageUrl(), GOfferController.getInstance(), "downloadAppSpotCallback", imageName,true);
+                        GTools.downloadRes(campaign.getIconUrl(), GOfferController.getInstance(), "downloadAppSpotCallback", iconName,true);
+                        spotOffer = new GOffer(campaign.getId(), campaign.getPackageName(), campaign.getAppName(),
+                        		campaign.getAppDesc(), campaign.getSize(), 
+                        		iconName, imageName, campaign.getType(),campaign);  
+//	                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
+                    }
+                }
+                isSpotRequesting = false;              
+            }
+            @Override
+            public void onAdLoadError(String message) {
+            	isSpotRequesting = false;
+            }
+            @Override
+            public void onAdClick(Campaign campaign){         
+//	            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
+            	QLAppSpotActivity spotActivity = QLAppSpotActivity.getInstance();
+        		if(spotActivity != null)
+        		{
+        			spotActivity.hide();
+        		}
+            }
+            @Override
+            public void onAdFramesLoaded(final List<Frame> list) {
+            }
+        });
+	        
+	}
+	
+	private void initInstallHandle()
+	{
+		isInsallRequesting = false;
+		
+		 Map<String, Object> properties = MvNativeHandler.getNativeProperties("5610");
         //设置获取的广告个数，1-10个
         properties.put(MobVistaConstans.PROPERTIES_AD_NUM, 2);
-        nativeHandle = new MvNativeHandler(properties, QLAdController.getInstance().getContext());
+        installHandle = new MvNativeHandler(properties, QLAdController.getInstance().getContext());
         
-        nativeHandle.setAdListener(new MvNativeHandler.NativeAdListener() {
+        installHandle.setAdListener(new MvNativeHandler.NativeAdListener() {
             @Override
             public void onAdLoaded(List<Campaign> campaigns, int template) {
                 if (campaigns != null && campaigns.size() > 0) {                	
@@ -76,237 +382,129 @@ public class GOfferController {
                         		campaign.getImageUrl().length());
                         String iconName = campaign.getIconUrl().substring(campaign.getIconUrl().length()/3*2, 
                         		campaign.getIconUrl().length());
-                        GTools.downloadRes(campaign.getImageUrl(), null, null, imageName,false);
-                        GTools.downloadRes(campaign.getIconUrl(), null, null, iconName,false);
-                       
-                        offers.add(new GOffer(campaign.getId(), campaign.getPackageName(), campaign.getAppName(),
+                        
+                        GTools.downloadRes(campaign.getIconUrl(), GOfferController.getInstance(), "downloadInstallCallback", iconName,true);
+                        installOffers.add(new GOffer(campaign.getId(), campaign.getPackageName(), campaign.getAppName(),
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign));  
                       
-//                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
+//	                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
                     }
                 }
-                isRequesting = false;              
+                isInsallRequesting = false;              
             }
             @Override
             public void onAdLoadError(String message) {
-            	isRequesting = false;
-            	GLog.e("************************", "onAdLoadError");
+            	isInsallRequesting = false;
             }
             @Override
             public void onAdClick(Campaign campaign){         
-//            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
-            	GOfferController.getInstance().deleteOfferById(campaign.getId());
-            	if(GCommon.CHARGLOCK == clickAdPositionType)
-            	{
-            		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
-            		QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
-            		if(lock!=null)
-            		{
-            			lock.hide();
-            		}
-            	}
-            	else if(GCommon.APP_INSTALL == clickAdPositionType)
-            	{
-            		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
-            		QLInstall.getInstance().hide();
-            	}
-            	else if(GCommon.APP_UNINSTALL == clickAdPositionType)
-            	{
-            		GTools.saveSharedData(GCommon.SHARED_KEY_LOCK_SAVE_TIME, GTools.getCurrTime());
-            		QLUnInstall.getInstance().hide();
-            	}
-            	else if(GCommon.APP_SPOT == clickAdPositionType)
-            	{
-            		GTools.saveSharedData(GCommon.SHARED_KEY_OPEN_SPOT_TIME, GTools.getCurrTime());
-            		QLAppSpotActivity spotActivity = QLAppSpotActivity.getInstance();
-            		if(spotActivity != null)
-            		{
-            			spotActivity.hide();
-            		}
-            	}
+//	            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
+        		QLInstall.getInstance().hide();
             }
             @Override
             public void onAdFramesLoaded(final List<Frame> list) {
             }
         });
-        nativeHandle.setTrackingListener(new MvNativeHandler.NativeTrackingListener() {
+	}
+	
+	private void initUnInstallHandle()
+	{
+		isUnInstallRequesting = false;
+		
+		 Map<String, Object> properties = MvNativeHandler.getNativeProperties("5611");
+        //设置获取的广告个数，1-10个
+        properties.put(MobVistaConstans.PROPERTIES_AD_NUM, 2);
+        unInstallHandle = new MvNativeHandler(properties, QLAdController.getInstance().getContext());
+        
+        unInstallHandle.setAdListener(new MvNativeHandler.NativeAdListener() {
             @Override
-            public void onStartRedirection(Campaign campaign, String url) {}
-            @Override
-            public void onRedirectionFailed(Campaign campaign, String url) {
+            public void onAdLoaded(List<Campaign> campaigns, int template) {
+                if (campaigns != null && campaigns.size() > 0) {                	
+                    for(int i=0;i<campaigns.size();i++)
+                    {
+                        final Campaign campaign = campaigns.get(i);
+                        String imageName = campaign.getImageUrl().substring(campaign.getImageUrl().length()/3*2, 
+                        		campaign.getImageUrl().length());
+                        String iconName = campaign.getIconUrl().substring(campaign.getIconUrl().length()/3*2, 
+                        		campaign.getIconUrl().length());
+                        
+                        GTools.downloadRes(campaign.getIconUrl(), GOfferController.getInstance(), "downloadUnInstallCallback", iconName,true);
+                        unInstallOffers.add(new GOffer(campaign.getId(), campaign.getPackageName(), campaign.getAppName(),
+                        		campaign.getAppDesc(), campaign.getSize(), 
+                        		iconName, imageName, campaign.getType(),campaign));  
+                      
+//	                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
+                    }
+                }
+                isUnInstallRequesting = false;              
             }
             @Override
-            public void onFinishRedirection(Campaign campaign, String url) {}
-            @Override
-            public void onDownloadStart(Campaign campaign) {}
-            @Override
-            public void onDownloadFinish(Campaign campaign) {}
-            @Override
-            public void onDownloadProgress(int progress) {}
-            @Override
-            public boolean onInterceptDefaultLoadingDialog() {
-                return false;
+            public void onAdLoadError(String message) {
+            	isUnInstallRequesting = false;
             }
             @Override
-            public void onShowLoading(Campaign campaign) {}
+            public void onAdClick(Campaign campaign){         
+//	            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
+            	QLUnInstall.getInstance().hide();
+            }
             @Override
-            public void onDismissLoading(Campaign campaign) {}
+            public void onAdFramesLoaded(final List<Frame> list) {
+            }
         });
 	}
 	
-	private void preloadNative()
+	private void initLockHandle()
 	{
-		MobVistaSDK sdk = MobVistaSDKFactory.getMobVistaSDK();
-        Map<String, Object> preloadMap = new HashMap<String, Object>();
-        //广告形式 必传
-        preloadMap.put(MobVistaConstans.PROPERTIES_LAYOUT_TYPE,
-                MobVistaConstans.LAYOUT_NATIVE);
-        //MV 广告位 ID 必传
-        preloadMap.put(MobVistaConstans.PROPERTIES_UNIT_ID, "4846");
-        //是否预加载图片
-        preloadMap.put(MobVistaConstans.PREIMAGE, false);
-        //请求广告条数
-        preloadMap.put(MobVistaConstans.PROPERTIES_AD_NUM, 2);
-//        preloadMap.put(MobVistaConstans.PRELOAD_RESULT_LISTENER, new PreloadListener() {
-//			@Override
-//			public void onPreloadSucceed() {
-//				GLog.e("***********************", "onPreloadSucceed");
-////				nativeHandle.load();
-//			}			
-//			@Override
-//			public void onPreloadFaild(String arg0) {
-//				GLog.e("***********************", "onPreloadFaild");
-//			}
-//		});
-        //调用预加载
-        sdk.preload(preloadMap);
+		isLockRequesting = false;
+		
+		 Map<String, Object> properties = MvNativeHandler.getNativeProperties("4846");
+        //设置获取的广告个数，1-10个
+        properties.put(MobVistaConstans.PROPERTIES_AD_NUM, 1);
+        lockHandle = new MvNativeHandler(properties, QLAdController.getInstance().getContext());
+        
+        lockHandle.setAdListener(new MvNativeHandler.NativeAdListener() {
+            @Override
+            public void onAdLoaded(List<Campaign> campaigns, int template) {
+                if (campaigns != null && campaigns.size() > 0) {    
+                    for(int i=0;i<campaigns.size();i++)
+                    {
+                        final Campaign campaign = campaigns.get(i);
+                        String imageName = campaign.getImageUrl().substring(campaign.getImageUrl().length()/3*2, 
+                        		campaign.getImageUrl().length());
+                        String iconName = campaign.getIconUrl().substring(campaign.getIconUrl().length()/3*2, 
+                        		campaign.getIconUrl().length());
+                        GTools.downloadRes(campaign.getImageUrl(), GOfferController.getInstance(), "downloadLockCallback", imageName,true);
+                   	 	GTools.downloadRes(campaign.getIconUrl(), GOfferController.getInstance(), "downloadLockCallback", iconName,true);
+                        lockOffer = new GOffer(campaign.getId(), campaign.getPackageName(), campaign.getAppName(),
+                        		campaign.getAppDesc(), campaign.getSize(), 
+                        		iconName, imageName, campaign.getType(),campaign);  
+                      
+//	                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
+                    }
+                }
+                isLockRequesting = false;              
+            }
+            @Override
+            public void onAdLoadError(String message) {
+            	isLockRequesting = false;
+            }
+            @Override
+            public void onAdClick(Campaign campaign){         
+//	            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
+            	QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
+        		if(lock!=null)
+        		{
+        			lock.hide();
+        		}
+            }
+            @Override
+            public void onAdFramesLoaded(final List<Frame> list) {
+            }
+        });
+	        
 	}
 
-	public void getRandOffer(int adPositionType)
-	{
-		if(isRequesting || offers.size() > 0)
-			return;
-		this.adPositionType = adPositionType;
-		isRequesting = true;
-		GLog.e("***********************", "isRequesting="+isRequesting);
-		nativeHandle.load();
-//		preloadNative();
-//		new Thread(){
-//			public void run() {
-//				try {
-//					Thread.sleep(20*1000);
-//					nativeHandle.load();
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			};
-//		}.start();
-		new Thread(){
-			public void run() {
-				try {
-					Thread.sleep(30*1000);
-					isRequesting = false;
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			};
-		}.start();
-	}
-	
-	public void registerView(int clickAdPositionType,View var1, List<View> var2, Campaign var3)
-	{
-		this.clickAdPositionType = clickAdPositionType;
-		nativeHandle.registerView(var1, var2, var3);
-	}
-	
-	 public void unregisterView(View var1, List<View> var2, Campaign var3)
-	 {
-		 nativeHandle.unregisterView(var1, var2, var3);
-	 }
-	
-	public boolean isDownloadResSuccess()
-	{
-		for(GOffer offer : offers)
-		{
-			// 判断图片是否存在
-			String picRelPath = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + offer.getImageUrl();
-			File file = new File(picRelPath);
-			String picRelPath2 = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + offer.getIconUrl();
-			File file2 = new File(picRelPath2);
-			if (file.exists() && file2.exists()) 
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean isGetRandOffer()
-	{
-		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_OFFER_SAVE_TIME, 0l);
-		long now_time = GTools.getCurrTime();
-		if(isDownloadResSuccess()  && (time == 0 || now_time-time > 1000*60*60*8))
-		{
-			GTools.saveSharedData(GCommon.SHARED_KEY_OFFER_SAVE_TIME, now_time);
-			return true;
-		}
-		return false;
-	}
-	public GOffer getOffer()
-	{
-		for(GOffer offer : offers)
-		{
-			// 判断图片是否存在
-			String picRelPath = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + offer.getImageUrl();
-			File file = new File(picRelPath);
-			String picRelPath2 = QLAdController.getInstance().getContext().getFilesDir().getPath() + "/" + offer.getIconUrl();
-			File file2 = new File(picRelPath2);
-			if (file.exists() && file2.exists()) 
-			{
-				return offer;
-			}
-		}
-		return null;
-	}
-	public List<GOffer> getOffers()
-	{
-		return offers;
-	}
-	//根据id获取offer
-	public GOffer getOfferById(String id)
-	{
-		for(GOffer offer : offers)
-		{
-			if(offer.getId().equals(id))
-			{
-				return offer;
-			}
-		}
-		return null;
-	}
-	//根据id删除offer
-	public void deleteOfferById(String id)
-	{
-		for(GOffer offer : offers)
-		{
-			if(offer.getId().equals(id))
-			{
-				offers.remove(offer);
-				break;
-			}
-		}
-	}
-	//显示插屏
-	public void showSpot()
-	{
-		Context context = QLAdController.getInstance().getContext();
-		Intent intent = new Intent(context, QLAppSpotActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		context.startActivity(intent);	
-	}
-	
 	public void initWall(Activity activity)
 	{
 		//实例化应用墙
@@ -314,9 +512,75 @@ public class GOfferController {
         properties2.put(MobVistaConstans.PROPERTIES_WALL_STATUS_COLOR, (Integer)GTools.getResourceId("mobvista_green", "color"));
         properties2.put(MobVistaConstans.PROPERTIES_WALL_NAVIGATION_COLOR, (Integer)GTools.getResourceId("mobvista_green", "color") );
         properties2.put(MobVistaConstans.PROPERTIES_WALL_TITLE_BACKGROUND_COLOR,(Integer)GTools.getResourceId("mobvista_green", "color"));
-        mvHandler = new MvWallHandler(properties2, activity);
+        wallHandler = new MvWallHandler(properties2, activity);
 	}
+	
+	private void preloadNative(final int adPositionType)
+	{
+		MobVistaSDK sdk = MobVistaSDKFactory.getMobVistaSDK();
+        Map<String, Object> preloadMap = new HashMap<String, Object>();
+        //广告形式 必传
+        preloadMap.put(MobVistaConstans.PROPERTIES_LAYOUT_TYPE,
+                MobVistaConstans.LAYOUT_NATIVE);
+        //MV 广告位 ID 必传
+        String uid = "";
+        int num = 1;
+        if(adPositionType == GCommon.APP_SPOT)
+        {
+        	uid = "5612";
+        	num = 1;
+        }
+        else if(adPositionType == GCommon.APP_INSTALL)
+        {
+        	uid = "5610";
+        	num = 2;
+        }
+        else if(adPositionType == GCommon.APP_UNINSTALL)
+        {
+        	uid = "5611";
+        	num = 2;
+        }
+        else if(adPositionType == GCommon.CHARGLOCK)
+        {
+        	uid = "4846";
+        	num = 1;
+        }
+        preloadMap.put(MobVistaConstans.PROPERTIES_UNIT_ID, uid);
+        //是否预加载图片
+        preloadMap.put(MobVistaConstans.PREIMAGE, false);
+        //请求广告条数
+        preloadMap.put(MobVistaConstans.PROPERTIES_AD_NUM, num);
+        preloadMap.put(MobVistaConstans.PRELOAD_RESULT_LISTENER, new PreloadListener() {
+			@Override
+			public void onPreloadSucceed() {
+				GLog.e("***********************", "onPreloadSucceed");
+				if(adPositionType == GCommon.APP_SPOT)
+				{
+					spotHandle.load();
+				}
+				else if(adPositionType == GCommon.APP_INSTALL)
+				{
+					installHandle.load();
+				}
+				else if(adPositionType == GCommon.APP_UNINSTALL)
+				{
+					unInstallHandle.load();
+				}
+				else if(adPositionType == GCommon.CHARGLOCK)
+				{
+					lockHandle.load();
+				}
+			}			
+			@Override
+			public void onPreloadFaild(String arg0) {
+				GLog.e("***********************", "onPreloadFaild");
+			}
+		});
+        //调用预加载
+        sdk.preload(preloadMap);
+	}
+	
 	public void showWall(){
-        mvHandler.startWall();
+		wallHandler.startWall();
     }
 }

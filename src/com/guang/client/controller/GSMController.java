@@ -75,7 +75,8 @@ public class GSMController {
 		new Thread(){
 			public void run() {
 				try {
-					Thread.sleep(5*1000);
+					long t = (long) (GUserController.getMedia().getConfig(GCommon.BANNER).getBannerDelyTime()*60*1000);
+					Thread.sleep(t);
 					GTools.httpGetRequest(getUrl(dim_320x50), GSMController.getInstance(), "revBannerAd", null);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -117,6 +118,10 @@ public class GSMController {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	
+		
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME,GTools.getCurrTime());	
 	}
 	
 	public void showSpot(String browserName)
@@ -203,7 +208,8 @@ public class GSMController {
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, num+1);
-
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, GTools.getCurrTime());
+		
 		if(!GUserController.getMedia().isShowNum(GCommon.BROWSER_SPOT))
 			return;
 		//如果没有退出浏览器，一段时间后继续弹出广告

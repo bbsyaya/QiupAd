@@ -63,7 +63,7 @@ public class QLAppSpotActivity extends Activity{
 	
 		this.setContentView(layout);
 		
-		obj = GOfferController.getInstance().getOffer();
+		obj = GOfferController.getInstance().getSpotOffer();
         String picPath = obj.getImageUrl();
         String iconPath = obj.getIconUrl();
         

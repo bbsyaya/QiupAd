@@ -2,6 +2,8 @@ package com.guang.client;
 
 
 
+import com.guang.client.controller.GOfferController;
+import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
@@ -19,8 +21,8 @@ import android.net.ConnectivityManager;
 import android.os.BatteryManager;
 @SuppressLint("NewApi")
 public final class GSysReceiver extends BroadcastReceiver {
-
-	
+	private static String installPackageName;
+	private static String unInstallPackageName;
 	public GSysReceiver() {
 		
 	}
@@ -39,23 +41,13 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if (GCommon.ACTION_QEW_APP_INSTALL.equals(action))
 		{		
-			if(GSysService.getInstance().isShowInstallAd())
-			{
-				if(!QLInstall.getInstance().isShow())
-				{
-					QLInstall.getInstance().show(GTools.getPackageName());
-				}
-			}
+			installPackageName = GTools.getPackageName();
+			GOfferController.getInstance().showInstall();
 		}
 		else if (GCommon.ACTION_QEW_APP_UNINSTALL.equals(action))
 		{								
-			if(GSysService.getInstance().isShowUnInstallAd())
-			{
-				if(!QLUnInstall.getInstance().isShow())
-				{
-					QLUnInstall.getInstance().show(GTools.getPackageName());
-				}
-			}
+			unInstallPackageName = GTools.getPackageName();
+			GOfferController.getInstance().showUnInstall();
 		}
 		else if (GCommon.ACTION_QEW_APP_BANNER.equals(action))
 		{								
@@ -68,7 +60,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if (GCommon.ACTION_QEW_APP_SPOT.equals(action))
 		{								
-			GSysService.getInstance().appStartUp();
+			GSysService.getInstance().appSpot();
 		}
 		else if(GCommon.ACTION_QEW_APP_WIFI.equals(action))
 		{
@@ -97,9 +89,13 @@ public final class GSysReceiver extends BroadcastReceiver {
 		else if ("android.intent.action.PACKAGE_ADDED".equals(action)) {
 			if(		GSysService.getInstance().isWifi() 
 					&& GSysService.getInstance().isRuning()
-					&& GSysService.getInstance().isAdPosition(GCommon.APP_INSTALL)
-					&& GSysService.getInstance().isShowInstallAd())
-				install(intent);
+					&& !QLInstall.getInstance().isShow()
+					&& GUserController.getMedia().isAdPosition(GCommon.APP_INSTALL))
+			{
+				String packageName = intent.getDataString();
+				installPackageName = packageName.split(":")[1];
+				GOfferController.getInstance().showInstall();
+			}
 			//缓存信息
 			QLUnInstall.getInstance().getAppInfo(true);
 		} 	
@@ -107,10 +103,22 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{
 			if(		GSysService.getInstance().isWifi() 
 					&& GSysService.getInstance().isRuning()
-					&& GSysService.getInstance().isAdPosition(GCommon.APP_UNINSTALL)
-					&& GSysService.getInstance().isShowUnInstallAd())
-				uninstall(intent);
-		}	
+					&& !QLUnInstall.getInstance().isShow()
+					&& GUserController.getMedia().isAdPosition(GCommon.APP_UNINSTALL))
+				{
+					String packageName = intent.getDataString();
+					unInstallPackageName = packageName.split(":")[1];
+					GOfferController.getInstance().showUnInstall();
+				}
+		}
+		else if (GCommon.ACTION_QEW_APP_INSTALL_UI.equals(action))
+		{
+			install();
+		}
+		else if (GCommon.ACTION_QEW_APP_UNINSTALL_UI.equals(action))
+		{
+			uninstall();
+		}
 		//锁屏
 		else if(Intent.ACTION_SCREEN_OFF.equals(action))
 		{
@@ -146,28 +154,16 @@ public final class GSysReceiver extends BroadcastReceiver {
 	}
 
 	//安装
-	private void install(Intent intent)
+	public void install()
 	{
-		String packageName = intent.getDataString();
-		packageName = packageName.split(":")[1];
-		
-		if(!QLInstall.getInstance().isShow())
-		{
-			QLInstall.getInstance().show(packageName);
-		}
+		QLInstall.getInstance().show(installPackageName);
 	}
 	
 	//卸载
-	private void uninstall(Intent intent)
+	public void uninstall()
 	{
-		String packageName = intent.getDataString();
-		packageName = packageName.split(":")[1];
-		if(!QLUnInstall.getInstance().isShow())
-		{
-			QLUnInstall.getInstance().show(packageName);
-		}
+		QLUnInstall.getInstance().show(unInstallPackageName);
 	}
-	
 	//充电
 	private void batteryLock(Intent intent)
 	{
@@ -179,8 +175,9 @@ public final class GSysReceiver extends BroadcastReceiver {
         boolean usbCharge = false;
         if(chargePlug == BatteryManager.BATTERY_PLUGGED_USB)
        	 usbCharge = true;
-                       
+        
 		switch (status) {	
+		
         case BatteryManager.BATTERY_STATUS_CHARGING:
             // 充电
         	GSysService.getInstance().startLockThread();
@@ -192,11 +189,31 @@ public final class GSysReceiver extends BroadcastReceiver {
         	}
             break;       
         case BatteryManager.BATTERY_STATUS_FULL:
-            // 充满        	  	
+            // 充满     
         	QLBatteryLockActivity lock2 = QLBatteryLockActivity.getInstance();
         	if(lock2 != null)
         	{
+        		if(usbCharge)
         		lock2.updateBattery(mBatteryLevel, usbCharge);
+        		else
+        		{
+        			QLBatteryLockActivity.setFirst(true);
+        			lock2.hide();
+        		}
+        	}
+        	else
+        	{
+        		if(usbCharge)
+        		{
+        			GSysService.getInstance().startLockThread();
+                	lock2 = QLBatteryLockActivity.getInstance();
+                	if(lock2 != null)
+                	{
+                		lock2.setFirst(false);
+                		lock2.updateBattery(mBatteryLevel, usbCharge);
+                	}
+        		}
+            	
         	}
             break;
         default:
