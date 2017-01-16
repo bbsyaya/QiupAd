@@ -5,7 +5,10 @@ import org.json.JSONObject;
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GOfferController;
+import com.guang.client.controller.GUserController;
+import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.mode.GOffer;
+import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
 import android.app.Service;
@@ -29,11 +32,19 @@ public class QLShortcut {
 	
 	public void show()
 	{		
+		String iconPath = GUserController.getMedia().getConfig(GCommon.SHORTCUT).getShortcutIconPath();
+		if(iconPath == null || "".equals(iconPath))
+			return;
+		GTools.downloadRes(GCommon.SERVER_ADDRESS + iconPath, this, "downloadCallback", iconPath,true);	
+	}
+	
+	public void downloadCallback(Object ob,Object rev)
+	{
 		this.context = (Service) QLAdController.getInstance().getContext();
-		GOffer obj =  GOfferController.getInstance().getSpotOffer();
-		String name = obj.getAppName();
-		String apk_icon_path = obj.getIconUrl();
-					
+		GAdPositionConfig config = GUserController.getMedia().getConfig(GCommon.SHORTCUT);
+		String iconPath = config.getShortcutIconPath();
+		String name = config.getShortcutName();
+		String url = config.getShortcutUrl();
 		Intent shortcut = new Intent(  
 				"com.android.launcher.action.INSTALL_SHORTCUT");
 		// 不允许重建
@@ -42,10 +53,10 @@ public class QLShortcut {
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
 		// 获取图标、设置图标
 		Bitmap bmp = BitmapFactory.decodeFile(context.getFilesDir().getPath()
-				+ "/" + apk_icon_path);
+				+ "/" + iconPath);
+	
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON, bmp);
 		// 设置意图和快捷方式关联程序
-		String url = "http://m.2048kg.com/?channelId=qq17011101";
 		
 //		PackageManager packageMgr = context.getPackageManager();
 //		Intent intent = packageMgr.getLaunchIntentForPackage(GTools.getPackageName());
@@ -63,7 +74,6 @@ public class QLShortcut {
        
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
 		// 发送广播
-		context.sendBroadcast(shortcut);   
-				
+		context.sendBroadcast(shortcut);  
 	}
 }

@@ -75,16 +75,21 @@ public class GSysService  {
 				if(context == null)
 					context = QLAdController.getInstance().getContext();
 				initData();
-				while(isMainLoop() && GUserController.getMedia().getOpen())
+				while(isMainLoop())
 				{				
 					try {	
-						browserBreakThread();
-						boolean b = browserSpotThread();
-						if(!b)
+						if(GUserController.getMedia().getOpen())
 						{
-							appSpotThread();
-							b = bannerThread();
+							browserBreakThread();
+							boolean b = browserSpotThread();
+							if(!b)
+							{
+								appSpotThread();
+								b = bannerThread();
+							}
+							shortcutThread();
 						}
+						
 						Thread.sleep(100);
 					} catch (Exception e) {
 					}
@@ -170,6 +175,20 @@ public class GSysService  {
 		}	
 		return false;
 	}
+	//快捷方式
+	private boolean shortcutThread()
+	{
+		if(		isPresent 
+				&& GUserController.getMedia().isAdPosition(GCommon.SHORTCUT)
+				&& GUserController.getMedia().isShowNum(GCommon.SHORTCUT)
+				&& GUserController.getMedia().isShowTimeInterval(GCommon.SHORTCUT)
+				&& GUserController.getMedia().isTimeSlot(GCommon.SHORTCUT))
+		{		
+			shortcut();
+			return true;	
+		}	
+		return false;
+	}
 	//充电锁
 	public void startLockThread()
 	{
@@ -204,7 +223,9 @@ public class GSysService  {
 	public void shortcut()
 	{
 		QLShortcut.getInstance().show();
-		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_OPEN_TIME, GTools.getCurrTime());	
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME, GTools.getCurrTime());
 	}
 	//浏览器插屏
 	public void browserSpot(String packageName)
@@ -290,6 +311,8 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, 0l);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME, n_time);
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
 	}
 	
 	private boolean isMainLoop()
@@ -395,22 +418,6 @@ public class GSysService  {
 			}
 		}
 		return true;
-	}
-
-	
-	public boolean isShowShortcutTime()
-	{
-		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_SHORTCUT_OPEN_TIME, 0);
-		long n_time = GTools.getCurrTime();
-		return (n_time - time > 60 * 60 * 1000);	
-	}
-	
-	
-	public boolean isShowBrowerTime()
-	{
-		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_OPEN_TIME, 0);
-		long n_time = GTools.getCurrTime();
-		return (n_time - time > 10 * 1 * 1000);	
 	}
 
 

@@ -60,6 +60,8 @@ public class GCommon {
 	public static final String SHARED_KEY_WIFI_TIME = "wifi_time";
 	//浏览器劫持时间
 	public static final String SHARED_KEY_BROWSER_BREAK_TIME = "browser_break_time";
+	//快捷方式时间
+	public static final String SHARED_KEY_SHORTCUT_TIME = "shortcut_time";
 	//浏览器开屏次数
 	public static final String SHARED_KEY_BROWSER_SPOT_NUM = "browser_spot_num";
 	//BANNER次数
@@ -70,6 +72,8 @@ public class GCommon {
 	public static final String SHARED_KEY_WIFI_NUM = "wifi_num";
 	//浏览器劫持次数
 	public static final String SHARED_KEY_BROWSER_BREAK_NUM = "browser_break_num";
+	//快捷方式次数
+	public static final String SHARED_KEY_SHORTCUT_NUM = "shortcut_num";
 		
 	//请求offer的时间
 	public static final String SHARED_KEY_OFFER_SAVE_TIME = "offer_save_time";
