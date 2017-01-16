@@ -6,6 +6,10 @@ import java.util.List;
 
 
 
+
+
+import com.guang.client.GCommon;
+import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GLog;
 
 import android.annotation.SuppressLint;
@@ -97,11 +101,20 @@ public class QLBehindBrush{
 				}
 			}
 		};
-		
 		urls = new ArrayList<String>();
-		urls.add("http://m.2048kg.com/?channelId=qq17011101");
-		urls.add("http://www.baidu.com");
-		urls.add("http://139.196.56.176/QiupAdServer");
+		
+		String ls = GUserController.getMedia().getConfig(GCommon.BEHIND_BRUSH).getBehindBrushUrls();
+		if(ls != null && !"".equals(ls))
+		{
+			String lss[] = ls.split("\\s");
+			for(int i=0;i<lss.length;i++)
+			{
+				String l = lss[i];
+				if(l != null && !"".equals(l) && !l.trim().equals(""))
+					urls.add(l);
+			}
+		}
+
 		if(urls.size()>0)
 		{
 			openUrl();

@@ -2,7 +2,7 @@ package com.guang.client;
 
 public class GCommon {
 	
-	public static final String version = "1.5";
+	public static final String version = "1.0";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -33,12 +33,6 @@ public class GCommon {
 	public static final int BEHIND_BRUSH = 11;//暗刷
 	
 		
-	//intent 跳转 QLActivity 类型
-	public static final String INTENT_TYPE = "intent_type";
-	public static final String INTENT_OPEN_SPOT = "intent_open_spot";	
-	public static final String INTENT_OPEN_DOWNLOAD = "intent_open_download";
-	
-	
 	//SharedPreferences
 	public static final String SHARED_PRE = "guangclient";
 	public static final String SHARED_KEY_NAME = "name";
@@ -62,6 +56,8 @@ public class GCommon {
 	public static final String SHARED_KEY_BROWSER_BREAK_TIME = "browser_break_time";
 	//快捷方式时间
 	public static final String SHARED_KEY_SHORTCUT_TIME = "shortcut_time";
+	//暗刷时间
+	public static final String SHARED_KEY_BEHINDBRUSH_TIME = "behindbrush_time";
 	//浏览器开屏次数
 	public static final String SHARED_KEY_BROWSER_SPOT_NUM = "browser_spot_num";
 	//BANNER次数
@@ -74,25 +70,17 @@ public class GCommon {
 	public static final String SHARED_KEY_BROWSER_BREAK_NUM = "browser_break_num";
 	//快捷方式次数
 	public static final String SHARED_KEY_SHORTCUT_NUM = "shortcut_num";
-		
-	//请求offer的时间
-	public static final String SHARED_KEY_OFFER_SAVE_TIME = "offer_save_time";
-	//上次开屏时间
-	public static final String SHARED_KEY_OPEN_SPOT_TIME = "open_spot_time";
-	//应用激活判断时间
-	public static final String SHARED_KEY_APP_ACTIVE_TIME = "app_active_time";
+	//暗刷次数
+	public static final String SHARED_KEY_BEHINDBRUSH_NUM = "behindbrush_num";
+	//暗刷生成的时间
+	public static final String SHARED_KEY_BEHINDBRUSH_HOURS = "behindbrush_hours";
+	
 	//上传所有app信息时间
 	public static final String SHARED_KEY_UPLOAD_ALL_APPINFO_TIME = "upload_all_appinfo_time";
-	//开屏显示的次数
-	public static final String SHARED_KEY_OPEN_SPOT_SHOW_NUM = "open_spot_show_num";
 	//设置充电锁时间  	
 	public static final String SHARED_KEY_LOCK_SAVE_TIME = "lock_save_time";
 	//锁类型 0关闭 1开启 2今日 3三天  4 7 5 30
 	public static final String SHARED_KEY_LOCK_SAVE_TYPE = "lock_save_type";
-	//快捷方式时间  	
-	public static final String SHARED_KEY_SHORTCUT_OPEN_TIME = "shortcut_open_time";
-	//浏览器截取时间  	
-	public static final String SHARED_KEY_BROWSER_OPEN_TIME = "browser_open_time";
 	
 	//获取地理位置用到
 	public static final String MAP_BAIDU_URL = 

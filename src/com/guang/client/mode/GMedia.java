@@ -96,6 +96,8 @@ public class GMedia {
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
 			else if(adPositionType == GCommon.SHORTCUT)
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
+			else if(adPositionType == GCommon.BEHIND_BRUSH)
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
 			return (num < config.getShowNum());	
 		}
 		return false;
@@ -119,6 +121,8 @@ public class GMedia {
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, 0);
 			else if(adPositionType == GCommon.SHORTCUT)
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_SHORTCUT_TIME, 0);
+			else if(adPositionType == GCommon.BEHIND_BRUSH)
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0);
 			long n_time = GTools.getCurrTime();
 			return (n_time - time > config.getShowTimeInterval()*60*1000);	
 		}

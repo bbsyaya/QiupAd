@@ -1,22 +1,15 @@
 package com.qinglu.ad;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.guang.client.GCommon;
-import com.guang.client.controller.GOfferController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
-import com.guang.client.mode.GOffer;
-import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 
 public class QLShortcut {
 	private Service context;
