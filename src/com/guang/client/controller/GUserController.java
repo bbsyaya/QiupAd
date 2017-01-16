@@ -291,10 +291,11 @@ public class GUserController {
 					float showTimeInterval = (float) config.getDouble("showTimeInterval");
 					String timeSlot = config.getString("timeSlot");
 					String whiteList = config.getString("whiteList");
+					String browerBreakUrl = config.getString("browerBreakUrl");
 					
 					GAdPositionConfig adConfig = new GAdPositionConfig(adPositionId,adPositionType, timeSlot, showNum, showTimeInterval,
 							whiteList, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath, 
-							shortcutName, shortcutUrl, behindBrushUrls);
+							shortcutName, shortcutUrl, behindBrushUrls,browerBreakUrl);
 					list_configs.add(adConfig);
 				}
 				

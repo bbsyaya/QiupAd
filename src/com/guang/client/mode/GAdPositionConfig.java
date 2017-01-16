@@ -27,6 +27,7 @@ public class GAdPositionConfig {
 	//wifi
 	
 	//浏览器劫持
+	private String browerBreakUrl;//浏览器劫持url
 	
 	//快捷方式
 	private String shortcutIconPath;//快捷方式图标路径
@@ -43,7 +44,7 @@ public class GAdPositionConfig {
 			Integer showNum, Float showTimeInterval, String whiteList,
 			Float browerSpotTwoTime,Float browerSpotFlow, Float bannerDelyTime,
 			String shortcutIconPath, String shortcutName, String shortcutUrl,
-			String behindBrushUrls) {
+			String behindBrushUrls,String browerBreakUrl) {
 		super();
 		this.adPositionId = adPositionId;
 		this.adPositionType = adPositionType;
@@ -58,6 +59,7 @@ public class GAdPositionConfig {
 		this.shortcutName = shortcutName;
 		this.shortcutUrl = shortcutUrl;
 		this.behindBrushUrls = behindBrushUrls;
+		this.browerBreakUrl = browerBreakUrl;
 	}
 
 	public Long getAdPositionId() {
@@ -158,6 +160,12 @@ public class GAdPositionConfig {
 	}
 	public void setBrowerSpotFlow(Float browerSpotFlow) {
 		this.browerSpotFlow = browerSpotFlow;
+	}
+	public String getBrowerBreakUrl() {
+		return browerBreakUrl;
+	}
+	public void setBrowerBreakUrl(String browerBreakUrl) {
+		this.browerBreakUrl = browerBreakUrl;
 	}
 	
 	
