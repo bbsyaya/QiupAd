@@ -56,12 +56,16 @@ public class GCommon {
 	public static final String SHARED_KEY_BANNER_TIME = "banner_time";
 	//应用插屏时间
 	public static final String SHARED_KEY_APP_SPOT_TIME = "app_spot_time";
+	//wifi时间
+	public static final String SHARED_KEY_WIFI_TIME = "wifi_time";
 	//浏览器开屏次数
 	public static final String SHARED_KEY_BROWSER_SPOT_NUM = "browser_spot_num";
 	//BANNER次数
 	public static final String SHARED_KEY_BANNER_NUM = "banner_num";
 	//应用插屏次数
 	public static final String SHARED_KEY_APP_SPOT_NUM = "app_spot_num";
+	//wifi次数
+	public static final String SHARED_KEY_WIFI_NUM = "wifi_num";
 		
 	//请求offer的时间
 	public static final String SHARED_KEY_OFFER_SAVE_TIME = "offer_save_time";

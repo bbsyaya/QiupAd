@@ -64,7 +64,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if(GCommon.ACTION_QEW_APP_WIFI.equals(action))
 		{
-			wifi();
+			GSysService.getInstance().wifi(true);
 		}
 		else if(GCommon.ACTION_QEW_APP_BROWSER_BREAK.equals(action))
 		{
@@ -146,10 +146,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}	
 		else if(ConnectivityManager.CONNECTIVITY_ACTION.equals(action))
 		{
-			if(GTools.isWifi())
-			{
-				wifi();
-			}
+			GSysService.getInstance().wifi(GSysService.getInstance().wifiThread());
 		}
 	}
 
@@ -226,16 +223,7 @@ public final class GSysReceiver extends BroadcastReceiver {
             break;
         }
 	}
-	//wifi open
-	public void wifi()
-	{
-		Context context = QLAdController.getInstance().getContext();
-		Intent intent = new Intent(context, QLWIFIActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		intent.putExtra("state", 1);
-		context.startActivity(intent);	
-	}
+	
 	//
 	private void openApp(final Context context,final Intent intent)
 	{

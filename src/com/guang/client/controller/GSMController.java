@@ -71,6 +71,7 @@ public class GSMController {
 		}
 		if(isShowBanner)
 			return;
+		GLog.e("--------------", "banner start");
 		isShowBanner = true;
 		new Thread(){
 			public void run() {
@@ -122,6 +123,8 @@ public class GSMController {
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, num+1);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME,GTools.getCurrTime());	
+		
+		GLog.e("--------------", "banner success");
 	}
 	
 	public void showSpot(String browserName)
@@ -137,6 +140,7 @@ public class GSMController {
 		isShowSpot = true;
 		flow = GTools.getAppFlow(browserName);
 		appFlowThread();
+		GLog.e("--------------", "browser spot start");
 	}
 	public void appFlowThread()
 	{
@@ -210,6 +214,8 @@ public class GSMController {
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, num+1);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, GTools.getCurrTime());
 		
+		GLog.e("--------------", "browser spot success");
+		
 		if(!GUserController.getMedia().isShowNum(GCommon.BROWSER_SPOT))
 			return;
 		//如果没有退出浏览器，一段时间后继续弹出广告
@@ -260,7 +266,6 @@ public class GSMController {
 		urlBuf.append("&device="+ua);
 		urlBuf.append("formatstrict=false");
 		urlBuf.append("&dimension="+dimension);
-		GLog.e("--------urlBuf----------", urlBuf.toString());
 		return urlBuf.toString();
 	}
 

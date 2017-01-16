@@ -21,6 +21,7 @@ import com.qinglu.ad.QLBehindBrush;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLShortcut;
 import com.qinglu.ad.QLUnInstall;
+import com.qinglu.ad.QLWIFIActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -208,7 +209,44 @@ public class GSysService  {
 	{
 		QLBehindBrush.getInstance().show();	
 	}
-	
+	//wifi
+	public boolean wifiThread()
+	{
+		if(		isPresent 
+				&& isWifi()
+				&& GUserController.getMedia().isAdPosition(GCommon.WIFI_CONN)
+				&& GUserController.getMedia().isShowNum(GCommon.WIFI_CONN)
+				&& GUserController.getMedia().isShowTimeInterval(GCommon.WIFI_CONN)
+				&& GUserController.getMedia().isTimeSlot(GCommon.WIFI_CONN))
+		{
+			return true;
+		}
+		return false;
+	}
+	public void wifi(boolean state)
+	{
+		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_WIFI_TIME, 0);
+		if(time==0)
+		{
+			time = GTools.getCurrTime();
+			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, time);
+			return;
+		}
+		if(!isWifi())
+		{
+			return;
+		}
+		Context context = QLAdController.getInstance().getContext();
+		Intent intent = new Intent(context, QLWIFIActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		intent.putExtra("state", (state ? 1 : 0));
+		context.startActivity(intent);	
+		
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, GTools.getCurrTime());
+	}
 	
 	private void initData()
 	{
@@ -222,6 +260,8 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME, 0l);
 		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, 0l);
+		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, 0);
 	}
 	
 	private boolean isMainLoop()

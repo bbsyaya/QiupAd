@@ -90,6 +90,8 @@ public class GMedia {
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM, 0);
 			else if(adPositionType == GCommon.APP_SPOT)
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
+			else if(adPositionType == GCommon.WIFI_CONN)
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
 			return (num < config.getShowNum());	
 		}
 		return false;
@@ -107,6 +109,8 @@ public class GMedia {
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BANNER_TIME, 0);
 			else if(adPositionType == GCommon.APP_SPOT)
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_APP_SPOT_TIME, 0);
+			else if(adPositionType == GCommon.WIFI_CONN)
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_WIFI_TIME, 0);
 			long n_time = GTools.getCurrTime();
 			return (n_time - time > config.getShowTimeInterval()*60*1000);	
 		}
