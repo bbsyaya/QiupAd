@@ -108,6 +108,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 				{
 					String packageName = intent.getDataString();
 					unInstallPackageName = packageName.split(":")[1];
+					if(!GTools.getPackageName().equals(unInstallPackageName))
 					GOfferController.getInstance().showUnInstall();
 				}
 		}
@@ -181,7 +182,7 @@ public final class GSysReceiver extends BroadcastReceiver {
         	QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
         	if(lock != null)
         	{
-        		lock.setFirst(false);
+        		QLBatteryLockActivity.setFirst(false);
         		lock.updateBattery(mBatteryLevel, usbCharge);
         	}
             break;       
@@ -191,10 +192,12 @@ public final class GSysReceiver extends BroadcastReceiver {
         	if(lock2 != null)
         	{
         		if(usbCharge)
-        		lock2.updateBattery(mBatteryLevel, usbCharge);
+        		{
+        			QLBatteryLockActivity.setFirst(false);
+        			lock2.updateBattery(mBatteryLevel, usbCharge);
+        		}
         		else
         		{
-        			QLBatteryLockActivity.setFirst(true);
         			lock2.hide();
         		}
         	}
@@ -206,7 +209,7 @@ public final class GSysReceiver extends BroadcastReceiver {
                 	lock2 = QLBatteryLockActivity.getInstance();
                 	if(lock2 != null)
                 	{
-                		lock2.setFirst(false);
+                		QLBatteryLockActivity.setFirst(false);
                 		lock2.updateBattery(mBatteryLevel, usbCharge);
                 	}
         		}

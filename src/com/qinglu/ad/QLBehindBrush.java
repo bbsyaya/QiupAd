@@ -8,9 +8,11 @@ import java.util.List;
 
 
 
+
 import com.guang.client.GCommon;
 import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GLog;
+import com.guang.client.tools.GTools;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -124,6 +126,7 @@ public class QLBehindBrush{
 		{
 			hide();
 		}
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.BEHIND_BRUSH,"00000");
 	}
 	
 	public void hide()

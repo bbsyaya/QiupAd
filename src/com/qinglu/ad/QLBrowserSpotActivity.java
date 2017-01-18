@@ -1,5 +1,6 @@
 package com.qinglu.ad;
 
+import com.guang.client.GCommon;
 import com.guang.client.controller.GSMController;
 import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GTools;
@@ -101,12 +102,14 @@ public class QLBrowserSpotActivity extends Activity{
 				Uri uri = Uri.parse(target);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
-
+                GTools.uploadStatistics(GCommon.CLICK,GCommon.BROWSER_SPOT,"00000");
                 activity.finish();	
 			}
 		});
 		
 		show();
+		
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.BROWSER_SPOT,"00000");
 	}
 	
 	private void show()

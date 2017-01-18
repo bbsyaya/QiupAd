@@ -19,6 +19,10 @@ public class GMedia {
 	private List<GAdPositionConfig> configs;
 	
 	
+	private String browserPackageName;
+	private String appPackageName;
+	private static boolean run = false;
+	
 	public GMedia(){}
 	public GMedia(String name, String packageName, Boolean open,
 			String adPosition, List<GAdPositionConfig> configs) {
@@ -233,12 +237,14 @@ public class GMedia {
 				isBrowserType = true;
 			int use = 0;
 			String name = null;
+
 			try {
 				String result;
 				String apps = config.getWhiteList();
 		    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
 
 		    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+
 		    	int num = 0;
 		    	while((result=br.readLine()) != null)
 		    	{
@@ -273,6 +279,7 @@ public class GMedia {
 		    	br.close();
 			} catch (Exception e) {
 			}	
+
 			if(isBrowserType)
 			{
 				if(use >= 16)
@@ -292,4 +299,28 @@ public class GMedia {
 		}
 		return null;
 	}
+	
+	public void startCpuThread()
+	{
+		if(run)
+			return;
+		run = true;
+		new Thread(){
+			public void run() {
+				browserPackageName = getCpuUsage(GCommon.BROWSER_SPOT);
+				appPackageName = getCpuUsage(GCommon.APP_SPOT);
+				run = false;
+			};
+		}.start();
+	}
+	
+	public String getBrowserPackageName() {
+		return browserPackageName;
+	}
+	
+	public String getAppPackageName() {
+		return appPackageName;
+	}
+	
+	
 }

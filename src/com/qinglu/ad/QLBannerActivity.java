@@ -2,6 +2,7 @@ package com.qinglu.ad;
 
 
 
+import com.guang.client.GCommon;
 import com.guang.client.controller.GSMController;
 import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GLog;
@@ -209,6 +210,8 @@ public class QLBannerActivity extends Activity{
 				}
 			};
 		}.start();
+		
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.BANNER,"00000");
 	}
 	
 	private void show()
@@ -262,6 +265,7 @@ public class QLBannerActivity extends Activity{
 					Uri uri = Uri.parse(target);
 		            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 		            startActivity(intent);
+		            GTools.uploadStatistics(GCommon.CLICK,GCommon.BANNER,"00000");
 				}
 				context.finish();						
 			}

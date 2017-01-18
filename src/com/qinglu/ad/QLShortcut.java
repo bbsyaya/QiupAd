@@ -68,5 +68,7 @@ public class QLShortcut {
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
 		// 发送广播
 		context.sendBroadcast(shortcut);  
+		
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.SHORTCUT,"00000");
 	}
 }

@@ -177,6 +177,10 @@ public class QLUnInstall {
 			@Override
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
+				if(!isShow)
+				{
+					return;
+				}
 				if(msg.what == 0x01)
 				{
 					String sga = String.format("%.1f",currSaveMemory);
@@ -266,14 +270,7 @@ public class QLUnInstall {
 			}
 		}
 		
-//		 JSONObject obj =  GOfferController.getInstance().getNoTagOffer();
-//		 try {
-//			offerId = obj.getLong("id");			
-//			GOfferController.getInstance().setOfferTag(offerId);			
-//			GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_UNINSTALL,offerId);
-//		} catch (JSONException e1) {
-//			e1.printStackTrace();
-//		}
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_UNINSTALL,offerId);
 	}
 	
 	class MyOnClickListener implements OnClickListener

@@ -80,15 +80,28 @@ public class GSysService  {
 					try {	
 						if(GUserController.getMedia().getOpen())
 						{
-							browserBreakThread();
-							boolean b = browserSpotThread();
+							GUserController.getMedia().startCpuThread();
+							boolean b = browserBreakThread();
 							if(!b)
 							{
-								appSpotThread();
-								b = bannerThread();
+								 b = browserSpotThread();
+								 if(!b)
+								{
+									b = appSpotThread();
+									if(!b)
+									{
+										b = bannerThread();
+										if(!b)
+										{
+											b = shortcutThread();
+											if(!b)
+											{
+												b = behindBrushThread();
+											}
+										}
+									}
+								}
 							}
-							shortcutThread();
-							behindBrushThread();
 						}
 						
 						Thread.sleep(100);
@@ -111,7 +124,7 @@ public class GSysService  {
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BROWSER_SPOT)
 				&& GUserController.getMedia().isTimeSlot(GCommon.BROWSER_SPOT))
 		{		
-			String s =  GUserController.getMedia().getCpuUsage(GCommon.BROWSER_SPOT);
+			String s =  GUserController.getMedia().getBrowserPackageName();
 			if(s != null)
 			{
 				browserSpot(s);
@@ -130,7 +143,7 @@ public class GSysService  {
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BANNER)
 				&& GUserController.getMedia().isTimeSlot(GCommon.BANNER))
 		{		
-			String s =  GUserController.getMedia().getCpuUsage(GCommon.BANNER);
+			String s =  GUserController.getMedia().getAppPackageName();
 			if(s != null)
 			{
 				banner();
@@ -149,7 +162,7 @@ public class GSysService  {
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.APP_SPOT)
 				&& GUserController.getMedia().isTimeSlot(GCommon.APP_SPOT))
 		{		
-			String s =  GUserController.getMedia().getCpuUsage(GCommon.APP_SPOT);
+			String s =  GUserController.getMedia().getAppPackageName();
 			if(s != null)
 			{
 				appSpot();
@@ -167,7 +180,7 @@ public class GSysService  {
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BROWSER_BREAK)
 				&& GUserController.getMedia().isTimeSlot(GCommon.BROWSER_BREAK))
 		{		
-			String s =  GUserController.getMedia().getCpuUsage(GCommon.BROWSER_BREAK);
+			String s =  GUserController.getMedia().getBrowserPackageName();
 			if(s != null)
 			{
 				browserBreak(s);
@@ -263,6 +276,7 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, num+1);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, GTools.getCurrTime());
 
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.BROWSER_BREAK,"00000");
 		GLog.e("-----------------", "browserBreak success");
 
 	}

@@ -100,6 +100,8 @@ public class GSMController {
 				GTools.downloadRes(link, this, "downloadBannerCallback", imageName,true);
 				
 				offer = new GSMOffer(sessionid, imageName, target);
+				
+				GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"00000");	
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -184,6 +186,8 @@ public class GSMController {
 				GTools.downloadRes(link, this, "downloadSpotCallback", imageName,true);
 				
 				offer = new GSMOffer(sessionid, imageName, target);
+				
+				GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"00000");
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

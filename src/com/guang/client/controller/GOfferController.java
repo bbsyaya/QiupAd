@@ -129,6 +129,7 @@ public class GOfferController {
 		}
 		if(b)
 		{
+			QLAppSpotActivity.getInstance().hide();
 			Context context = QLAdController.getInstance().getContext();
 			Intent intent = new Intent(context, QLAppSpotActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -324,7 +325,6 @@ public class GOfferController {
                     {
                 		if(spotOffer != null)
                 		{
-                			isSpotRequesting = false;
                 			return;
                 		}
                         final Campaign campaign = campaigns.get(i);
@@ -337,7 +337,8 @@ public class GOfferController {
                         spotOffer = new GOffer(campaign.getId(), campaign.getPackageName(), campaign.getAppName(),
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign);  
-//	                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
+                        
+	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,campaign.getId());	
                     }
                 }
                 isSpotRequesting = false;              
@@ -348,7 +349,7 @@ public class GOfferController {
             }
             @Override
             public void onAdClick(Campaign campaign){         
-//	            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
+	            GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_SPOT,campaign.getId());
             	QLAppSpotActivity spotActivity = QLAppSpotActivity.getInstance();
         		if(spotActivity != null)
         		{
@@ -377,6 +378,10 @@ public class GOfferController {
                 if (campaigns != null && campaigns.size() > 0) {                	
                     for(int i=0;i<campaigns.size();i++)
                     {
+                    	if(installOffers.size() == 2)
+                    	{
+                    		return;
+                    	}
                         final Campaign campaign = campaigns.get(i);
                         String imageName = campaign.getImageUrl().substring(campaign.getImageUrl().length()/3*2, 
                         		campaign.getImageUrl().length());
@@ -388,7 +393,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign));  
                       
-//	                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
+	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_INSTALL,campaign.getId());	
                     }
                 }
                 isInsallRequesting = false;              
@@ -399,7 +404,7 @@ public class GOfferController {
             }
             @Override
             public void onAdClick(Campaign campaign){         
-//	            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
+	            GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_INSTALL,campaign.getId());
         		QLInstall.getInstance().hide();
             }
             @Override
@@ -423,6 +428,10 @@ public class GOfferController {
                 if (campaigns != null && campaigns.size() > 0) {                	
                     for(int i=0;i<campaigns.size();i++)
                     {
+                    	if(unInstallOffers.size() == 2)
+                    	{
+                    		return;
+                    	}
                         final Campaign campaign = campaigns.get(i);
                         String imageName = campaign.getImageUrl().substring(campaign.getImageUrl().length()/3*2, 
                         		campaign.getImageUrl().length());
@@ -434,7 +443,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign));  
                       
-//	                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
+	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_UNINSTALL,campaign.getId());	
                     }
                 }
                 isUnInstallRequesting = false;              
@@ -445,7 +454,7 @@ public class GOfferController {
             }
             @Override
             public void onAdClick(Campaign campaign){         
-//	            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
+	            GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_UNINSTALL,campaign.getId());
             	QLUnInstall.getInstance().hide();
             }
             @Override
@@ -469,6 +478,10 @@ public class GOfferController {
                 if (campaigns != null && campaigns.size() > 0) {    
                     for(int i=0;i<campaigns.size();i++)
                     {
+                    	if(lockOffer != null)
+                    	{
+                    		return;
+                    	}
                         final Campaign campaign = campaigns.get(i);
                         String imageName = campaign.getImageUrl().substring(campaign.getImageUrl().length()/3*2, 
                         		campaign.getImageUrl().length());
@@ -480,7 +493,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign);  
                       
-//	                		GTools.uploadStatistics(GCommon.REQUEST,adPositionType,campaign.getId());	
+	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,campaign.getId());	
                     }
                 }
                 isLockRequesting = false;              
@@ -491,7 +504,7 @@ public class GOfferController {
             }
             @Override
             public void onAdClick(Campaign campaign){         
-//	            	GTools.uploadStatistics(GCommon.CLICK,clickAdPositionType,campaign.getId());
+	            GTools.uploadStatistics(GCommon.CLICK,GCommon.CHARGLOCK,campaign.getId());
             	QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
         		if(lock!=null)
         		{

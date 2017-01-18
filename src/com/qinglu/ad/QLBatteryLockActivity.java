@@ -385,7 +385,7 @@ public class QLBatteryLockActivity extends Activity{
 		 new Thread(){
 			 public void run() {
 				 try {
-					Thread.sleep(30);
+					Thread.sleep(50);
 					handler.sendEmptyMessage(0x11);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -418,7 +418,8 @@ public class QLBatteryLockActivity extends Activity{
 			 List<View> list = new ArrayList<View>();
 		     list.add(tv_ad_download);
 		     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,tv_ad_download, list, obj.getCampaign());
-//			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,offerId);
+		     
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,offerId);
 		} 	        
 	}
 	public void updateWifi()
@@ -565,21 +566,21 @@ public class QLBatteryLockActivity extends Activity{
 		{
 			new Thread(){
 				public void run() {
-					while(dis != 0 && dis != -300)
+					while(dis != 0 && dis != GTools.dip2px(-100))
 					{
 						try {
-							if(dis>-150)
+							if(dis>GTools.dip2px(-50))
 							{
 								dis += 5;
 							}
-							else if(dis<=-150)
+							else if(dis<=GTools.dip2px(-50))
 							{
 								dis -= 5;
 							}
 							if(dis > 0)
 								dis = 0;
-							else if(dis<-300)
-								dis = -300;
+							else if(dis<GTools.dip2px(-100))
+								dis = GTools.dip2px(-100);
 							handler.sendEmptyMessage(0x01);
 							Thread.sleep(10);
 						} catch (InterruptedException e) {
@@ -654,15 +655,15 @@ public class QLBatteryLockActivity extends Activity{
 		{
 			if(dis>0)
 				dis = 0;
-			if(dis < -300)
-				dis = -300;
+			if(dis < GTools.dip2px(-100))
+				dis = GTools.dip2px(-100);
 			
 			int disT = dis;
 			int disB = 0;
-			if(disT < -200)
+			if(disT < GTools.dip2px(-66))
 			{
-				disT = -200;
-				disB = dis + 200;
+				disT = GTools.dip2px(-66);
+				disB = dis + GTools.dip2px(66);
 			}
 				
 			
@@ -678,7 +679,7 @@ public class QLBatteryLockActivity extends Activity{
 			tv_pro.setLayoutParams(tv_pro_params);
 			
 			AbsoluteLayout.LayoutParams lay_sur_time_params = (AbsoluteLayout.LayoutParams) lay_sur_time.getLayoutParams();
-			lay_sur_time_params.x = width/2 - lay_sur_time.getWidth()/2 + (int)(-disT*0.25f);;
+			lay_sur_time_params.x = width/2 - lay_sur_time.getWidth()/2 - GTools.dip2px(4);
 			lay_sur_time_params.y = GTools.dip2px(160) + disT + disT/3;
 			lay_sur_time.setLayoutParams(lay_sur_time_params);
 			
@@ -691,7 +692,7 @@ public class QLBatteryLockActivity extends Activity{
 			iv_hand_params.x = width/2 - iv_hand.getWidth()/2;
 			iv_hand_params.y = lay_hand_params.y + lay.getHeight() + GTools.dip2px(10) + disB;
 			iv_hand.setLayoutParams(iv_hand_params);
-			float al = 1.0f - ((-disB)/100.f);
+			float al = 1.0f - ((float)(-disB)/ GTools.dip2px(33));
 			iv_hand.setAlpha(al);
 			
 			AbsoluteLayout.LayoutParams lay_ad_params = (AbsoluteLayout.LayoutParams) lay_ad.getLayoutParams();

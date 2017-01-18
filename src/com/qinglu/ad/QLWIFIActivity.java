@@ -126,6 +126,8 @@ public class QLWIFIActivity extends Activity{
             animateLeida();
             
             GOfferController.getInstance().initWall(this);
+            
+            GTools.uploadStatistics(GCommon.SHOW,GCommon.WIFI_CONN,"00000");
         }
         else
         {

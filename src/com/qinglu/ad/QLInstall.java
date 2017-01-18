@@ -192,6 +192,7 @@ public class QLInstall {
 				super.handleMessage(msg);
 				if(msg.what == 0x01)
 				{
+					if(isShow)
 					tv_install_num.setText(currInstallNum+"");
 				}
 			}
@@ -271,15 +272,8 @@ public class QLInstall {
 			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_4, list, obj.getCampaign());
 			}
 		}
-		
-//		 JSONObject obj =  GOfferController.getInstance().getNoTagOffer();
-//		 try {
-//			offerId = obj.getLong("id");			
-//			GOfferController.getInstance().setOfferTag(offerId);			
-//			GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_INSTALL,offerId);
-//		} catch (JSONException e1) {
-//			e1.printStackTrace();
-//		}
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_INSTALL,offerId);
+
 	}
 	
 	class MyOnClickListener implements OnClickListener

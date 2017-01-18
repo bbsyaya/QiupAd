@@ -82,6 +82,8 @@ public class QLAppSpotActivity extends Activity{
         tv_appstartup_dsc.setText(obj.getAppDesc());
 		
 		show();
+		
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_SPOT,"00000");
 	}
 	
 	private void show()
@@ -118,6 +120,7 @@ public class QLAppSpotActivity extends Activity{
 		if(activity!=null)
 		{
 			activity.finish();
+			activity = null;
 		}
 	}
 }
