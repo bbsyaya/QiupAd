@@ -44,10 +44,11 @@ import android.widget.RelativeLayout;
 
 @SuppressLint({ "NewApi", "HandlerLeak", "ResourceAsColor" })
 public class QLBannerActivity extends Activity{
-	private Activity context;
+	private QLBannerActivity context;
 	private RelativeLayout view;
 	private int l_height;
 	private String target;
+	Bitmap bitmapPic;
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
@@ -112,8 +113,8 @@ public class QLBannerActivity extends Activity{
 		iv_banner_banner.setLayoutParams(imageLayoutParams);
 		iv_banner_banner.setScaleType(ScaleType.FIT_XY);
 		
-		Bitmap bitmap = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
-		iv_banner_banner.setImageBitmap(bitmap);
+		bitmapPic = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
+		iv_banner_banner.setImageBitmap(bitmapPic);
 		view.addView(iv_banner_banner);
 		
 		this.setContentView(root,rootlayoutParams);
@@ -170,7 +171,7 @@ public class QLBannerActivity extends Activity{
 					else
 					{
 						AbsoluteLayout.LayoutParams par = (AbsoluteLayout.LayoutParams) view.getLayoutParams();
-						if(view.getAlpha() < 0.4f)
+						if(view.getAlpha() <= 0.5f)
 						{
 							float tx = 800;
 							if(par.x<0)
@@ -203,7 +204,7 @@ public class QLBannerActivity extends Activity{
 		new Thread(){
 			public void run() {
 				try {
-					Thread.sleep(1000*60);
+					Thread.sleep(1000*10);
 					handler.sendEmptyMessage(0x01);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -302,5 +303,19 @@ public class QLBannerActivity extends Activity{
 			public void onAnimationRepeat(Animation animation) {}
 		});
        view.startAnimation(animationSet);
+	}
+	@Override
+	protected void onDestroy() {
+		recycle();
+		super.onDestroy();
+	}
+	public void recycle()
+	{
+		if(bitmapPic != null && !bitmapPic.isRecycled()){   
+			bitmapPic.recycle();   
+			bitmapPic = null;   
+		}   
+		
+		System.gc(); 
 	}
 }

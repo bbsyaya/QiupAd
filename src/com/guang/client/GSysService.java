@@ -39,12 +39,13 @@ public class GSysService  {
 	private static GSysReceiver receiver;
 	private boolean isPresent;
 	private boolean isRuning;
-
+	private boolean isLock;
 	
 	private GSysService()
 	{
 		isPresent = false;
 		isRuning = false;
+		isLock = false;
 	}
 	
 	public static GSysService getInstance()
@@ -81,30 +82,15 @@ public class GSysService  {
 						if(GUserController.getMedia().getOpen())
 						{
 							GUserController.getMedia().startCpuThread();
-							boolean b = browserBreakThread();
-							if(!b)
-							{
-								 b = browserSpotThread();
-								 if(!b)
-								{
-									b = appSpotThread();
-									if(!b)
-									{
-										b = bannerThread();
-										if(!b)
-										{
-											b = shortcutThread();
-											if(!b)
-											{
-												b = behindBrushThread();
-											}
-										}
-									}
-								}
-							}
+							browserBreakThread();
+							browserSpotThread();
+							appSpotThread();
+							bannerThread();
+							shortcutThread();
+							behindBrushThread();
 						}
 						
-						Thread.sleep(100);
+						Thread.sleep(500);
 					} catch (Exception e) {
 					}
 				}	
@@ -146,7 +132,7 @@ public class GSysService  {
 			String s =  GUserController.getMedia().getAppPackageName();
 			if(s != null)
 			{
-				banner();
+				banner(s);
 				return true;
 			}			
 		}	
@@ -218,7 +204,7 @@ public class GSysService  {
 		return false;
 	}
 	//充电锁
-	public void startLockThread()
+	public void startLockThread(int mBatteryLevel)
 	{
 		if(		
 				isWifi()
@@ -230,7 +216,7 @@ public class GSysService  {
 			QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
 			if(lock == null)
 			{
-				QLBatteryLockActivity.show();
+				QLBatteryLockActivity.show(mBatteryLevel);
 			}
 		}	
 	}
@@ -242,14 +228,15 @@ public class GSysService  {
 		GOfferController.getInstance().showAppSpot();
 	}
 	//banner
-	public void banner()
+	public void banner(String appNmae)
 	{
 		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME,GTools.getCurrTime());			
-		GSMController.getInstance().showBanner();
+		GSMController.getInstance().showBanner(appNmae);
 	}
 	//shortcut
 	public void shortcut()
 	{
+		GLog.e("-----------------", "shortcut success");
 		QLShortcut.getInstance().show();
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM, num+1);
@@ -344,22 +331,28 @@ public class GSysService  {
 	{
 		isPresent = true;
 		isRuning = true;
-		long n_time = GTools.getCurrTime();
-		GTools.saveSharedData(GCommon.SHARED_KEY_MAIN_LOOP_TIME, n_time);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, 0l);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME, 0l);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME, 0l);
-		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
+		isLock = false;
 		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, 0l);
-		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, 0l);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME, n_time);
-		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0l);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
+
+		if(!isMainLoop())
+		{
+			long n_time = GTools.getCurrTime();
+			GTools.saveSharedData(GCommon.SHARED_KEY_MAIN_LOOP_TIME, n_time);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, 0l);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME, 0l);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME, 0l);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, 0l);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME, n_time);
+			GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0l);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
+		}
+		
 	}
 	
 	private boolean isMainLoop()
@@ -510,6 +503,14 @@ public class GSysService  {
 
 	public void setRuning(boolean isRuning) {
 		this.isRuning = isRuning;
+	}
+
+	public boolean isLock() {
+		return isLock;
+	}
+
+	public void setLock(boolean isLock) {
+		this.isLock = isLock;
 	}
 
    

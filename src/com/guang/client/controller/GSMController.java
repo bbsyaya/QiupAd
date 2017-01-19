@@ -34,6 +34,7 @@ public class GSMController {
 	private final int AdspaceId = 0;
 	private final String url = "http://soma.smaato.net/oapi/reqAd.jsp";
 	private String browserName;
+	private String appName;
 	private long flow = 0;//流量
 	private boolean isShowBanner = false;//是否显示banner标记
 	private boolean isShowSpot = false;//是否显示插屏标记
@@ -62,8 +63,9 @@ public class GSMController {
 		getNetIp();
 	}
 	
-	public void showBanner()
+	public void showBanner(final String appName)
 	{
+		this.appName = appName;
 		if(p_ip == null)
 		{
 			getNetIp();
@@ -78,6 +80,11 @@ public class GSMController {
 				try {
 					long t = (long) (GUserController.getMedia().getConfig(GCommon.BANNER).getBannerDelyTime()*60*1000);
 					Thread.sleep(t);
+					if(GTools.isAppInBackground(appName))
+					{
+						isShowBanner = false;
+						return;
+					}
 					GTools.httpGetRequest(getUrl(dim_320x50), GSMController.getInstance(), "revBannerAd", null);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -116,6 +123,10 @@ public class GSMController {
 	{
 		isShowBanner = false;
 		offer.setFinished(true);
+		if(GTools.isAppInBackground(appName))
+		{
+			return;
+		}
 		Context context = QLAdController.getInstance().getContext();
 		Intent intent = new Intent(context, QLBannerActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

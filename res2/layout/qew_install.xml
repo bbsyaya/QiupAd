@@ -242,6 +242,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="10sp"
                     android:lines="1"
+                    android:maxWidth="100dp"
 					android:ellipsize="end"
                     android:textColor="@android:color/black"
                     android:alpha="0.4" />
@@ -269,6 +270,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="10sp" 
                     android:lines="1"
+                    android:maxWidth="100dp"
 					android:ellipsize="end"
                     android:textColor="@android:color/black"
                     android:alpha="0.4"/>
@@ -296,6 +298,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="10sp"
                     android:lines="1"
+                    android:maxWidth="100dp"
 					android:ellipsize="end"
                     android:textColor="@android:color/black"
                     android:alpha="0.4" />
@@ -324,6 +327,7 @@
                     android:textSize="10sp" 
                     android:textColor="@android:color/black"
                     android:lines="1"
+                    android:maxWidth="100dp"
 					android:ellipsize="end"
                     android:alpha="0.4"/>
             </LinearLayout>

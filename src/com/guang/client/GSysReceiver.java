@@ -51,7 +51,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if (GCommon.ACTION_QEW_APP_BANNER.equals(action))
 		{								
-			GSysService.getInstance().banner();
+			GSysService.getInstance().banner(GTools.getPackageName());
 		}
 		else if(GCommon.ACTION_QEW_APP_LOCK.equals(action))
 		{		
@@ -124,21 +124,34 @@ public final class GSysReceiver extends BroadcastReceiver {
 		else if(Intent.ACTION_SCREEN_OFF.equals(action))
 		{
 			GSysService.getInstance().setPresent(false);
+			GSysService.getInstance().setLock(false);
 		}
 		//开屏
 		else if(Intent.ACTION_USER_PRESENT.equals(action))
 		{
-			GSysService.getInstance().setPresent(true);
+			GSysService.getInstance().setPresent(true);				
 		}
 		//亮屏
 		else if(Intent.ACTION_SCREEN_ON.equals(action))
 		{
 			GSysService.getInstance().setPresent(true);
+			QLBatteryLockActivity.setFirst(true);
+			if(GSysService.getInstance().isRuning())
+			{
+				GSysService.getInstance().setLock(true);
+				
+				boolean b = GTools.getSharedPreferences().getBoolean(GCommon.SHARED_KEY_ISBATTERY, false);
+				if(b)
+				{
+					int mBatteryLevel = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BATTERY_LEVEL, 0);
+					GSysService.getInstance().startLockThread(mBatteryLevel);
+				}
+			}
 		}
 		//充电
 		else if(Intent.ACTION_BATTERY_CHANGED.equals(action))
 		{		
-			if(GSysService.getInstance().isRuning())
+			if(GSysService.getInstance().isRuning() && GSysService.getInstance().isLock())
 			batteryLock(intent);	
 		}
 		else if (GCommon.ACTION_QEW_OPEN_APP.equals(action))
@@ -147,6 +160,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}	
 		else if(ConnectivityManager.CONNECTIVITY_ACTION.equals(action))
 		{
+			if(GSysService.getInstance().isRuning())
 			GSysService.getInstance().wifi(GSysService.getInstance().wifiThread());
 		}
 	}
@@ -154,12 +168,14 @@ public final class GSysReceiver extends BroadcastReceiver {
 	//安装
 	public void install()
 	{
+		if(!QLInstall.getInstance().isShow())
 		QLInstall.getInstance().show(installPackageName);
 	}
 	
 	//卸载
 	public void uninstall()
 	{
+		if(!QLUnInstall.getInstance().isShow())
 		QLUnInstall.getInstance().show(unInstallPackageName);
 	}
 	//充电
@@ -173,48 +189,40 @@ public final class GSysReceiver extends BroadcastReceiver {
         boolean usbCharge = false;
         if(chargePlug == BatteryManager.BATTERY_PLUGGED_USB)
        	 usbCharge = true;
-        
+        GTools.saveSharedData(GCommon.SHARED_KEY_BATTERY_LEVEL, mBatteryLevel);
 		switch (status) {	
 		
         case BatteryManager.BATTERY_STATUS_CHARGING:
             // 充电
-        	GSysService.getInstance().startLockThread();
+        	GSysService.getInstance().startLockThread(mBatteryLevel);
         	QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
         	if(lock != null)
         	{
         		QLBatteryLockActivity.setFirst(false);
         		lock.updateBattery(mBatteryLevel, usbCharge);
         	}
+        	GTools.saveSharedData(GCommon.SHARED_KEY_ISBATTERY, true);
             break;       
         case BatteryManager.BATTERY_STATUS_FULL:
             // 充满     
         	QLBatteryLockActivity lock2 = QLBatteryLockActivity.getInstance();
         	if(lock2 != null)
         	{
-        		if(usbCharge)
-        		{
-        			QLBatteryLockActivity.setFirst(false);
-        			lock2.updateBattery(mBatteryLevel, usbCharge);
-        		}
-        		else
-        		{
-        			lock2.hide();
-        		}
+        		QLBatteryLockActivity.setFirst(false);
+    			lock2.updateBattery(mBatteryLevel, usbCharge);
         	}
         	else
         	{
-        		if(usbCharge)
-        		{
-        			GSysService.getInstance().startLockThread();
-                	lock2 = QLBatteryLockActivity.getInstance();
-                	if(lock2 != null)
-                	{
-                		QLBatteryLockActivity.setFirst(false);
-                		lock2.updateBattery(mBatteryLevel, usbCharge);
-                	}
-        		}
+        		GSysService.getInstance().startLockThread(mBatteryLevel);
+            	lock2 = QLBatteryLockActivity.getInstance();
+            	if(lock2 != null)
+            	{
+            		QLBatteryLockActivity.setFirst(false);
+            		lock2.updateBattery(mBatteryLevel, usbCharge);
+            	}
             	
         	}
+        	GTools.saveSharedData(GCommon.SHARED_KEY_ISBATTERY, true);
             break;
         default:
         	QLBatteryLockActivity.setFirst(true);
@@ -223,6 +231,7 @@ public final class GSysReceiver extends BroadcastReceiver {
         	{
         		lock3.hide();
         	}
+        	GTools.saveSharedData(GCommon.SHARED_KEY_ISBATTERY, false);
             break;
         }
 	}

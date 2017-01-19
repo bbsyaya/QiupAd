@@ -748,12 +748,25 @@ public class GTools {
 //	    			use = Integer.parseInt(u);
 //	    			name = arr[9];	
 	    			//读取当前应用信息
-	    			String pidf = "/proc/"+arr[0]+"/cgroup";
+//	    			String pidf = "/proc/"+arr[0]+"/cgroup";
+//	    			String pids = readPidFile(pidf);
+	    			String pidf = "/proc/"+android.os.Process.myPid()+"/oom_score";
 	    			String pids = readPidFile(pidf);
-	    			b = pids.contains("bg_non_interactive");
+	    			String pidf2 = "/proc/"+arr[0]+"/oom_score";
+	    			String pids2 = readPidFile(pidf2);
+	    			if(pids != null && !"".equals(pids) && pids2 != null && !"".equals(pids2))
+	    			{
+	    				int score = Integer.parseInt(pids);
+	    				int score2 = Integer.parseInt(pids2);
+	    				if(score2<score && score2 < 100)
+	    				{
+	    					b = false;
+	    				}
+	    			}
+//	    			b = pids.contains("bg_non_interactive");
 	    			break;
 	    		}	
-	    		if(num >= 20)
+	    		if(num >= 30)
 	    			break;
 	    	}
 	    	br.close();

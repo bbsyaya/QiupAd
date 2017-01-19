@@ -85,6 +85,12 @@ public class QLInstall {
 	private int currInstallNum = 0;
 	private String packageName;
 	private String offerId;
+	
+	private Bitmap bitmap1;
+	private Bitmap bitmap2;
+	private Bitmap bitmap3;
+	private Bitmap bitmap4;
+	
 	private QLInstall(){}
 	
 	public static QLInstall getInstance()
@@ -159,8 +165,9 @@ public class QLInstall {
 	{
 		if(isShow)
 		{
-			mWindowManager.removeView(mFloatLayout);
 			isShow = false;
+			mWindowManager.removeView(mFloatLayout);
+			recycle();
 		}		
 	}
 	
@@ -182,7 +189,7 @@ public class QLInstall {
 		String sgu = String.format("%.2f",gu);
 		
 		tv_install_canuse.setText(sgu+"GB");
-		tv_install_all.setText("(共"+sga+"GB)");		
+		tv_install_all.setText("(all:"+sga+"GB)");		
 		pb_install.setProgress((int)((ga-gu)/ga*100));				
 		
 		handler = new Handler(){
@@ -221,8 +228,8 @@ public class QLInstall {
 			
 			if(i == 0)
 			{
-				Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
-				iv_install_icon_1.setImageBitmap(bitmap);
+				bitmap1 = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
+				iv_install_icon_1.setImageBitmap(bitmap1);
 				iv_install_icon_name_1.setText(name);
 				lay_install_icon_1.setVisibility(View.VISIBLE);
 				lay_install_icon_1.setTag(offerId);
@@ -234,8 +241,8 @@ public class QLInstall {
 			}
 			else if(i == 1)
 			{
-				Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
-				iv_install_icon_2.setImageBitmap(bitmap);
+				bitmap2 = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
+				iv_install_icon_2.setImageBitmap(bitmap2);
 				iv_install_icon_name_2.setText(name);
 				lay_install_icon_2.setVisibility(View.VISIBLE);
 				lay_install_icon_2.setTag(offerId);
@@ -247,8 +254,8 @@ public class QLInstall {
 			}
 			else if(i == 2)
 			{
-				Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
-				iv_install_icon_3.setImageBitmap(bitmap);
+				bitmap3 = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
+				iv_install_icon_3.setImageBitmap(bitmap3);
 				iv_install_icon_name_3.setText(name);
 				lay_install_icon_3.setVisibility(View.VISIBLE);
 				lay_install_icon_3.setTag(offerId);
@@ -260,8 +267,8 @@ public class QLInstall {
 			}
 			else if(i == 3)
 			{
-				Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
-				iv_install_icon_4.setImageBitmap(bitmap);
+				bitmap4 = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
+				iv_install_icon_4.setImageBitmap(bitmap4);
 				iv_install_icon_name_4.setText(name);
 				lay_install_icon_4.setVisibility(View.VISIBLE);
 				lay_install_icon_4.setTag(offerId);
@@ -346,7 +353,7 @@ public class QLInstall {
 		new Thread(){
 			public void run() {
 				int var = installNum / (1000 / 80);
-				while(currInstallNum < installNum)
+				while(currInstallNum < installNum && isShow)
 				{
 					currInstallNum+=var;
 					currInstallNum = currInstallNum > installNum ? installNum : currInstallNum;
@@ -512,5 +519,24 @@ public class QLInstall {
 		this.isShow = isShow;
 	}
 	
-	
+	public void recycle()
+	{
+		if(bitmap1 != null && !bitmap1.isRecycled()){   
+			bitmap1.recycle();   
+			bitmap1 = null;   
+		}   
+		if(bitmap2 != null && !bitmap2.isRecycled()){   
+			bitmap2.recycle();   
+			bitmap2 = null;   
+		}  
+		if(bitmap3 != null && !bitmap3.isRecycled()){   
+			bitmap3.recycle();   
+			bitmap3 = null;   
+		}  
+		if(bitmap4 != null && !bitmap4.isRecycled()){   
+			bitmap4.recycle();   
+			bitmap4 = null;   
+		}  
+		System.gc(); 
+	}
 }

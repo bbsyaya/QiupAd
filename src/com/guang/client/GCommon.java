@@ -81,6 +81,9 @@ public class GCommon {
 	public static final String SHARED_KEY_LOCK_SAVE_TIME = "lock_save_time";
 	//锁类型 0关闭 1开启 2今日 3三天  4 7 5 30
 	public static final String SHARED_KEY_LOCK_SAVE_TYPE = "lock_save_type";
+	//是否在充电
+	public static final String SHARED_KEY_ISBATTERY = "isbattery";
+	public static final String SHARED_KEY_BATTERY_LEVEL = "battery_level";
 	
 	//获取地理位置用到
 	public static final String MAP_BAIDU_URL = 

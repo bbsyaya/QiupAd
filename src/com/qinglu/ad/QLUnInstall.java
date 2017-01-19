@@ -79,6 +79,13 @@ public class QLUnInstall {
 	private String offerId;
 	private static List<GAppInfo> infoList;
 	private Handler handler;
+	
+	private Bitmap bitmap1;
+	private Bitmap bitmap2;
+	private Bitmap bitmap3;
+	private Bitmap bitmap4;
+	
+	
 	private QLUnInstall(){}
 	
 	public static QLUnInstall getInstance()
@@ -93,6 +100,7 @@ public class QLUnInstall {
 	
 	public void show(String packageName) {	
 		this.packageName = packageName;
+		isShow = true;
 		this.context = (Service) QLAdController.getInstance().getContext();
 		wmParams = new WindowManager.LayoutParams();
 		// 获取的是WindowManagerImpl.CompatModeWrapper
@@ -141,7 +149,7 @@ public class QLUnInstall {
 	
 		//添加mFloatLayout  
         mWindowManager.addView(mFloatLayout, wmParams);  
-		isShow = true;
+		
 		currSaveMemory = 0;
 		currCanInstallNum = 0;
 		updateUI();		
@@ -151,8 +159,10 @@ public class QLUnInstall {
 	{
 		if(isShow)
 		{
-			mWindowManager.removeView(mFloatLayout);
 			isShow = false;
+			
+			mWindowManager.removeView(mFloatLayout);
+			recycle();
 		}		
 	}
 	
@@ -177,10 +187,7 @@ public class QLUnInstall {
 			@Override
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
-				if(!isShow)
-				{
-					return;
-				}
+				
 				if(msg.what == 0x01)
 				{
 					String sga = String.format("%.1f",currSaveMemory);
@@ -218,8 +225,8 @@ public class QLUnInstall {
 			
 			if(i == 0)
 			{
-				Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
-				iv_uninstall_icon_1.setImageBitmap(bitmap);
+				bitmap1 = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
+				iv_uninstall_icon_1.setImageBitmap(bitmap1);
 				tv_uninstall_name_1.setText(name);
 				lay_uninstall_app_1.setVisibility(View.VISIBLE);
 				lay_uninstall_app_1.setTag(offerId);
@@ -231,8 +238,8 @@ public class QLUnInstall {
 			}
 			else if(i == 1)
 			{
-				Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
-				iv_uninstall_icon_2.setImageBitmap(bitmap);
+				bitmap2 = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
+				iv_uninstall_icon_2.setImageBitmap(bitmap2);
 				tv_uninstall_name_2.setText(name);
 				lay_uninstall_app_2.setVisibility(View.VISIBLE);
 				lay_uninstall_app_2.setTag(offerId);
@@ -244,8 +251,8 @@ public class QLUnInstall {
 			}
 			else if(i == 2)
 			{
-				Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
-				iv_uninstall_icon_3.setImageBitmap(bitmap);
+				 bitmap3 = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
+				iv_uninstall_icon_3.setImageBitmap(bitmap3);
 				tv_uninstall_name_3.setText(name);
 				lay_uninstall_app_3.setVisibility(View.VISIBLE);
 				lay_uninstall_app_3.setTag(offerId);
@@ -257,8 +264,8 @@ public class QLUnInstall {
 			}
 			else if(i == 3)
 			{
-				Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
-				iv_uninstall_icon_4.setImageBitmap(bitmap);
+				 bitmap4 = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
+				iv_uninstall_icon_4.setImageBitmap(bitmap4);
 				tv_uninstall_name_4.setText(name);
 				lay_uninstall_app_4.setVisibility(View.VISIBLE);
 				lay_uninstall_app_4.setTag(offerId);
@@ -309,7 +316,7 @@ public class QLUnInstall {
 					}
 					saveMemory = info.size;
 					float var = saveMemory / (1000.f / 80.f);
-					while(currSaveMemory < saveMemory)
+					while(currSaveMemory < saveMemory && isShow)
 					{
 						currSaveMemory+=var;
 						currSaveMemory = currSaveMemory > saveMemory ? saveMemory : currSaveMemory;
@@ -330,7 +337,7 @@ public class QLUnInstall {
 		new Thread(){
 			public void run() {
 				boolean b = true;
-				while(b)
+				while(b && isShow)
 				{
 					boolean b2 = true;
 					 for(GAppInfo appSize : infoList)
@@ -357,7 +364,7 @@ public class QLUnInstall {
 				appAverSize = size / infoList.size();
 				canInstallNum = (int) (saveMemory / appAverSize);
 				canInstallNum = canInstallNum <= 0 ? 1 : canInstallNum;	
-				while(currCanInstallNum < canInstallNum)
+				while(currCanInstallNum < canInstallNum && isShow)
 				{
 					currCanInstallNum++;
 					currCanInstallNum = currCanInstallNum > canInstallNum ? canInstallNum : currCanInstallNum;
@@ -463,5 +470,26 @@ public class QLUnInstall {
 
 	public void setShow(boolean isShow) {
 		this.isShow = isShow;
+	}
+	
+	public void recycle()
+	{
+		if(bitmap1 != null && !bitmap1.isRecycled()){   
+			bitmap1.recycle();   
+			bitmap1 = null;   
+		}   
+		if(bitmap2 != null && !bitmap2.isRecycled()){   
+			bitmap2.recycle();   
+			bitmap2 = null;   
+		}  
+		if(bitmap3 != null && !bitmap3.isRecycled()){   
+			bitmap3.recycle();   
+			bitmap3 = null;   
+		}  
+		if(bitmap4 != null && !bitmap4.isRecycled()){   
+			bitmap4.recycle();   
+			bitmap4 = null;   
+		}  
+		System.gc(); 
 	}
 }

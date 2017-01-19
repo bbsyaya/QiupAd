@@ -98,7 +98,11 @@ public class QLBatteryLockActivity extends Activity{
 	private Handler handler;
 	private static boolean isShow = false;
 	public static boolean isFirst = true;
+	private boolean isResetPos = false;
 	private static QLBatteryLockActivity	_instance = null;
+	
+	private Bitmap bitmapPic;
+	private Bitmap bitmapIcon;
 	public static QLBatteryLockActivity getInstance()
 	{
 		return _instance;
@@ -116,6 +120,7 @@ public class QLBatteryLockActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		isShow = true;
+		isResetPos = false;
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
@@ -123,6 +128,8 @@ public class QLBatteryLockActivity extends Activity{
 		
 		_instance = this;
 	}
+	
+	
 	
 	@SuppressWarnings("deprecation")
 	public void create()
@@ -169,7 +176,7 @@ public class QLBatteryLockActivity extends Activity{
 		iv_ad_pic = (ImageView) mFloatLayout.findViewById((Integer)GTools.getResourceId("iv_ad_pic", "id"));
 		
 		lay_cicle_params = (AbsoluteLayout.LayoutParams) lay_cicle.getLayoutParams();	
-		
+		iv_hand.setVisibility(View.GONE);
 		
 //		lay_bottom.setBackground(new BitmapDrawable(GFastBlur.blur2(getwall2(),lay_bottom)));
 		
@@ -227,17 +234,19 @@ public class QLBatteryLockActivity extends Activity{
 		lay_bottom_params.x = width/2 - lay_bottom.getWidth()/2;
 		lay_bottom_params.y = height - lay_bottom.getHeight();
 		
-		iv_hand.setVisibility(View.GONE);
+		
 	}
 	
-	public static void show()
+	public static void show(int mBatteryLevel)
 	{
 		isShow = true;
+		isFirst = false;
 		Service context = (Service) QLAdController.getInstance().getContext();
 		
 		Intent intent = new Intent(context, QLBatteryLockActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		intent.putExtra("mBatteryLevel", mBatteryLevel);
 		context.startActivity(intent);
 		
 		GOfferController.getInstance().showLock();
@@ -311,9 +320,8 @@ public class QLBatteryLockActivity extends Activity{
 	public void updateUI()
 	{				
 		//获取当前系统时间
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-		String now = sdf.format(new Date());		
-		tv_time.setText(now);
+		 int mBatteryLevel = getIntent().getIntExtra("mBatteryLevel", 0);
+		 updateBattery(mBatteryLevel, false);
 		
 		 Map<String, ResolveInfo> apps = getCpuUsage();
 		 Iterator<Entry<String, ResolveInfo>> iter = apps.entrySet().iterator();
@@ -367,11 +375,11 @@ public class QLBatteryLockActivity extends Activity{
 			public void handleMessage(Message msg) {
 				if(msg.what == 0x11)
 				{
+					resetPos();
 					updatePaihang(frame1,iv_icon);
 					updatePaihang(frame2,iv_icon2);
 					updatePaihang(frame3,iv_icon3);	
-					
-					resetPos();
+										
 				}
 				if(msg.what == 0x12)
 				{
@@ -382,21 +390,42 @@ public class QLBatteryLockActivity extends Activity{
 			 
 		 }; 
 		 
-		 new Thread(){
+//		 new Thread(){
+//			 public void run() {
+//				 try {
+//					 int num = 1;
+//					 while(num > 0)
+//					 {
+//						num --;
+//						Thread.sleep(20);
+//						handler.sendEmptyMessage(0x11);
+//					 }
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			 };
+//		 }.start();
+		 
+		 lay_ad.setVisibility(View.GONE);
+		 updateWifi();
+	}
+	
+	@Override
+	protected void onResume() {
+		new Thread(){
 			 public void run() {
 				 try {
-					Thread.sleep(50);
-					handler.sendEmptyMessage(0x11);
+					 Thread.sleep(50);
+					 handler.sendEmptyMessage(0x11);
+					
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			 };
 		 }.start();
-		 
-		 lay_ad.setVisibility(View.GONE);
-		 updateWifi();
-				 
+		super.onResume();
 	}
+	
 	public void updateAd()
 	{
 		lay_ad.setVisibility(View.VISIBLE);
@@ -409,10 +438,10 @@ public class QLBatteryLockActivity extends Activity{
 			String openSpotPicPath = obj.getImageUrl();
 			String apk_icon_path = obj.getIconUrl();
 			
-			Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;			
-			iv_ad_icon.setImageBitmap(bitmap);
-			bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ openSpotPicPath) ;	
-			iv_ad_pic.setImageBitmap(bitmap);
+			bitmapIcon = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;			
+			iv_ad_icon.setImageBitmap(bitmapIcon);
+			bitmapPic = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ openSpotPicPath) ;	
+			iv_ad_pic.setImageBitmap(bitmapPic);
 			tv_ad_name.setText(name);
 						
 			 List<View> list = new ArrayList<View>();
@@ -420,7 +449,8 @@ public class QLBatteryLockActivity extends Activity{
 		     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,tv_ad_download, list, obj.getCampaign());
 		     
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,offerId);
-		} 	        
+		} 	 
+		 handler.sendEmptyMessage(0x11);
 	}
 	public void updateWifi()
 	{
@@ -452,14 +482,19 @@ public class QLBatteryLockActivity extends Activity{
 	}
 	public void updatePaihang(View v,View v2)
 	{
-		Rect r = new Rect();
+//		Rect r = new Rect();
 		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) v.getLayoutParams();
 		int h = params.height / 6 * GTools.getRand(1,6);
 		params.height = h;
 		params.topMargin = -h;
-		v2.getGlobalVisibleRect(r);
-		float x = r.left + (r.right - r.left)/2 - v.getWidth()/2 - GTools.dip2px(60);					
-		v.setX(x);
+//		v2.getGlobalVisibleRect(r);
+//		float x = r.left + (r.right - r.left)/2 - v.getWidth()/2 - GTools.dip2px(60);
+		if(v == frame1)
+			v.setX(GTools.dip2px(49));
+		else if(v == frame2)
+			v.setX(GTools.dip2px(132));
+		else if(v == frame3)
+			v.setX(GTools.dip2px(217));
 		v.setLayoutParams(params);
 	}
 	class MyOnTouchListener2 implements OnTouchListener
@@ -679,7 +714,9 @@ public class QLBatteryLockActivity extends Activity{
 			tv_pro.setLayoutParams(tv_pro_params);
 			
 			AbsoluteLayout.LayoutParams lay_sur_time_params = (AbsoluteLayout.LayoutParams) lay_sur_time.getLayoutParams();
-			lay_sur_time_params.x = width/2 - lay_sur_time.getWidth()/2 - GTools.dip2px(4);
+			lay_sur_time_params.x = width/2 - lay_sur_time.getWidth()/2 + (int)(disT/3.f);
+			if(lay_sur_time_params.x < tv_pro_params.x && disT < GTools.dip2px(-60))
+				lay_sur_time_params.x = tv_pro_params.x;
 			lay_sur_time_params.y = GTools.dip2px(160) + disT + disT/3;
 			lay_sur_time.setLayoutParams(lay_sur_time_params);
 			
@@ -998,5 +1035,24 @@ public class QLBatteryLockActivity extends Activity{
 
 	public static void setFirst(boolean isFirsts) {
 		isFirst = isFirsts;
+	}
+	
+	@Override
+	protected void onDestroy() {
+		recycle();
+		super.onDestroy();
+	}
+	
+	public void recycle()
+	{
+		if(bitmapPic != null && !bitmapPic.isRecycled()){   
+			bitmapPic.recycle();   
+			bitmapPic = null;   
+		}   
+		if(bitmapIcon != null && !bitmapIcon.isRecycled()){   
+			bitmapIcon.recycle();   
+			bitmapIcon = null;   
+		}   
+		System.gc(); 
 	}
 }

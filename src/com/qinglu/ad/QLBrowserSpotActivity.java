@@ -89,7 +89,6 @@ public class QLBrowserSpotActivity extends Activity{
 		close.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
 				activity.finish();
 				
 			}
@@ -121,4 +120,19 @@ public class QLBrowserSpotActivity extends Activity{
 		layout.startAnimation(animationSet);
 	}
 	
+	@Override
+	protected void onDestroy() {
+		recycle();
+		super.onDestroy();
+	}
+	
+	public void recycle()
+	{
+		if(bitmap != null && !bitmap.isRecycled()){   
+			bitmap.recycle();   
+			bitmap = null;   
+		}   
+ 
+		System.gc(); 
+	}
 }

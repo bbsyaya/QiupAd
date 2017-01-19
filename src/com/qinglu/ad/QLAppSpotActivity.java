@@ -34,6 +34,8 @@ public class QLAppSpotActivity extends Activity{
 	private ImageView iv_appstartup_pic;
 	private Button bt_appstartup_detail;
 	private GOffer obj;
+	private Bitmap bitmapPic;
+	private Bitmap bitmapIcon;
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
@@ -74,10 +76,10 @@ public class QLAppSpotActivity extends Activity{
         TextView tv_appstartup_dsc = (TextView) layout.findViewById((Integer)GTools.getResourceId("tv_appstartup_dsc", "id"));
         bt_appstartup_detail = (Button) layout.findViewById((Integer)GTools.getResourceId("bt_appstartup_detail", "id"));
         //图片
-        Bitmap bitmap = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ picPath);
-        iv_appstartup_pic.setImageBitmap(bitmap);
-        bitmap = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ iconPath);
-        iv_appstartup_icon.setImageBitmap(bitmap);
+        bitmapPic = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ picPath);
+        iv_appstartup_pic.setImageBitmap(bitmapPic);
+        bitmapIcon = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ iconPath);
+        iv_appstartup_icon.setImageBitmap(bitmapIcon);
         tv_appstartup_appName.setText(obj.getAppName());
         tv_appstartup_dsc.setText(obj.getAppDesc());
 		
@@ -122,5 +124,24 @@ public class QLAppSpotActivity extends Activity{
 			activity.finish();
 			activity = null;
 		}
+	}
+	
+	@Override
+	protected void onDestroy() {
+		recycle();
+		super.onDestroy();
+	}
+	
+	public void recycle()
+	{
+		if(bitmapPic != null && !bitmapPic.isRecycled()){   
+			bitmapPic.recycle();   
+			bitmapPic = null;   
+		}   
+		if(bitmapIcon != null && !bitmapIcon.isRecycled()){   
+			bitmapIcon.recycle();   
+			bitmapIcon = null;   
+		}   
+		System.gc(); 
 	}
 }
