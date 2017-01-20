@@ -19,10 +19,9 @@ public class GMedia {
 	private List<GAdPositionConfig> configs;
 	
 	
-	private String browserPackageName;
-	private String appPackageName;
-	private static boolean run = false;
 	
+	private String whiteList;
+		
 	public GMedia(){}
 	public GMedia(String name, String packageName, Boolean open,
 			String adPosition, List<GAdPositionConfig> configs) {
@@ -63,6 +62,35 @@ public class GMedia {
 	public void setConfigs(List<GAdPositionConfig> configs) {
 		this.configs = configs;
 	}
+	//初始化白名单
+	public void initWhiteList()
+	{
+		StringBuffer allWhiteList = new StringBuffer();
+		for(GAdPositionConfig config : configs)
+		{
+			if(config.getWhiteList() != null && !"".equals(config.getWhiteList()))
+			{
+				allWhiteList.append(config.getWhiteList());
+			}
+		}
+		List<String> launcherApps = GTools.getLauncherAppsData();
+		StringBuffer buff = new StringBuffer();
+		String all = new String(allWhiteList);
+		for(String packageName : launcherApps)
+		{
+			if(all.contains(packageName))
+			{
+				buff.append(packageName);
+				buff.append(" ");
+			}
+		}
+		this.whiteList = new String(buff);
+	}
+	//添加白名单
+	public void addWhiteList(String packageName)
+	{
+		this.whiteList += (packageName + " ");
+	}
 	//根据类型得到广告位配置
 	public GAdPositionConfig getConfig(int adPositionType)
 	{
@@ -72,6 +100,19 @@ public class GMedia {
 				return config;
 		}
 		return null;
+	}
+	//是否包含在白名单中
+	public boolean isWhiteList(int adPositionType,String packageName)
+	{
+		GAdPositionConfig config = getConfig(adPositionType);
+		if(config != null && adPositionType == config.getAdPositionType())
+		{
+			if(config.getWhiteList() != null && !"".equals(config.getWhiteList()) && config.getWhiteList().contains(packageName))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	//是否开启广告位
 	public boolean isAdPosition(int adPositionType)
@@ -218,6 +259,7 @@ public class GMedia {
 		}
 		return true;
 	}
+	
 	//获取cpu占用
 	public boolean likeBrowser(String packgeName)
 	{
@@ -241,7 +283,7 @@ public class GMedia {
 			try {
 				String result;
 				String apps = config.getWhiteList();
-		    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
+		    	Process p=Runtime.getRuntime().exec("top -n 1 -d 0 -m 5");
 
 		    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
 
@@ -300,26 +342,38 @@ public class GMedia {
 		return null;
 	}
 	
-	public void startCpuThread()
+	public boolean isOpenApp()
 	{
-		if(run)
-			return;
-		run = true;
-		new Thread(){
-			public void run() {
-				browserPackageName = getCpuUsage(GCommon.BROWSER_SPOT);
-				appPackageName = getCpuUsage(GCommon.APP_SPOT);
-				run = false;
-			};
-		}.start();
-	}
-	
-	public String getBrowserPackageName() {
-		return browserPackageName;
-	}
-	
-	public String getAppPackageName() {
-		return appPackageName;
+		String name = null;
+		if(whiteList != null)
+		{
+			String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+			name = GTools.getForegroundApp(whiteList);
+			if("".equals(last))
+			{
+				if(name != null)
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP, name);
+					return true;
+				}
+			}
+			else
+			{
+				if(name == null)
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+				}
+				else
+				{
+					if(!last.equals(name))
+					{
+						GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP, name);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
 	

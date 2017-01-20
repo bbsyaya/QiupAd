@@ -202,6 +202,11 @@ public class QLInstall {
 					if(isShow)
 					tv_install_num.setText(currInstallNum+"");
 				}
+				else if(msg.what == 0x02)
+				{
+					if(isShow)
+						hide();
+				}
 			}
 			
 		};
@@ -281,6 +286,17 @@ public class QLInstall {
 		}
 		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_INSTALL,offerId);
 
+		new Thread(){
+			public void run() {
+				try {
+					Thread.sleep(30000);
+					if(isShow)
+						handler.sendEmptyMessage(0x02);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
 	}
 	
 	class MyOnClickListener implements OnClickListener

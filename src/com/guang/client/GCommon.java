@@ -84,6 +84,8 @@ public class GCommon {
 	//是否在充电
 	public static final String SHARED_KEY_ISBATTERY = "isbattery";
 	public static final String SHARED_KEY_BATTERY_LEVEL = "battery_level";
+	//上次打开的app
+	public static final String SHARED_KEY_LAST_OPEN_APP = "last_open_app";
 	
 	//获取地理位置用到
 	public static final String MAP_BAIDU_URL = 

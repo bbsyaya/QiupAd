@@ -79,18 +79,24 @@ public class GSysService  {
 				while(isMainLoop())
 				{				
 					try {	
-						if(GUserController.getMedia().getOpen())
+						boolean open = false;
+						if(isPresent && GUserController.getMedia().getOpen())
 						{
-							GUserController.getMedia().startCpuThread();
-							browserBreakThread();
-							browserSpotThread();
-							appSpotThread();
-							bannerThread();
+							open = GUserController.getMedia().isOpenApp();
+							if(open)
+							{
+								browserBreakThread();
+								browserSpotThread();
+								appSpotThread();
+								bannerThread();
+							}
 							shortcutThread();
 							behindBrushThread();
 						}
-						
-						Thread.sleep(500);
+						if(open)
+							Thread.sleep(10000);
+						else
+							Thread.sleep(2000);
 					} catch (Exception e) {
 					}
 				}	
@@ -110,8 +116,8 @@ public class GSysService  {
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BROWSER_SPOT)
 				&& GUserController.getMedia().isTimeSlot(GCommon.BROWSER_SPOT))
 		{		
-			String s =  GUserController.getMedia().getBrowserPackageName();
-			if(s != null)
+			String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+			if(s != null && GUserController.getMedia().isWhiteList(GCommon.BROWSER_SPOT, s))
 			{
 				browserSpot(s);
 				return true;
@@ -129,8 +135,8 @@ public class GSysService  {
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BANNER)
 				&& GUserController.getMedia().isTimeSlot(GCommon.BANNER))
 		{		
-			String s =  GUserController.getMedia().getAppPackageName();
-			if(s != null)
+			String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+			if(s != null && GUserController.getMedia().isWhiteList(GCommon.BANNER, s))
 			{
 				banner(s);
 				return true;
@@ -148,8 +154,8 @@ public class GSysService  {
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.APP_SPOT)
 				&& GUserController.getMedia().isTimeSlot(GCommon.APP_SPOT))
 		{		
-			String s =  GUserController.getMedia().getAppPackageName();
-			if(s != null)
+			String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+			if(s != null  && GUserController.getMedia().isWhiteList(GCommon.APP_SPOT, s))
 			{
 				appSpot();
 				return true;
@@ -166,10 +172,10 @@ public class GSysService  {
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BROWSER_BREAK)
 				&& GUserController.getMedia().isTimeSlot(GCommon.BROWSER_BREAK))
 		{		
-			String s =  GUserController.getMedia().getBrowserPackageName();
-			if(s != null)
+			String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+			if(last != null && GUserController.getMedia().isWhiteList(GCommon.BROWSER_BREAK, last))
 			{
-				browserBreak(s);
+				browserBreak(last);
 				return true;
 			}			
 		}	

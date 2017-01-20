@@ -1,5 +1,8 @@
 package com.guang.client.mode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GAdPositionConfig {
 	private Long adPositionId;
 	private int adPositionType;
@@ -37,8 +40,7 @@ public class GAdPositionConfig {
 	//暗刷
 	private String behindBrushUrls;
 	
-	
-	
+		
 	public GAdPositionConfig(){}
 	public GAdPositionConfig(Long adPositionId,int adPositionType, String timeSlot,
 			Integer showNum, Float showTimeInterval, String whiteList,
@@ -169,4 +171,20 @@ public class GAdPositionConfig {
 	}
 	
 	
+	
+//	public void initPackageName(List<String> launcherApps)
+//	{
+//		packageNames = new ArrayList<String>();
+//		if(whiteList != null && !"".equals(whiteList))
+//		{
+//			for(String packageName : launcherApps)
+//			{
+//				if(whiteList.contains(packageName))
+//				{
+//					packageNames.add(packageName);
+//				}
+//			}
+//		}
+//		
+//	}
 }

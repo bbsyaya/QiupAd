@@ -931,7 +931,7 @@ public class QLBatteryLockActivity extends Activity{
   			String result;
   			Map<String, ResolveInfo> maps = getLauncherApp();
   			
-  	    	Process p = Runtime.getRuntime().exec("top -n 1 -d 1");
+  	    	Process p = Runtime.getRuntime().exec("top -n 1 -d 0");
 
   	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream ()));
   	    	

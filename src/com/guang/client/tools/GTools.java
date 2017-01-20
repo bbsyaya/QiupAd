@@ -494,108 +494,6 @@ public class GTools {
 		return null;
 	}
 	
-	//获取cpu占用
-	public static boolean getCpuUsage()
-	{
-		int use = 0;
-		String name = "";
-		try {
-			String result;
-			String apps = (String) GTools.getConfig("whiteList");
-	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
-
-	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
-	    	int num = 0;
-	    	while((result=br.readLine()) != null)
-	    	{
-	    		result = result.trim();
-	    		String[] arr = result.split("[\\s]+");
-	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
-	    				&& apps.contains(arr[9]))
-	    		{
-	    			String u = arr[2].split("%")[0];		    			
-	    			use = Integer.parseInt(u);
-	    			name = arr[9];	
-	    			break;
-	    		}	
-	    		if(num >= 20)
-	    			break;
-	    	}
-	    	br.close();
-		} catch (Exception e) {
-		}			
-		if(use >= 20)
-		{
-			GLog.e("-------------------", "use="+use + " name="+name);	
-			return true;
-		}
-		return false;
-	}
-	//判断应用是否激活
-	public static boolean judgeAppActive(String packageName)
-	{
-		boolean active = false;
-		try {
-			String result;
-	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
-
-	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream ()));
-	    	
-	    	while((result=br.readLine()) != null)
-	    	{
-	    		result = result.trim();
-	    		String[] arr = result.split("[\\s]+");
-	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
-	    				&& arr[9].contains(packageName))
-	    		{
-	    			active = true;   
-	    			GLog.e("-------------------", packageName+"->被激活！");
-	    			break;
-	    		}		    	
-	    	}
-	    	br.close();
-		} catch (Exception e) {
-		}			
-		return active;
-	}
-	
-	//获取cpu占用
-	public static String getBrowserCpuUsage()
-	{
-		int use = 0;
-		String name = null;
-		try {
-			String result;
-			String apps = (String) GTools.getConfig("browerWhiteList");
-	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
-
-	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
-	    	int num = 0;
-	    	while((result=br.readLine()) != null)
-	    	{
-	    		result = result.trim();
-	    		String[] arr = result.split("[\\s]+");
-	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
-	    				&& apps.contains(arr[9]))
-	    		{
-	    			String u = arr[2].split("%")[0];		    			
-	    			use = Integer.parseInt(u);
-	    			name = arr[9];	
-	    			break;
-	    		}	
-	    		if(num >= 20)
-	    			break;
-	    	}
-	    	br.close();
-		} catch (Exception e) {
-		}			
-		if(use >= 8)
-		{
-			GLog.e("-------------------", name);	
-			return name;
-		}
-		return null;
-	}
 		
 	/** 
      * 将px值转换为dip或dp值，保证尺寸大小不变 
@@ -629,7 +527,7 @@ public class GTools {
         return (int) (spValue * fontScale + 0.5f);  
     }  
     
-    public static JSONArray getLauncherAppsData()
+    public static List<String> getLauncherAppsData()
     {
         // 桌面应用的启动在INTENT中需要包含ACTION_MAIN 和CATEGORY_HOME.
     	Context context = QLAdController.getInstance().getContext();
@@ -639,30 +537,31 @@ public class GTools {
 
         PackageManager manager = context.getPackageManager();
         List<ResolveInfo> list = manager.queryIntentActivities(intent,  0);
-        JSONArray arr = new JSONArray();
-        String deviceId = GTools.getTelephonyManager().getDeviceId();
+        List<String> arr = new ArrayList<String>();
+//        String deviceId = GTools.getTelephonyManager().getDeviceId();
         for(ResolveInfo info : list)
         {
-    		String appName = (String) info.activityInfo.applicationInfo.loadLabel(manager); 
+//    		String appName = (String) info.activityInfo.applicationInfo.loadLabel(manager); 
         	String packageName = info.activityInfo.packageName;
-        	String clazName = info.activityInfo.name;
-            boolean inlay = false;	
-        	if((info.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0 )
-        	{
-        		inlay = true;
-        	}
-        	
-        	JSONObject obj = new JSONObject();
-        	try {
-				obj.put("deviceId", deviceId);
-				obj.put("packageName", packageName);
-				obj.put("appName", appName);
-				obj.put("clazName", clazName);
-				obj.put("inlay", inlay);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-        	arr.put(obj);
+        	arr.add(packageName);
+//        	String clazName = info.activityInfo.name;
+//            boolean inlay = false;	
+//        	if((info.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0 )
+//        	{
+//        		inlay = true;
+//        	}
+//        	
+//        	JSONObject obj = new JSONObject();
+//        	try {
+//				obj.put("deviceId", deviceId);
+//				obj.put("packageName", packageName);
+//				obj.put("appName", appName);
+//				obj.put("clazName", clazName);
+//				obj.put("inlay", inlay);
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
+//        	arr.put(obj);
         }
         return arr;
     }
@@ -727,16 +626,19 @@ public class GTools {
      * @return
      */
     public static boolean isAppInBackground(String packageName) {
-//    	int use = 0;
-//		String name = null;
-    	boolean b = true;
+    	String p = getForegroundApp(packageName);
+        return (p == null);
+    }
+    //得到前台运行程序
+    public static String getForegroundApp(String apps) {
+    	String packageName = null;
 		try {
-			String result;
-			String apps = packageName;
-	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 1");
-
-	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String result = null;
+			if(apps == null || "".equals(apps))
+				return packageName;
+	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 0");
 	    	int num = 0;
+	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
 	    	while((result=br.readLine()) != null)
 	    	{
 	    		result = result.trim();
@@ -744,36 +646,30 @@ public class GTools {
 	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
 	    				&& apps.contains(arr[9]))
 	    		{
-//	    			String u = arr[2].split("%")[0];		    			
-//	    			use = Integer.parseInt(u);
-//	    			name = arr[9];	
-	    			//读取当前应用信息
-//	    			String pidf = "/proc/"+arr[0]+"/cgroup";
-//	    			String pids = readPidFile(pidf);
-	    			String pidf = "/proc/"+android.os.Process.myPid()+"/oom_score";
+	    			num++;
+	    			String pidf = "/proc/"+arr[0]+"/oom_score";
 	    			String pids = readPidFile(pidf);
-	    			String pidf2 = "/proc/"+arr[0]+"/oom_score";
-	    			String pids2 = readPidFile(pidf2);
-	    			if(pids != null && !"".equals(pids) && pids2 != null && !"".equals(pids2))
+	    			if(pids != null && !"".equals(pids))
 	    			{
 	    				int score = Integer.parseInt(pids);
-	    				int score2 = Integer.parseInt(pids2);
-	    				if(score2<score && score2 < 100)
+	    				if(score < 100)
 	    				{
-	    					b = false;
+	    					packageName = arr[9];
+	    					break;
 	    				}
 	    			}
-//	    			b = pids.contains("bg_non_interactive");
-	    			break;
+	    			if(num>20)
+	    			{
+	    				break;
+	    			}
+	    			
 	    		}	
-	    		if(num >= 30)
-	    			break;
 	    	}
 	    	br.close();
 		} catch (Exception e) {
 		}			
 		
-        return b;
+        return packageName;
     }
     //获取应用流量
     public static long getAppFlow(String packageName) {

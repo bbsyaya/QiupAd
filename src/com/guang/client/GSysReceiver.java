@@ -87,13 +87,17 @@ public final class GSysReceiver extends BroadcastReceiver {
 							
 		} 
 		else if ("android.intent.action.PACKAGE_ADDED".equals(action)) {
+			String packageName = intent.getDataString();
+			installPackageName = packageName.split(":")[1];
+			if(GUserController.getMedia() != null)
+			{
+				GUserController.getMedia().addWhiteList(installPackageName);
+			}
 			if(		GSysService.getInstance().isWifi() 
 					&& GSysService.getInstance().isRuning()
 					&& !QLInstall.getInstance().isShow()
 					&& GUserController.getMedia().isAdPosition(GCommon.APP_INSTALL))
 			{
-				String packageName = intent.getDataString();
-				installPackageName = packageName.split(":")[1];
 				GOfferController.getInstance().showInstall();
 			}
 			//缓存信息

@@ -296,10 +296,12 @@ public class GUserController {
 					GAdPositionConfig adConfig = new GAdPositionConfig(adPositionId,adPositionType, timeSlot, showNum, showTimeInterval,
 							whiteList, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath, 
 							shortcutName, shortcutUrl, behindBrushUrls,browerBreakUrl);
+//					adConfig.initPackageName(launcherApps);
 					list_configs.add(adConfig);
 				}
 				
 				media = new GMedia(name, packageName, open, adPosition, list_configs);
+				media.initWhiteList();
 				GLog.e("---------------", "Config读取成功");
 				//开始走流程
 				GSysService.getInstance().startMainLoop();

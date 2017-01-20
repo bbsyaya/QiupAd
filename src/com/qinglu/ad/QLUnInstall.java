@@ -201,11 +201,28 @@ public class QLUnInstall {
 				{
 					ib_uninstall_close.setVisibility(View.VISIBLE);
 				}
+				else if(msg.what == 0x04)
+				{
+					if(isShow)
+						hide();
+				}
 			}			
 		};
 		updateBottom();
 		updateSaveMemory();
 		updateCanInstallNum();
+		
+		new Thread(){
+			public void run() {
+				try {
+					Thread.sleep(30000);
+					if(isShow)
+						handler.sendEmptyMessage(0x04);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
 	}
 	
 	private void updateBottom()
