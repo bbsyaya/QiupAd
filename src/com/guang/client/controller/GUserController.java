@@ -65,21 +65,29 @@ public class GUserController {
 		}
 	}
 	
-	public static void loginResult(Object ob,Object rev) throws JSONException
+	public static void loginResult(Object ob,Object rev) 
 	{
-		JSONObject obj = new JSONObject(rev.toString());
-		if(obj.getBoolean("result"))
-		{
-			GLog.e(TAG,"longin success!");
-			GUserController.getInstance().loginSuccess();
-		}
-		else
-		{
+		try {
+			JSONObject obj = new JSONObject(rev.toString());
+			if(obj.getBoolean("result"))
+			{
+				GLog.e(TAG,"longin success!");
+				GUserController.getInstance().loginSuccess();
+			}
+			else
+			{
+				GTools.saveSharedData(GCommon.SHARED_KEY_NAME, "");
+				GTools.saveSharedData(GCommon.SHARED_KEY_PASSWORD, "");
+				GLog.e(TAG,"login faiure!");
+				GUserController.getInstance().login();
+			}
+		} catch (Exception e) {
 			GTools.saveSharedData(GCommon.SHARED_KEY_NAME, "");
 			GTools.saveSharedData(GCommon.SHARED_KEY_PASSWORD, "");
 			GLog.e(TAG,"login faiure!");
 			GUserController.getInstance().login();
 		}
+		
 	}
 	//验证是否已经注册
 	public void validate()

@@ -3,7 +3,9 @@ package com.qinglu.ad;
 
 
 import com.guang.client.GCommon;
+import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GSMController;
+import com.guang.client.mode.GOffer;
 import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
@@ -41,6 +43,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 @SuppressLint({ "NewApi", "HandlerLeak", "ResourceAsColor" })
 public class QLBannerActivity extends Activity{
@@ -88,36 +91,60 @@ public class QLBannerActivity extends Activity{
         p.x = 0;
         p.y = -height/2 + l_height/2 + title_h;
         getWindow().setAttributes(p); 
-
-        
-        GSMOffer obj = GSMController.getInstance().getOffer();
-        String bannerPicPath = obj.getLink();
-        target = obj.getTarget();
         
         AbsoluteLayout root = new AbsoluteLayout(this);
         AbsoluteLayout.LayoutParams rootlayoutParams = new AbsoluteLayout.LayoutParams(p.width,p.height,0,0);
-//		rootlayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+// 		rootlayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+        view = new RelativeLayout(this);
+ 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, l_height);
+ 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+ 		view.setLayoutParams(layoutParams);
+ 		
+ 		root.addView(view);
+ 		
+        boolean type = getIntent().getBooleanExtra("type", false);
+        
+        if(type)
+        {	
+        	LayoutInflater inflater = LayoutInflater.from(getApplication());
+        	RelativeLayout view2 = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_banner", "layout"), null);
+        	view.addView(view2);
+        	
+    		GOffer offer = GAPPNextController.getInstance().getBannerOffer();
+    		String bannerPicPath = offer.getIconUrl();
+            target = offer.getUrlApp();
+            
+            ImageView iv_banner_icon = (ImageView) view2.findViewById((Integer)GTools.getResourceId("iv_banner_icon", "id"));
+            TextView tv_banner_appname = (TextView) view2.findViewById((Integer)GTools.getResourceId("tv_banner_appname", "id"));
+            TextView tv_banner_appdesc = (TextView) view2.findViewById((Integer)GTools.getResourceId("tv_banner_appdesc", "id"));
+       
+            bitmapPic = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
+            iv_banner_icon.setImageBitmap(bitmapPic);
+            tv_banner_appname.setText(offer.getAppName());
+            tv_banner_appdesc.setText(offer.getAppDesc());
+        }
+        else
+        {
+        	GSMOffer obj = GSMController.getInstance().getOffer();
+            String bannerPicPath = obj.getLink();
+            target = obj.getTarget();
+
+     		ImageView iv_banner_banner = new ImageView(this);
+     		
+     		RelativeLayout.LayoutParams imageLayoutParams = new RelativeLayout.LayoutParams((int) (width*0.85f), GTools.dip2px(50));		
+             imageLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+             imageLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+     		iv_banner_banner.setLayoutParams(imageLayoutParams);
+     		iv_banner_banner.setScaleType(ScaleType.FIT_XY);
+     		
+     		bitmapPic = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
+     		iv_banner_banner.setImageBitmap(bitmapPic);
+     		view.addView(iv_banner_banner);
+     		
+        }
+        
+ 		this.setContentView(root,rootlayoutParams);
 		
-		view = new RelativeLayout(this);
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, l_height);
-		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-		view.setLayoutParams(layoutParams);
-		
-		root.addView(view);
-		
-		ImageView iv_banner_banner = new ImageView(this);
-		
-		RelativeLayout.LayoutParams imageLayoutParams = new RelativeLayout.LayoutParams((int) (width*0.85f), GTools.dip2px(50));		
-        imageLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-        imageLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		iv_banner_banner.setLayoutParams(imageLayoutParams);
-		iv_banner_banner.setScaleType(ScaleType.FIT_XY);
-		
-		bitmapPic = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
-		iv_banner_banner.setImageBitmap(bitmapPic);
-		view.addView(iv_banner_banner);
-		
-		this.setContentView(root,rootlayoutParams);
 						
 		show();
 		

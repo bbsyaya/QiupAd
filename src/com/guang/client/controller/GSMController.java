@@ -143,7 +143,8 @@ public class GSMController {
 			}
 			else
 			{
-				
+				GLog.e("----------------------", "切换AppNext");
+				GAPPNextController.getInstance().showBanner(appName);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -153,7 +154,7 @@ public class GSMController {
 			isShowBanner = false;
 			GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
 		}
-		GLog.e("--------revAd----------", "revAd"+rev.toString());
+		
 	}
 	public void downloadBannerCallback(Object ob,Object rev)
 	{
@@ -167,6 +168,7 @@ public class GSMController {
 		}
 		Context context = QLAdController.getInstance().getContext();
 		Intent intent = new Intent(context, QLBannerActivity.class);
+		intent.putExtra("type", false);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	

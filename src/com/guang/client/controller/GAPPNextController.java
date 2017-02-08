@@ -40,6 +40,7 @@ public class GAPPNextController {
 	private List<GOffer> unInstallOffers;
 	private GOffer spotOffer;
 	private GOffer lockOffer;
+	private GOffer bannerOffer;
 	private final String AdspaceId = "304af244-164f-4e4c-9bd0-374843427f22";
 	private final String url = "https://admin.appnext.com/offerWallApi.aspx";
 	
@@ -47,7 +48,9 @@ public class GAPPNextController {
 	private boolean isInsallRequesting = false;
 	private boolean isUnInstallRequesting = false;
 	private boolean isLockRequesting = false;
+	private boolean isBannerRequesting = false;
 	
+	private String bannerAppName;
 	
 	private GAPPNextController()
 	{
@@ -323,6 +326,83 @@ public class GAPPNextController {
 			}
 		}
 	}
+	
+	//显示banner
+	public void showBanner(String bannerAppName)
+	{
+		this.bannerAppName = bannerAppName;
+		if(isBannerRequesting)
+			return;
+		GLog.e("--------------", "banner start!");
+		bannerOffer = null;
+		isBannerRequesting = true;
+		GTools.httpGetRequest(getUrl(1),this, "revBannerAd", null);
+	}
+	public void revBannerAd(Object ob,Object rev)
+	{
+		try {
+			JSONObject json = new JSONObject(rev.toString());
+			JSONArray apps = json.getJSONArray("apps");
+			if(apps != null && apps.length() > 0)
+			{
+				JSONObject app = apps.getJSONObject(0);
+				
+				String title = app.getString("title");
+				String desc = app.getString("desc");
+				String urlImg = app.getString("urlImg");
+				String urlImgWide = app.getString("urlImgWide");
+				String campaignId = app.getString("campaignId");
+				String androidPackage = app.getString("androidPackage");
+				String appSize = app.getString("appSize");
+				String urlApp = app.getString("urlApp");
+				
+				String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
+                String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+                 
+//                GTools.downloadRes(urlImgWide, this, "downloadBannerCallback", imageName,true);
+                GTools.downloadRes(urlImg, this, "downloadBannerCallback", iconName,true);
+                bannerOffer = new GOffer(campaignId, androidPackage, title,
+                		 desc, appSize, iconName, imageName,urlApp);  
+                 
+             	GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,campaignId);	
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}	
+		finally
+		{
+			isBannerRequesting = false;
+		}
+		GLog.e("--------revAd----------", "revAd"+rev.toString());
+	}
+	public void downloadBannerCallback(Object ob,Object rev)
+	{
+		if(bannerOffer != null)
+		{
+			bannerOffer.setPicNum(bannerOffer.getPicNum()+1);
+		}
+		// 判断图片是否存在
+		if(bannerOffer.getPicNum()==1)
+		{
+			if(GTools.isAppInBackground(bannerAppName))
+			{
+				return;
+			}
+			Context context = QLAdController.getInstance().getContext();
+			Intent intent = new Intent(context, QLBannerActivity.class);
+			intent.putExtra("type", true);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+			context.startActivity(intent);	
+			
+			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, num+1);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME,GTools.getCurrTime());	
+			
+			GLog.e("--------------", "banner success");
+		}
+		
+	}
 		
 	private String getUrl(int cnt)
 	{
@@ -350,4 +430,9 @@ public class GAPPNextController {
 	{
 		return unInstallOffers;
 	}
+
+	public GOffer getBannerOffer() {
+		return bannerOffer;
+	}
+	
 }
