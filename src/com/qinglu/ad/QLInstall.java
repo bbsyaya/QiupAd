@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import com.guang.client.GCommon;
 import com.guang.client.GSysReceiver;
+import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
@@ -29,6 +30,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -223,14 +225,13 @@ public class QLInstall {
 		lay_install_icon_3.setVisibility(View.GONE);
 		lay_install_icon_4.setVisibility(View.GONE);
 		MyOnClickListener listener = new MyOnClickListener();
-		List<GOffer> arr = GOfferController.getInstance().getInstallOffer();
+		List<GOffer> arr = GAPPNextController.getInstance().getInstallOffer();
 		
 		for (int i = 0; i < arr.size(); i++) {
 			GOffer obj = arr.get(i);
 			String offerId = obj.getId();
 			String name = obj.getAppName();
 			String apk_icon_path = obj.getIconUrl();
-			
 			if(i == 0)
 			{
 				bitmap1 = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;
@@ -238,11 +239,12 @@ public class QLInstall {
 				iv_install_icon_name_1.setText(name);
 				lay_install_icon_1.setVisibility(View.VISIBLE);
 				lay_install_icon_1.setTag(offerId);
-//				lay_install_icon_1.setOnClickListener(listener);
+				lay_install_icon_1.setOnClickListener(listener);
 				
-				 List<View> list = new ArrayList<View>();
-			     list.add(lay_install_icon_1);
-			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_1, list, obj.getCampaign());	
+//				 List<View> list = new ArrayList<View>();
+//			     list.add(lay_install_icon_1);
+//			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_1, list, obj.getCampaign());	
+				
 			}
 			else if(i == 1)
 			{
@@ -251,11 +253,12 @@ public class QLInstall {
 				iv_install_icon_name_2.setText(name);
 				lay_install_icon_2.setVisibility(View.VISIBLE);
 				lay_install_icon_2.setTag(offerId);
-//				lay_install_icon_2.setOnClickListener(listener);
+				lay_install_icon_2.setOnClickListener(listener);
 				
-				List<View> list = new ArrayList<View>();
-			     list.add(lay_install_icon_2);
-			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_2, list, obj.getCampaign());	
+//				List<View> list = new ArrayList<View>();
+//			     list.add(lay_install_icon_2);
+//			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_2, list, obj.getCampaign());	
+			
 			}
 			else if(i == 2)
 			{
@@ -264,11 +267,12 @@ public class QLInstall {
 				iv_install_icon_name_3.setText(name);
 				lay_install_icon_3.setVisibility(View.VISIBLE);
 				lay_install_icon_3.setTag(offerId);
-//				lay_install_icon_3.setOnClickListener(listener);
+				lay_install_icon_3.setOnClickListener(listener);
 				
-				List<View> list = new ArrayList<View>();
-			     list.add(lay_install_icon_3);
-			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_3, list, obj.getCampaign());	
+//				List<View> list = new ArrayList<View>();
+//			     list.add(lay_install_icon_3);
+//			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_3, list, obj.getCampaign());	
+			
 			}
 			else if(i == 3)
 			{
@@ -277,11 +281,11 @@ public class QLInstall {
 				iv_install_icon_name_4.setText(name);
 				lay_install_icon_4.setVisibility(View.VISIBLE);
 				lay_install_icon_4.setTag(offerId);
-//				lay_install_icon_4.setOnClickListener(listener);
+				lay_install_icon_4.setOnClickListener(listener);
 				
-				List<View> list = new ArrayList<View>();
-			     list.add(lay_install_icon_4);
-			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_4, list, obj.getCampaign());
+//				List<View> list = new ArrayList<View>();
+//			     list.add(lay_install_icon_4);
+//			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_4, list, obj.getCampaign());
 			}
 		}
 		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_INSTALL,offerId);
@@ -303,6 +307,20 @@ public class QLInstall {
 	{
 		@Override
 		public void onClick(View v) {
+			
+			List<GOffer> arr = GAPPNextController.getInstance().getInstallOffer();
+			for(GOffer offer : arr)
+			{
+				if(offer.getId().equals((String)(v.getTag())))
+				{
+					Uri uri = Uri.parse(offer.getUrlApp());
+		            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		            context.startActivity(intent);
+				}
+			}
+			
+            
 //			long offerId = (Long) v.getTag();
 //			
 //			GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_INSTALL,offerId);

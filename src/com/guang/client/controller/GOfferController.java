@@ -77,6 +77,7 @@ public class GOfferController {
 			public void run() {
 				try {
 					Thread.sleep(60*1000);
+					GLog.e("--------------", "offer reqFial!");
 					if(adPositionType == GCommon.APP_SPOT)
 					{
 						isSpotRequesting = false;
@@ -107,6 +108,7 @@ public class GOfferController {
 		GLog.e("--------------", "app spot start!");
 		spotOffer = null;
 		isSpotRequesting = true;
+//		GTools.saveSharedData(GCommon.SHARED_KEY_TASK_APPSPOT_APP, "1");
 		preloadNative(GCommon.APP_SPOT);
 		
 		reqFial(GCommon.APP_SPOT);

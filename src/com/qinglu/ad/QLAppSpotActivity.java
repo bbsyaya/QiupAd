@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.guang.client.GCommon;
+import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -65,7 +68,7 @@ public class QLAppSpotActivity extends Activity{
 	
 		this.setContentView(layout);
 		
-		obj = GOfferController.getInstance().getSpotOffer();
+		obj = GAPPNextController.getInstance().getSpotOffer();
         String picPath = obj.getImageUrl();
         String iconPath = obj.getIconUrl();
         
@@ -104,10 +107,32 @@ public class QLAppSpotActivity extends Activity{
 						activity.finish();
 					}
 				});
-		        List<View> list = new ArrayList<View>();
-			    list.add(iv_appstartup_pic);
-			    list.add(bt_appstartup_detail);
-			    GOfferController.getInstance().registerView(GCommon.APP_SPOT,iv_appstartup_pic, list, obj.getCampaign());	
+		        
+		        iv_appstartup_pic.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Uri uri = Uri.parse(obj.getUrlApp());
+		                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		                startActivity(intent);
+		                
+		                activity.finish();
+					}
+				});
+				
+				bt_appstartup_detail.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Uri uri = Uri.parse(obj.getUrlApp());
+		                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		                startActivity(intent);
+		                
+		                activity.finish();
+					}
+				});
+//		        List<View> list = new ArrayList<View>();
+//			    list.add(iv_appstartup_pic);
+//			    list.add(bt_appstartup_detail);
+//			    GOfferController.getInstance().registerView(GCommon.APP_SPOT,iv_appstartup_pic, list, obj.getCampaign());	
 			}
 			@Override
 			public void onAnimationStart(Animation animation) {}
@@ -115,6 +140,8 @@ public class QLAppSpotActivity extends Activity{
 			public void onAnimationRepeat(Animation animation) {}
 		});
 		layout.startAnimation(animationSet);
+		
+		
 	}
 	
 	public static void hide()

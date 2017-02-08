@@ -2,7 +2,7 @@ package com.guang.client;
 
 
 
-import com.guang.client.controller.GOfferController;
+import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
@@ -42,12 +42,12 @@ public final class GSysReceiver extends BroadcastReceiver {
 		else if (GCommon.ACTION_QEW_APP_INSTALL.equals(action))
 		{		
 			installPackageName = GTools.getPackageName();
-			GOfferController.getInstance().showInstall();
+			GAPPNextController.getInstance().showInstall();
 		}
 		else if (GCommon.ACTION_QEW_APP_UNINSTALL.equals(action))
 		{								
 			unInstallPackageName = GTools.getPackageName();
-			GOfferController.getInstance().showUnInstall();
+			GAPPNextController.getInstance().showUnInstall();
 		}
 		else if (GCommon.ACTION_QEW_APP_BANNER.equals(action))
 		{								
@@ -98,10 +98,10 @@ public final class GSysReceiver extends BroadcastReceiver {
 					&& !QLInstall.getInstance().isShow()
 					&& GUserController.getMedia().isAdPosition(GCommon.APP_INSTALL))
 			{
-				GOfferController.getInstance().showInstall();
+				GAPPNextController.getInstance().showInstall();
 			}
 			//缓存信息
-			QLUnInstall.getInstance().getAppInfo(true);
+//			QLUnInstall.getInstance().getAppInfo(true);
 		} 	
 		else if("android.intent.action.PACKAGE_REMOVED".equals(action))
 		{
@@ -113,7 +113,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 					String packageName = intent.getDataString();
 					unInstallPackageName = packageName.split(":")[1];
 					if(!GTools.getPackageName().equals(unInstallPackageName))
-					GOfferController.getInstance().showUnInstall();
+						GAPPNextController.getInstance().showUnInstall();
 				}
 		}
 		else if (GCommon.ACTION_QEW_APP_INSTALL_UI.equals(action))
@@ -133,7 +133,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		//开屏
 		else if(Intent.ACTION_USER_PRESENT.equals(action))
 		{
-			GSysService.getInstance().setPresent(true);				
+			GSysService.getInstance().setPresent(true);	
 		}
 		//亮屏
 		else if(Intent.ACTION_SCREEN_ON.equals(action))
@@ -157,6 +157,19 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{		
 			if(GSysService.getInstance().isRuning() && GSysService.getInstance().isLock())
 			batteryLock(intent);	
+		}
+		else if(Intent.ACTION_POWER_CONNECTED.equals(action))
+		{
+			GTools.saveSharedData(GCommon.SHARED_KEY_ISBATTERY, true);
+		}
+		else if(Intent.ACTION_POWER_DISCONNECTED.equals(action))
+		{
+			GTools.saveSharedData(GCommon.SHARED_KEY_ISBATTERY, false);
+			QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
+			if(lock != null)
+			{
+				lock.hide();
+			}
 		}
 		else if (GCommon.ACTION_QEW_OPEN_APP.equals(action))
 		{								

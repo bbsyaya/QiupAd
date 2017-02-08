@@ -15,8 +15,26 @@ public class GOffer {
     private int type = 1;
     private Campaign campaign;
     private long time;
+    private String urlApp;
+    
+	private int picNum;
+
     
     public GOffer(){};
+    public GOffer(String id, String packageName, String appName,
+			String appDesc, String size, String iconUrl, String imageUrl,String urlApp) {
+		super();
+		this.id = id;
+		this.packageName = packageName;
+		this.appName = appName;
+		this.appDesc = appDesc;
+		this.size = size;
+		this.iconUrl = iconUrl;
+		this.imageUrl = imageUrl;
+		this.urlApp = urlApp;
+		this.picNum = 0;
+		this.time = GTools.getCurrTime();
+	}
 	public GOffer(String id, String packageName, String appName,
 			String appDesc, String size, String iconUrl, String imageUrl,
 			int type,Campaign campaign) {
@@ -87,8 +105,22 @@ public class GOffer {
 		this.campaign = campaign;
 	}
 	
+	public String getUrlApp() {
+		return urlApp;
+	}
+	public void setUrlApp(String urlApp) {
+		this.urlApp = urlApp;
+	}
 	public boolean isTimeOut()
 	{
 		return GTools.getCurrTime() - time < 60*60*1000;
 	}
+	public int getPicNum() {
+		return picNum;
+	}
+	public void setPicNum(int picNum) {
+		this.picNum = picNum;
+	}
+	
+	
 }

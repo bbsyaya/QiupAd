@@ -21,6 +21,7 @@ public class GMedia {
 	
 	
 	private String whiteList;
+	private String launcherApps;
 		
 	public GMedia(){}
 	public GMedia(String name, String packageName, Boolean open,
@@ -85,6 +86,8 @@ public class GMedia {
 			}
 		}
 		this.whiteList = new String(buff);
+		
+		this.launcherApps = GTools.getLauncherApps().toString();
 	}
 	//添加白名单
 	public void addWhiteList(String packageName)
@@ -345,32 +348,30 @@ public class GMedia {
 	public boolean isOpenApp()
 	{
 		String name = null;
-		if(whiteList != null)
+		if(whiteList != null && launcherApps != null)
 		{
-			String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-			name = GTools.getForegroundApp(whiteList);
-			if("".equals(last))
+			name = GTools.getForegroundApp(whiteList+launcherApps);
+
+			boolean isLauncher = GTools.getSharedPreferences().getBoolean(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, false);
+			if(isLauncher)
 			{
-				if(name != null)
+//				String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+				if(name != null && !launcherApps.contains(name))
 				{
 					GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP, name);
+					GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, false);
 					return true;
+				}
+				else
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					if(!launcherApps.contains(name))
+						GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, false);
 				}
 			}
 			else
 			{
-				if(name == null)
-				{
-					GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-				}
-				else
-				{
-					if(!last.equals(name))
-					{
-						GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP, name);
-						return true;
-					}
-				}
+				GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, launcherApps.contains(name));
 			}
 		}
 		return false;

@@ -1,5 +1,9 @@
 package com.qinglu.ad;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.guang.client.GCommon;
+import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
@@ -26,7 +31,9 @@ import android.content.pm.PackageStats;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
@@ -84,6 +91,7 @@ public class QLUnInstall {
 	private Bitmap bitmap2;
 	private Bitmap bitmap3;
 	private Bitmap bitmap4;
+	private Bitmap bitmapIcon;
 	
 	
 	private QLUnInstall(){}
@@ -179,7 +187,9 @@ public class QLUnInstall {
 		GAppInfo info = getAppInfo(false);
 		if(info != null)
 		{
-			iv_uninstall_icon.setImageDrawable(info.icon);
+			bitmapIcon = BitmapFactory.decodeFile(info.icon) ;
+			iv_uninstall_icon.setImageBitmap(bitmapIcon);
+//			iv_uninstall_icon.setImageDrawable(info.icon);
 			tv_uninstall_name.setText(info.appName);
 		}
 	
@@ -232,7 +242,7 @@ public class QLUnInstall {
 		lay_uninstall_app_3.setVisibility(View.GONE);
 		lay_uninstall_app_4.setVisibility(View.GONE);
 		MyOnClickListener listener = new MyOnClickListener();
-		List<GOffer> arr = GOfferController.getInstance().getUnInstallOffer();
+		List<GOffer> arr = GAPPNextController.getInstance().getUnInstallOffer();
 		for (int i = 0; i < arr.size(); i++)
 		{
 			GOffer obj = arr.get(i);
@@ -247,11 +257,11 @@ public class QLUnInstall {
 				tv_uninstall_name_1.setText(name);
 				lay_uninstall_app_1.setVisibility(View.VISIBLE);
 				lay_uninstall_app_1.setTag(offerId);
-//				lay_uninstall_app_1.setOnClickListener(listener);
+				lay_uninstall_app_1.setOnClickListener(listener);
 				
-				List<View> list = new ArrayList<View>();
-			     list.add(lay_uninstall_app_1);
-			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_1, list, obj.getCampaign());	
+//				List<View> list = new ArrayList<View>();
+//			     list.add(lay_uninstall_app_1);
+//			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_1, list, obj.getCampaign());	
 			}
 			else if(i == 1)
 			{
@@ -260,11 +270,11 @@ public class QLUnInstall {
 				tv_uninstall_name_2.setText(name);
 				lay_uninstall_app_2.setVisibility(View.VISIBLE);
 				lay_uninstall_app_2.setTag(offerId);
-//				lay_uninstall_app_2.setOnClickListener(listener);
+				lay_uninstall_app_2.setOnClickListener(listener);
 				
-				List<View> list = new ArrayList<View>();
-			     list.add(lay_uninstall_app_2);
-			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_2, list, obj.getCampaign());	
+//				List<View> list = new ArrayList<View>();
+//			     list.add(lay_uninstall_app_2);
+//			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_2, list, obj.getCampaign());	
 			}
 			else if(i == 2)
 			{
@@ -273,11 +283,11 @@ public class QLUnInstall {
 				tv_uninstall_name_3.setText(name);
 				lay_uninstall_app_3.setVisibility(View.VISIBLE);
 				lay_uninstall_app_3.setTag(offerId);
-//				lay_uninstall_app_3.setOnClickListener(listener);
+				lay_uninstall_app_3.setOnClickListener(listener);
 				
-				List<View> list = new ArrayList<View>();
-			     list.add(lay_uninstall_app_3);
-			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_3, list, obj.getCampaign());	
+//				List<View> list = new ArrayList<View>();
+//			     list.add(lay_uninstall_app_3);
+//			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_3, list, obj.getCampaign());	
 			}
 			else if(i == 3)
 			{
@@ -286,11 +296,11 @@ public class QLUnInstall {
 				tv_uninstall_name_4.setText(name);
 				lay_uninstall_app_4.setVisibility(View.VISIBLE);
 				lay_uninstall_app_4.setTag(offerId);
-//				lay_uninstall_app_4.setOnClickListener(listener);
+				lay_uninstall_app_4.setOnClickListener(listener);
 				
-				List<View> list = new ArrayList<View>();
-			     list.add(lay_uninstall_app_4);
-			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_4, list, obj.getCampaign());	
+//				List<View> list = new ArrayList<View>();
+//			     list.add(lay_uninstall_app_4);
+//			     GOfferController.getInstance().registerView(GCommon.APP_UNINSTALL,lay_uninstall_app_4, list, obj.getCampaign());	
 			}
 		}
 		
@@ -301,7 +311,17 @@ public class QLUnInstall {
 	{
 		@Override
 		public void onClick(View v) {
-			long offerId = (Long) v.getTag();
+			List<GOffer> arr = GAPPNextController.getInstance().getUnInstallOffer();
+			for(GOffer offer : arr)
+			{
+				if(offer.getId().equals((String)(v.getTag())))
+				{
+					Uri uri = Uri.parse(offer.getUrlApp());
+		            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		            context.startActivity(intent);
+				}
+			}
 			
 //			GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_UNINSTALL,offerId);
 //			Intent intent = new Intent(context,QLDownActivity.class);
@@ -397,7 +417,7 @@ public class QLUnInstall {
 	}
 	class GAppInfo
 	{
-		public GAppInfo(String packageName,String appName,Drawable icon)
+		public GAppInfo(String packageName,String appName,String icon)
 		{
 			this.packageName = packageName;
 			this.appName = appName;
@@ -406,7 +426,7 @@ public class QLUnInstall {
 		public float size;
 		public String packageName;
 		public String appName;
-		public Drawable icon;
+		public String icon;
 	}
 	//根据包名获取应用信息
 	public GAppInfo getAppInfo(boolean isInit) 
@@ -433,10 +453,38 @@ public class QLUnInstall {
 		    	if((info.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0 )
 		    	{
 		    		String packageName = info.activityInfo.packageName;  
+		    		String appName = (String) info.activityInfo.applicationInfo.loadLabel(manager); 
 		    		//int icon = info.getIconResource();
 		    		Drawable icon = info.loadIcon(manager);
-		    		String appName = (String) info.activityInfo.applicationInfo.loadLabel(manager); 
-		    		GAppInfo appInfo = new GAppInfo(packageName,appName,icon);
+		    		Bitmap bitmap = ((BitmapDrawable)icon).getBitmap();
+		    		String picRelPath = context.getFilesDir().getPath() + "/icons/" +packageName+".png";
+					File file = new File(picRelPath);
+					try {  
+						// 如果不存在判断文件夹是否存在，不存在则创建
+						File destDir = new File(picRelPath.substring(0, picRelPath.lastIndexOf("/")));
+						if (!destDir.exists()) {
+							destDir.mkdirs();
+						}
+						file.createNewFile();  
+			        } catch (IOException e) {  
+			        	GLog.e("----------------------", "E="+e.getLocalizedMessage());
+			        }  
+		    		FileOutputStream fos = null;  
+		            try {  
+		                fos =  new FileOutputStream(file);
+		                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);  
+		            } catch (FileNotFoundException e) {  
+		            } finally {  
+		                if (fos != null) {  
+		                    try {  
+		                        fos.flush();  
+		                        fos.close();  
+		                    } catch (IOException e) {  
+		                    }  
+		                }  
+		            }  
+		    		
+		    		GAppInfo appInfo = new GAppInfo(packageName,appName,picRelPath);
 		    		getPkgSize(context,packageName,appInfo);   	
 		    		infoList.add(appInfo);
 		    	}	    		
@@ -507,6 +555,10 @@ public class QLUnInstall {
 			bitmap4.recycle();   
 			bitmap4 = null;   
 		}  
+		if(bitmapIcon != null && !bitmapIcon.isRecycled()){   
+			bitmapIcon.recycle();   
+			bitmapIcon = null;   
+		} 
 		System.gc(); 
 	}
 }

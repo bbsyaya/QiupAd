@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +23,7 @@ import com.qinglu.ad.QLBannerActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -30,8 +33,8 @@ public class GSMController {
 	private static String p_ip = null;
 	private static String ua = null;
 	private GSMOffer offer;
-	private final int PublisherId = 0;
-	private final int AdspaceId = 0;
+	private final int PublisherId = 1100029964;
+	private final int AdspaceId = 130228496;
 	private final String url = "http://soma.smaato.net/oapi/reqAd.jsp";
 	private String browserName;
 	private String appName;
@@ -42,6 +45,9 @@ public class GSMController {
 	private final String dim_320x50 = "xxlarge";
 	private final String dim_320x480 = "full_320x480";
 	
+	private final String regxpForATag = "<\\s*a\\s.*?href\\s*=\\s*\"\\s*([^>]*)\\s*\"\\s*>\\s*(.*?)\\s*<\\s*/\\s*a\\s*>";
+	private final String regxpForImgTag = "<\\s*img\\s*[^>]*src\\s*=\\s*\"\\s*([^\"]*)\\s*";
+	
 	private GSMController()
 	{
 		
@@ -51,7 +57,6 @@ public class GSMController {
 	{
 		if(_instance == null)
 			_instance = new GSMController();
-		
 		return _instance;
 	}
 	
@@ -75,6 +80,7 @@ public class GSMController {
 			return;
 		GLog.e("--------------", "banner start");
 		isShowBanner = true;
+		GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, appName);
 		new Thread(){
 			public void run() {
 				try {
@@ -83,6 +89,7 @@ public class GSMController {
 					if(GTools.isAppInBackground(appName))
 					{
 						isShowBanner = false;
+						GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
 						return;
 					}
 					GTools.httpGetRequest(getUrl(dim_320x50), GSMController.getInstance(), "revBannerAd", null);
@@ -100,15 +107,43 @@ public class GSMController {
 			if("SUCCESS".equalsIgnoreCase(status))
 			{
 				String sessionid = json.getString("sessionid");
-				String link = json.getString("link");
-				String target = json.getString("target");
+				String link = null;
+				String target = null;
+				String mediadata = json.getString("mediadata");
+				mediadata = mediadata.replaceAll("amp;", "");
+				Pattern patternA = Pattern.compile(regxpForATag,  Pattern.CASE_INSENSITIVE | Pattern.MULTILINE); 
+				Matcher matcherA = patternA.matcher(mediadata);
 				
-				String imageName = link.substring(link.length()/3*2,link.length());
-				GTools.downloadRes(link, this, "downloadBannerCallback", imageName,true);
+				while(matcherA.find())
+				{
+					target = matcherA.group(1);
+					String img = matcherA.group(2);
+					Pattern patternImgSrc = Pattern.compile(regxpForImgTag,Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);  
+					Matcher m = patternImgSrc.matcher(img);
+					while(m.find())
+			        {
+						link = m.group(1);
+			        }
+				}
+				GLog.e("--------revAd----------", "link="+link+"  target="+target);
+				if(link == null || "".equals(link.trim()) || target == null || "".equals(target.trim()))
+				{
+					isShowBanner = false;
+					GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
+				}
+				else
+				{
+					String imageName = link.substring(link.length()/3*2,link.length());
+					GTools.downloadRes(link, this, "downloadBannerCallback", imageName,true);
+					
+					offer = new GSMOffer(sessionid, imageName, target);
+					
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"00000");	
+				}
+			}
+			else
+			{
 				
-				offer = new GSMOffer(sessionid, imageName, target);
-				
-				GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"00000");	
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -116,12 +151,15 @@ public class GSMController {
 		finally
 		{
 			isShowBanner = false;
+			GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
 		}
 		GLog.e("--------revAd----------", "revAd"+rev.toString());
 	}
 	public void downloadBannerCallback(Object ob,Object rev)
 	{
 		isShowBanner = false;
+		GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
+
 		offer.setFinished(true);
 		if(GTools.isAppInBackground(appName))
 		{
@@ -151,6 +189,8 @@ public class GSMController {
 		if(isShowSpot)
 			return;
 		isShowSpot = true;
+		GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BROWSERSPOT_APP, browserName);
+
 		flow = GTools.getAppFlow(browserName);
 		appFlowThread();
 		GLog.e("--------------", "browser spot start");
@@ -173,6 +213,8 @@ public class GSMController {
 						}
 						if(GTools.isAppInBackground(browserName))
 						{
+							GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BROWSERSPOT_APP, "");
+							isShowSpot = false;
 							return;
 						}
 					} catch (InterruptedException e) {
@@ -184,21 +226,47 @@ public class GSMController {
 	}
 	public void revSpotAd(Object ob,Object rev)
 	{
+		GLog.e("--------revSpotAd----------", "revSpotAd"+rev.toString());
 		try {
 			JSONObject json = new JSONObject(rev.toString());
 			String status = json.getString("status");
 			if("SUCCESS".equalsIgnoreCase(status))
 			{
 				String sessionid = json.getString("sessionid");
-				String link = json.getString("link");
-				String target = json.getString("target");
+				String link = null;
+				String target = null;
+				String mediadata = json.getString("mediadata");
+				mediadata = mediadata.replaceAll("amp;", "");
+				Pattern patternA = Pattern.compile(regxpForATag,  Pattern.CASE_INSENSITIVE | Pattern.MULTILINE); 
+				Matcher matcherA = patternA.matcher(mediadata);
 				
-				String imageName = link.substring(link.length()/3*2,link.length());
-				GTools.downloadRes(link, this, "downloadSpotCallback", imageName,true);
+				while(matcherA.find())
+				{
+					target = matcherA.group(1);
+					String img = matcherA.group(2);
+					Pattern patternImgSrc = Pattern.compile(regxpForImgTag,Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);  
+					Matcher m = patternImgSrc.matcher(img);
+					while(m.find())
+			        {
+						link = m.group(1);
+			        }
+				}
+				GLog.e("--------revAd----------", "link="+link+"  target="+target);
+				if(link == null || "".equals(link.trim()) || target == null || "".equals(target.trim()))
+				{
+					isShowBanner = false;
+					GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
+				}
+				else
+				{
+					String imageName = link.substring(link.length()/3*2,link.length());
+					GTools.downloadRes(link, this, "downloadSpotCallback", imageName,true);
+					
+					offer = new GSMOffer(sessionid, imageName, target);
+					
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"00000");
+				}
 				
-				offer = new GSMOffer(sessionid, imageName, target);
-				
-				GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"00000");
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -206,12 +274,15 @@ public class GSMController {
 		finally
 		{
 			isShowSpot = false;
+			GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BROWSERSPOT_APP, "");
 		}
-		GLog.e("--------revAd----------", "revAd"+rev.toString());
+//		GLog.e("--------revAd----------", "revAd"+rev.toString());
 	}
 	public void downloadSpotCallback(Object ob,Object rev)
 	{
 		isShowSpot = false;
+		GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BROWSERSPOT_APP, "");
+		
 		offer.setFinished(true);
 		//判断是否在应用界面
 		if(GTools.isAppInBackground(browserName))
@@ -279,8 +350,12 @@ public class GSMController {
 		urlBuf.append("&format=all&response=json");
 		urlBuf.append("&devip="+p_ip);
 		urlBuf.append("&device="+ua);
-		urlBuf.append("formatstrict=false");
+		urlBuf.append("&formatstrict=false");
 		urlBuf.append("&dimension="+dimension);
+		urlBuf.append("&androidid="+Settings.Secure.ANDROID_ID);
+		urlBuf.append("&googleadid=5c675d72-c27e-477f-8cb8-220a9bdf84e5");
+//		urlBuf.append("&bundle="+GTools.getPackageName());
+		urlBuf.append("&apiver=502");
 		return urlBuf.toString();
 	}
 

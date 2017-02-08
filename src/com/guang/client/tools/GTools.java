@@ -600,6 +600,23 @@ public class GTools {
     	return obj;
     }
     
+    public static List<String> getLauncherApps()
+    {
+    	// 桌面应用的启动在INTENT中需要包含ACTION_MAIN 和CATEGORY_HOME.
+    	Context context = QLAdController.getInstance().getContext();
+    	List<String> names = new ArrayList<String>();  
+        PackageManager packageManager = context.getPackageManager();  
+        //属性  
+        Intent intent = new Intent(Intent.ACTION_MAIN);  
+        intent.addCategory(Intent.CATEGORY_HOME);  
+        List<ResolveInfo> resolveInfo = packageManager.queryIntentActivities(intent,  
+                PackageManager.MATCH_DEFAULT_ONLY);  
+        for(ResolveInfo ri : resolveInfo){  
+            names.add(ri.activityInfo.packageName);  
+        }  
+        return names;
+    }
+    
     public static long getCanUseMemory() {  
         String state = Environment.getExternalStorageState(); 
         long use = 0;
@@ -642,10 +659,11 @@ public class GTools {
 	    	while((result=br.readLine()) != null)
 	    	{
 	    		result = result.trim();
+	    		
 	    		String[] arr = result.split("[\\s]+");
 	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
 	    				&& apps.contains(arr[9]))
-	    		{
+	    		{	   
 	    			num++;
 	    			String pidf = "/proc/"+arr[0]+"/oom_score";
 	    			String pids = readPidFile(pidf);
@@ -658,7 +676,7 @@ public class GTools {
 	    					break;
 	    				}
 	    			}
-	    			if(num>20)
+	    			if(num>10)
 	    			{
 	    				break;
 	    			}
@@ -667,8 +685,7 @@ public class GTools {
 	    	}
 	    	br.close();
 		} catch (Exception e) {
-		}			
-		
+		}		
         return packageName;
     }
     //获取应用流量

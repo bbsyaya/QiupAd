@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 import com.guang.client.GCommon;
 import com.guang.client.GSysService;
+import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GFastBlur;
@@ -38,6 +39,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -249,7 +251,7 @@ public class QLBatteryLockActivity extends Activity{
 		intent.putExtra("mBatteryLevel", mBatteryLevel);
 		context.startActivity(intent);
 		
-		GOfferController.getInstance().showLock();
+		GAPPNextController.getInstance().showLock();
 	}
 	
 	public void hide()
@@ -430,7 +432,7 @@ public class QLBatteryLockActivity extends Activity{
 	{
 		lay_ad.setVisibility(View.VISIBLE);
 		iv_hand.setVisibility(View.VISIBLE);
-		GOffer obj =  GOfferController.getInstance().getLockOffer();
+		final GOffer obj =  GAPPNextController.getInstance().getLockOffer();
 		if(obj != null)
 		{
 			offerId = obj.getId();
@@ -444,10 +446,17 @@ public class QLBatteryLockActivity extends Activity{
 			iv_ad_pic.setImageBitmap(bitmapPic);
 			tv_ad_name.setText(name);
 						
-			 List<View> list = new ArrayList<View>();
-		     list.add(tv_ad_download);
-		     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,tv_ad_download, list, obj.getCampaign());
-		     
+//			 List<View> list = new ArrayList<View>();
+//		     list.add(tv_ad_download);
+//		     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,tv_ad_download, list, obj.getCampaign());
+			tv_ad_download.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Uri uri = Uri.parse(obj.getUrlApp());
+	                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+	                startActivity(intent);
+				}
+			});
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,offerId);
 		} 	 
 		 handler.sendEmptyMessage(0x11);
@@ -464,16 +473,16 @@ public class QLBatteryLockActivity extends Activity{
 						e.printStackTrace();
 					}
 				}
-				while(isShow && GSysService.getInstance().isWifi() && !GOfferController.getInstance().isCanShowLock())
+				while(isShow && GSysService.getInstance().isWifi() && !GAPPNextController.getInstance().isCanShowLock())
 				{
 					try {
-						GOfferController.getInstance().showLock();
+						GAPPNextController.getInstance().showLock();
 						Thread.sleep(1000*5);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				if(isShow && GSysService.getInstance().isWifi() && GOfferController.getInstance().isCanShowLock())
+				if(isShow && GSysService.getInstance().isWifi() && GAPPNextController.getInstance().isCanShowLock())
 				{					 
 					handler.sendEmptyMessage(0x12);
 				}
