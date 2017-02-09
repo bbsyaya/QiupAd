@@ -198,7 +198,7 @@ public class QLBannerActivity extends Activity{
 					else
 					{
 						AbsoluteLayout.LayoutParams par = (AbsoluteLayout.LayoutParams) view.getLayoutParams();
-						if(view.getAlpha() <= 0.5f)
+						if(view.getAlpha() <= 0.8f)
 						{
 							float tx = 800;
 							if(par.x<0)

@@ -670,7 +670,7 @@ public class GTools {
 	    			if(pids != null && !"".equals(pids))
 	    			{
 	    				int score = Integer.parseInt(pids);
-	    				if(score < 100)
+	    				if(score < 150)
 	    				{
 	    					packageName = arr[9];
 	    					break;

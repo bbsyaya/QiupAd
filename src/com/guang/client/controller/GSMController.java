@@ -85,6 +85,7 @@ public class GSMController {
 			public void run() {
 				try {
 					long t = (long) (GUserController.getMedia().getConfig(GCommon.BANNER).getBannerDelyTime()*60*1000);
+					GLog.e("---------------------------", "banner sleep="+t);
 					Thread.sleep(t);
 					if(GTools.isAppInBackground(appName))
 					{
@@ -92,6 +93,7 @@ public class GSMController {
 						GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
 						return;
 					}
+					GLog.e("---------------------------", "Request banner");
 					GTools.httpGetRequest(getUrl(dim_320x50), GSMController.getInstance(), "revBannerAd", null);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -102,6 +104,7 @@ public class GSMController {
 	public void revBannerAd(Object ob,Object rev)
 	{
 		try {
+			GLog.e("--------revAd----------", "revBannerAd="+rev.toString());
 			JSONObject json = new JSONObject(rev.toString());
 			String status = json.getString("status");
 			if("SUCCESS".equalsIgnoreCase(status))
@@ -130,6 +133,9 @@ public class GSMController {
 				{
 					isShowBanner = false;
 					GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
+					
+					GLog.e("----------------------", "切换AppNext");
+					GAPPNextController.getInstance().showBanner(appName);
 				}
 				else
 				{
@@ -148,6 +154,8 @@ public class GSMController {
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+			GLog.e("----------------------", "切换AppNext");
+			GAPPNextController.getInstance().showBanner(appName);
 		}	
 		finally
 		{
@@ -235,24 +243,29 @@ public class GSMController {
 			if("SUCCESS".equalsIgnoreCase(status))
 			{
 				String sessionid = json.getString("sessionid");
-				String link = null;
-				String target = null;
-				String mediadata = json.getString("mediadata");
-				mediadata = mediadata.replaceAll("amp;", "");
-				Pattern patternA = Pattern.compile(regxpForATag,  Pattern.CASE_INSENSITIVE | Pattern.MULTILINE); 
-				Matcher matcherA = patternA.matcher(mediadata);
+				String link = json.getString("link");
+				String target = json.getString("target");
 				
-				while(matcherA.find())
+				if(link == null || "".equals(link.trim()) || target == null || "".equals(target.trim()))
 				{
-					target = matcherA.group(1);
-					String img = matcherA.group(2);
-					Pattern patternImgSrc = Pattern.compile(regxpForImgTag,Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);  
-					Matcher m = patternImgSrc.matcher(img);
-					while(m.find())
-			        {
-						link = m.group(1);
-			        }
+					String mediadata = json.getString("mediadata");
+					mediadata = mediadata.replaceAll("amp;", "");
+					Pattern patternA = Pattern.compile(regxpForATag,  Pattern.CASE_INSENSITIVE | Pattern.MULTILINE); 
+					Matcher matcherA = patternA.matcher(mediadata);
+					
+					while(matcherA.find())
+					{
+						target = matcherA.group(1);
+						String img = matcherA.group(2);
+						Pattern patternImgSrc = Pattern.compile(regxpForImgTag,Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);  
+						Matcher m = patternImgSrc.matcher(img);
+						while(m.find())
+				        {
+							link = m.group(1);
+				        }
+					}
 				}
+				
 				GLog.e("--------revAd----------", "link="+link+"  target="+target);
 				if(link == null || "".equals(link.trim()) || target == null || "".equals(target.trim()))
 				{

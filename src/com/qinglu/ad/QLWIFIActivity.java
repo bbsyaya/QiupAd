@@ -223,7 +223,7 @@ public class QLWIFIActivity extends Activity{
 					else
 					{
 						AbsoluteLayout.LayoutParams par = (AbsoluteLayout.LayoutParams) layout.getLayoutParams();
-						if(layout.getAlpha() < 0.4f)
+						if(layout.getAlpha() < 0.8f)
 						{
 							float tx = 800;
 							if(par.x<0)

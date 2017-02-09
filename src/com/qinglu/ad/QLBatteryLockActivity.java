@@ -568,7 +568,7 @@ public class QLBatteryLockActivity extends Activity{
 				{
 					this.dis2 = (int) (event.getRawX() - moveDisX);
 					int dis2 = (int) Math.abs(event.getRawX() - moveDisX);
-					if(dis2<width/3*2)
+					if(dis2<width/3)
 						animateThread3();
 					else
 					{

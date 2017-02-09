@@ -51,6 +51,7 @@ public class GAPPNextController {
 	private boolean isBannerRequesting = false;
 	
 	private String bannerAppName;
+	private String appName;
 	
 	private GAPPNextController()
 	{
@@ -67,8 +68,9 @@ public class GAPPNextController {
 	}
 	
 	//显示应用插屏
-	public void showAppSpot()
+	public void showAppSpot(String appName)
 	{
+		this.appName = appName;
 		if(isSpotRequesting)
 			return;
 		GLog.e("--------------", "app spot start!");
@@ -123,6 +125,10 @@ public class GAPPNextController {
 		if(spotOffer.getPicNum()==2)
 		{
 			QLAppSpotActivity.getInstance().hide();
+			if(GTools.isAppInBackground(appName))
+			{
+				return;
+			}
 			Context context = QLAdController.getInstance().getContext();
 			Intent intent = new Intent(context, QLAppSpotActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -177,17 +183,19 @@ public class GAPPNextController {
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-		}	
-		finally
-		{
 			isLockRequesting = false;
-		}
+		}	
 		GLog.e("--------revAd----------", "revAd"+rev.toString());
 	}
 	public void downloadLockCallback(Object ob,Object rev)
 	{
 		if(lockOffer!=null)
-		lockOffer.setPicNum(lockOffer.getPicNum()+1);
+		{
+			lockOffer.setPicNum(lockOffer.getPicNum()+1);
+			if(lockOffer.getPicNum() == 2)
+				isLockRequesting = false;
+		}
+		
 	}
 	public boolean isCanShowLock()
 	{

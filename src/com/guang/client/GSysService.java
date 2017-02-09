@@ -40,13 +40,11 @@ public class GSysService  {
 	private static GSysReceiver receiver;
 	private boolean isPresent;
 	private boolean isRuning;
-	private boolean isLock;
 	
 	private GSysService()
 	{
 		isPresent = false;
 		isRuning = false;
-		isLock = false;
 	}
 	
 	public static GSysService getInstance()
@@ -86,7 +84,7 @@ public class GSysService  {
 						if(open)
 							Thread.sleep(10000);
 						else
-							Thread.sleep(3000);
+							Thread.sleep(2200);
 						if(isPresent && GUserController.getMedia().getOpen())
 						{
 							open = GUserController.getMedia().isOpenApp();
@@ -164,7 +162,7 @@ public class GSysService  {
 			String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
 			if(s != null  && GUserController.getMedia().isWhiteList(GCommon.APP_SPOT, s))
 			{
-				appSpot();
+				appSpot(s);
 				return true;
 			}			
 		}	
@@ -219,15 +217,14 @@ public class GSysService  {
 	//充电锁
 	public void startLockThread(int mBatteryLevel)
 	{
-		if(		
-				isWifi()
+		if(		isRuning()
+				&& isWifi()
 				&& GUserController.getMedia().isAdPosition(GCommon.CHARGLOCK)
 				&& isOpenLock()
-				&& !QLBatteryLockActivity.isShow()
-				&& QLBatteryLockActivity.isFirst())
+				&& !QLBatteryLockActivity.isShow())
 		{
 			QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
-			if(lock == null)
+			if(lock == null && GTools.getSharedPreferences().getBoolean(GCommon.SHARED_KEY_ISBATTERY, false))
 			{
 				QLBatteryLockActivity.show(mBatteryLevel);
 			}
@@ -235,15 +232,13 @@ public class GSysService  {
 	}
 	
 	//应用启动
-	public void appSpot()
+	public void appSpot(String appNmae)
 	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME,GTools.getCurrTime());
-		GAPPNextController.getInstance().showAppSpot();
+		GAPPNextController.getInstance().showAppSpot(appNmae);
 	}
 	//banner
 	public void banner(String appNmae)
 	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME,GTools.getCurrTime());			
 		GSMController.getInstance().showBanner(appNmae);
 	}
 	//shortcut
@@ -258,7 +253,6 @@ public class GSysService  {
 	//浏览器插屏
 	public void browserSpot(String packageName)
 	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, GTools.getCurrTime());
 		GSMController.getInstance().showSpot(packageName);
 	}
 	//浏览器截取
@@ -294,7 +288,6 @@ public class GSysService  {
 	public boolean wifiThread()
 	{
 		if(		isPresent 
-				&& isWifi()
 				&& GUserController.getMedia().isAdPosition(GCommon.WIFI_CONN)
 				&& GUserController.getMedia().isShowNum(GCommon.WIFI_CONN)
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.WIFI_CONN)
@@ -334,16 +327,19 @@ public class GSysService  {
 		intent.putExtra("state", (state ? 1 : 0));
 		context.startActivity(intent);	
 		
-		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, num+1);
-		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, GTools.getCurrTime());
+		if(state)
+		{
+			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, num+1);
+			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, GTools.getCurrTime());
+		}
+		
 	}
 	
 	private void initData()
 	{
 		isPresent = true;
 		isRuning = true;
-		isLock = false;
 		GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, 0l);
 		GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, false);
 		if(!isMainLoop())
@@ -532,13 +528,6 @@ public class GSysService  {
 		this.isRuning = isRuning;
 	}
 
-	public boolean isLock() {
-		return isLock;
-	}
-
-	public void setLock(boolean isLock) {
-		this.isLock = isLock;
-	}
-
+	
    
 }

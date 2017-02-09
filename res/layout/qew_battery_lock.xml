@@ -350,7 +350,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
                         android:background="@drawable/qew_lock_button_download"
-                        android:text="Download"
+                        android:text="Detail"
                         android:textColor="#ffffff"
                         android:textSize="14sp" />
                 </LinearLayout>
