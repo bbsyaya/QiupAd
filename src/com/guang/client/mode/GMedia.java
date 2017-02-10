@@ -17,7 +17,7 @@ public class GMedia {
 	private Boolean open;//是否开启
 	private String adPosition;
 	private List<GAdPositionConfig> configs;
-	
+	private float loopTime;
 	
 	
 	private String whiteList;
@@ -25,13 +25,14 @@ public class GMedia {
 		
 	public GMedia(){}
 	public GMedia(String name, String packageName, Boolean open,
-			String adPosition, List<GAdPositionConfig> configs) {
+			String adPosition, List<GAdPositionConfig> configs,float loopTime) {
 		super();
 		this.name = name;
 		this.packageName = packageName;
 		this.open = open;
 		this.adPosition = adPosition;
 		this.configs = configs;
+		this.loopTime = loopTime;
 	}
 	public String getName() {
 		return name;
@@ -62,6 +63,13 @@ public class GMedia {
 	}
 	public void setConfigs(List<GAdPositionConfig> configs) {
 		this.configs = configs;
+	}
+	
+	public float getLoopTime() {
+		return loopTime;
+	}
+	public void setLoopTime(float loopTime) {
+		this.loopTime = loopTime;
 	}
 	//初始化白名单
 	public void initWhiteList()

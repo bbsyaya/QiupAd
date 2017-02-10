@@ -23,6 +23,7 @@ import com.guang.client.tools.GFastBlur;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.view.GCircleProgressView;
+import com.umeng.analytics.MobclickAgent;
 
 import android.R;
 import android.annotation.SuppressLint;
@@ -109,6 +110,7 @@ public class QLBatteryLockActivity extends Activity{
 	{
 		return _instance;
 	}
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) {
@@ -411,7 +413,11 @@ public class QLBatteryLockActivity extends Activity{
 		 lay_ad.setVisibility(View.GONE);
 		 updateWifi();
 	}
-	
+
+	public void onPause() {
+	    super.onPause();
+	    MobclickAgent.onPause(this);
+	}
 	@Override
 	protected void onResume() {
 		new Thread(){
@@ -425,6 +431,7 @@ public class QLBatteryLockActivity extends Activity{
 				}
 			 };
 		 }.start();
+		 MobclickAgent.onResume(this);  
 		super.onResume();
 	}
 	

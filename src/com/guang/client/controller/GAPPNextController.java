@@ -1,17 +1,8 @@
 package com.guang.client.controller;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,19 +10,15 @@ import org.json.JSONObject;
 
 import com.guang.client.GCommon;
 import com.guang.client.mode.GOffer;
-import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLAppSpotActivity;
-import com.qinglu.ad.QLBrowserSpotActivity;
 import com.qinglu.ad.QLBannerActivity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
+
 
 public class GAPPNextController {
 

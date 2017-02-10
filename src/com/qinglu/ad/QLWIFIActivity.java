@@ -8,6 +8,7 @@ import com.guang.client.controller.GOfferController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
+import com.umeng.analytics.MobclickAgent;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -54,6 +55,16 @@ public class QLWIFIActivity extends Activity{
 	private int state;
 	private Object tag1 = new Object();
 	private Object tag2 = new Object();
+	
+	public void onResume() {
+	    super.onResume();
+	    MobclickAgent.onResume(this);       //统计时长
+	}
+	public void onPause() {
+	    super.onPause();
+	    MobclickAgent.onPause(this);
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub

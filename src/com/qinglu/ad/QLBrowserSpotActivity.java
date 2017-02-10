@@ -1,9 +1,11 @@
 package com.qinglu.ad;
 
 import com.guang.client.GCommon;
+import com.guang.client.controller.GOnewayController;
 import com.guang.client.controller.GSMController;
 import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GTools;
+import com.umeng.analytics.MobclickAgent;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -27,6 +29,15 @@ public class QLBrowserSpotActivity extends Activity{
 	private QLBrowserSpotActivity activity;
 	private RelativeLayout layout;
 	private Bitmap bitmap;
+	
+	public void onResume() {
+	    super.onResume();
+	    MobclickAgent.onResume(this);       //统计时长
+	}
+	public void onPause() {
+	    super.onPause();
+	    MobclickAgent.onPause(this);
+	}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
@@ -54,7 +65,16 @@ public class QLBrowserSpotActivity extends Activity{
 		layout.setLayoutParams(layoutParams);
 		this.setContentView(layout);
 		
-		GSMOffer obj = GSMController.getInstance().getOffer();
+		GSMOffer obj = null;
+		boolean type = getIntent().getBooleanExtra("type", false);
+		if(type)
+		{
+			obj = GOnewayController.getInstance().getSpotOffer();
+		}
+		else
+		{
+			obj = GSMController.getInstance().getOffer();
+		}
         String picPath = obj.getLink();
         final String target = obj.getTarget();
         

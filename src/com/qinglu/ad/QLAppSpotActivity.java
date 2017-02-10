@@ -8,6 +8,7 @@ import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
+import com.umeng.analytics.MobclickAgent;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -39,6 +40,16 @@ public class QLAppSpotActivity extends Activity{
 	private GOffer obj;
 	private Bitmap bitmapPic;
 	private Bitmap bitmapIcon;
+	
+	public void onResume() {
+	    super.onResume();
+	    MobclickAgent.onResume(this);       //统计时长
+	}
+	public void onPause() {
+	    super.onPause();
+	    MobclickAgent.onPause(this);
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub

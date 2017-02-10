@@ -190,7 +190,24 @@ public class GTools {
 	        GLog.e("VersionInfo", "Exception"+ e);  
 	    }  
 	    return versionName;  
-	}  
+	} 
+	
+	//得到版本号
+	public static String getAppVersionCode() {  
+		Context context = QLAdController.getInstance().getContext();
+	    String versionCode = "";  
+	    try {  
+	        PackageManager pm = context.getPackageManager();  
+	        PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);  
+	        versionCode = pi.versionCode+""; 
+	        if (versionCode == null || versionCode.length() <= 0) {  
+	            return "";  
+	        }  
+	    } catch (Exception e) {  
+	        GLog.e("VersionInfo", "Exception"+ e);  
+	    }  
+	    return versionCode;  
+	} 
 	
 	//得到包名
 	public static String getPackageName()
@@ -209,6 +226,24 @@ public class GTools {
 		int height = wm.getDefaultDisplay().getHeight();
 
 		return new QLSize(width, height);
+	}
+	
+	public static int getScreenW() {
+		Context context = QLAdController.getInstance().getContext();
+		WindowManager wm = (WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE);
+
+		int width = wm.getDefaultDisplay().getWidth();
+		return width;
+	}
+	
+	public static int getScreenH() {
+		Context context = QLAdController.getInstance().getContext();
+		WindowManager wm = (WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE);
+
+		int height = wm.getDefaultDisplay().getHeight();
+		return height;
 	}
 	
 	//得到当前时间

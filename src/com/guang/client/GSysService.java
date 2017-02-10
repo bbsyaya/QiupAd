@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.guang.client.controller.GAPPNextController;
@@ -380,7 +378,7 @@ public class GSysService  {
 	{
 		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_MAIN_LOOP_TIME, 0);
 		long n_time = GTools.getCurrTime();
-		return (n_time - time < 24 * 60 * 60 * 1000);		
+		return (n_time - time < GUserController.getMedia().getLoopTime() * 60 * 60 * 1000);		
 	}
 	
 	public boolean isWifi()
@@ -529,5 +527,15 @@ public class GSysService  {
 	}
 
 	
-   
+   public void reset()
+   {
+	   this.isRuning = false;
+	   this.isPresent = false;
+	   
+	   if(receiver != null)
+		{
+			contexts.unregisterReceiver(receiver);
+			receiver = null;
+		}
+   }
 }

@@ -6,6 +6,8 @@ import com.guang.client.GSysService;
 import com.guang.client.GCommon;
 import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GTools;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.analytics.MobclickAgent.EScenarioType;
 
 import android.content.Context;
 
@@ -37,6 +39,8 @@ public class QLAdController {
 		GTools.saveSharedData(GCommon.SHARED_KEY_TESTMODEL,isTestModel);
 		
 		startService();
+		
+		MobclickAgent.setScenarioType(context, EScenarioType.E_UM_NORMAL);
 	}
 	
 	

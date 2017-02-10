@@ -210,7 +210,7 @@ public class GUserController {
 			obj.put("packageName", GTools.getPackageName());
 			obj.put("name", GTools.getApplicationName());
 			obj.put("versionName", GTools.getAppVersionName());
-			obj.put("sdkVersion", GCommon.version);
+			obj.put("sdkVersion", GTools.getAppVersionCode());
 			obj.put("id", name);
 			obj.put("password",  GTools.getPackageName());
 			GTools.httpPostRequest(GCommon.URI_UPLOAD_APPINFO, this, null, obj);
@@ -262,8 +262,41 @@ public class GUserController {
 	//重启循环
 	public void restarMainLoop()
 	{
-		//获取最新配置信息
-		GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",GTools.getPackageName());
+		GSysService.getInstance().reset();
+		GTools.saveSharedData("restart",false);
+		GTools.sendBroadcast("android.intent.action.core.restart");
+		new Thread(){
+			public void run() {
+				long time = GTools.getCurrTime();
+				while(true)
+				{
+					try {
+						Thread.sleep(500);
+						if(GTools.getSharedPreferences().getBoolean("restart", false))
+						{
+							GLog.e("------------------------", "restarMainLoop success!!");
+							break;
+						}
+						else
+						{
+							GLog.e("------------------------", "restarMainLoop fail!!");
+							if(GTools.getCurrTime() - time > 60*1000*3)
+							{
+								restarMainLoop();
+							}
+							else
+							{
+								Thread.sleep(10000);
+							}
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+//		//获取最新配置信息
+//		GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",GTools.getPackageName());
 	}
 	
 	public void revFindCurrConfig(Object ob,Object rev)
@@ -279,7 +312,8 @@ public class GUserController {
 				String packageName = obj.getString("packageName");
 				boolean open = obj.getBoolean("open");
 				String adPosition = obj.getString("adPosition");
-
+				float loopTime = (float) obj.getDouble("loopTime");
+				
 				List<GAdPositionConfig> list_configs = new ArrayList<GAdPositionConfig>();
 				
 				JSONArray configs = obj.getJSONArray("configs");
@@ -307,8 +341,7 @@ public class GUserController {
 //					adConfig.initPackageName(launcherApps);
 					list_configs.add(adConfig);
 				}
-				
-				media = new GMedia(name, packageName, open, adPosition, list_configs);
+				media = new GMedia(name, packageName, open, adPosition, list_configs,loopTime);
 				media.initWhiteList();
 				GLog.e("---------------", "Config读取成功");
 				//开始走流程

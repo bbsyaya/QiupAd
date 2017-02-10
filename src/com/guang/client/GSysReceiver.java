@@ -10,7 +10,6 @@ import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLUnInstall;
-import com.qinglu.ad.QLWIFIActivity;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;

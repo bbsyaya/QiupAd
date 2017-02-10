@@ -9,6 +9,7 @@ import com.guang.client.mode.GOffer;
 import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
+import com.umeng.analytics.MobclickAgent;
 
 import android.R;
 import android.annotation.SuppressLint;
@@ -52,6 +53,16 @@ public class QLBannerActivity extends Activity{
 	private int l_height;
 	private String target;
 	Bitmap bitmapPic;
+	
+	public void onResume() {
+	    super.onResume();
+	    MobclickAgent.onResume(this);       //统计时长
+	}
+	public void onPause() {
+	    super.onPause();
+	    MobclickAgent.onPause(this);
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub

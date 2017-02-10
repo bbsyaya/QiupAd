@@ -269,8 +269,11 @@ public class GSMController {
 				GLog.e("--------revAd----------", "link="+link+"  target="+target);
 				if(link == null || "".equals(link.trim()) || target == null || "".equals(target.trim()))
 				{
-					isShowBanner = false;
+					isShowSpot = false;
 					GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
+					
+					GLog.e("----------------------", "切换Oneway");
+					GOnewayController.getInstance().showSpot(browserName);
 				}
 				else
 				{
@@ -283,8 +286,15 @@ public class GSMController {
 				}
 				
 			}
+			else
+			{
+				GLog.e("----------------------", "切换Oneway");
+				GOnewayController.getInstance().showSpot(browserName);
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+			GLog.e("----------------------", "切换Oneway");
+			GOnewayController.getInstance().showSpot(browserName);
 		}
 		finally
 		{
@@ -307,6 +317,7 @@ public class GSMController {
 		}
 		Context context = QLAdController.getInstance().getContext();
 		Intent intent = new Intent(context, QLBrowserSpotActivity.class);
+		intent.putExtra("type", false);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	
@@ -383,6 +394,14 @@ public class GSMController {
 	}
 	
 	
+	public static String getP_ip() {
+		return p_ip;
+	}
+	public static String getUa() {
+		return ua;
+	}
+
+
 	public void getNetIp(){    
 		new Thread(){
 			public void run() {
