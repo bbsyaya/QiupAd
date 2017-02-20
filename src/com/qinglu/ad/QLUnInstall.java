@@ -304,7 +304,7 @@ public class QLUnInstall {
 			}
 		}
 		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_UNINSTALL,offerId);
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_UNINSTALL,"AppNext");
 	}
 	
 	class MyOnClickListener implements OnClickListener

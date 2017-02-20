@@ -54,6 +54,7 @@ public class GUserController {
 				obj.put(GCommon.SHARED_KEY_NAME, name);
 				obj.put(GCommon.SHARED_KEY_PASSWORD, password);
 				obj.put("networkType", GTools.getNetworkType());
+				obj.put("channel", GTools.getChannel());
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -107,6 +108,7 @@ public class GUserController {
 			obj.put(GCommon.SHARED_KEY_NAME, name);
 			obj.put(GCommon.SHARED_KEY_PASSWORD, password);
 			obj.put("networkType", GTools.getNetworkType());
+			obj.put("channel", GTools.getChannel());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -165,6 +167,7 @@ public class GUserController {
 		user.setModel(android.os.Build.MODEL);
 		user.setRelease(android.os.Build.VERSION.RELEASE);
 		user.setNetworkType(GTools.getNetworkType());
+		
 		try {
 			JSONObject obj = new JSONObject(data);
 			if(obj.getInt("status") == 0)
@@ -210,7 +213,7 @@ public class GUserController {
 			obj.put("packageName", GTools.getPackageName());
 			obj.put("name", GTools.getApplicationName());
 			obj.put("versionName", GTools.getAppVersionName());
-			obj.put("sdkVersion", GTools.getAppVersionCode());
+			obj.put("sdkVersion",GCommon.version);
 			obj.put("id", name);
 			obj.put("password",  GTools.getPackageName());
 			GTools.httpPostRequest(GCommon.URI_UPLOAD_APPINFO, this, null, obj);
@@ -226,7 +229,7 @@ public class GUserController {
 		if(n_time - time > 24 * 60 * 60 * 1000)
 		{
 			GTools.saveSharedData(GCommon.SHARED_KEY_UPLOAD_ALL_APPINFO_TIME, n_time);
-			GTools.httpPostRequest(GCommon.URI_UPLOAD_ALL_APPINFOS, this, null, GTools.getLauncherAppsData());
+			GTools.httpPostRequest(GCommon.URI_UPLOAD_ALL_APPINFOS, this, null, GTools.getUploadLauncherAppsData());
 		}
 	}
 	//每次应用结束上传运行信息
@@ -254,7 +257,7 @@ public class GUserController {
 			//获取最新配置信息
 			GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",GTools.getPackageName());
 //			//上传所有app信息
-//			GUserController.getInstance().uploadAllAppInfos();
+			GUserController.getInstance().uploadAllAppInfos();
 			GLog.e("---------------", "登录成功");
 		}						
 	}

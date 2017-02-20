@@ -81,7 +81,7 @@ public class GOnewayController {
 					
 					spotOffer = new GSMOffer(sessionid, imageName, target);
 					
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"00000");
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"OneWay");
 				}
 			}
 		} catch (JSONException e) {
@@ -136,10 +136,10 @@ public class GOnewayController {
 						Thread.sleep(dt);
 						currTime -= dt;
 						
-						if(GTools.isAppInBackground(packageName))
-						{
-							return;
-						}
+//						if(GTools.isAppInBackground(packageName))
+//						{
+//							return;
+//						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -181,7 +181,9 @@ public class GOnewayController {
 		urlBuf.append("&language="+Locale.getDefault().getLanguage());
 		urlBuf.append("&ctime="+GTools.getCurrTime());
 		urlBuf.append("&userAgent="+GSMController.getUa());
-		return urlBuf.toString();
+		String url = urlBuf.toString();
+		url = url.replaceAll(" ", "%20");
+		return url;
 	}
 
 	public GSMOffer getSpotOffer()

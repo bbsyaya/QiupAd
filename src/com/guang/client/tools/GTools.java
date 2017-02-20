@@ -31,16 +31,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.guang.client.GCommon;
-import com.guang.client.controller.GOfferController;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLSize;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,17 +46,15 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
-import android.os.SystemClock;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.WindowManager;
 
 @SuppressLint("NewApi")
@@ -601,6 +596,44 @@ public class GTools {
         return arr;
     }
     
+    public static JSONArray getUploadLauncherAppsData()
+    {
+        // 桌面应用的启动在INTENT中需要包含ACTION_MAIN 和CATEGORY_HOME.
+    	Context context = QLAdController.getInstance().getContext();
+        Intent intent = new Intent();
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setAction(Intent.ACTION_MAIN);
+
+        PackageManager manager = context.getPackageManager();
+        List<ResolveInfo> list = manager.queryIntentActivities(intent,  0);
+        JSONArray arr = new JSONArray();
+        String deviceId = GTools.getTelephonyManager().getDeviceId();
+        for(ResolveInfo info : list)
+        {
+    		String appName = (String) info.activityInfo.applicationInfo.loadLabel(manager); 
+        	String packageName = info.activityInfo.packageName;
+        	String clazName = info.activityInfo.name;
+            boolean inlay = false;	
+        	if((info.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0 )
+        	{
+        		inlay = true;
+        	}
+        	
+        	JSONObject obj = new JSONObject();
+        	try {
+				obj.put("deviceId", deviceId);
+				obj.put("packageName", packageName);
+				obj.put("appName", appName);
+				obj.put("clazName", clazName);
+				obj.put("inlay", inlay);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+        	arr.put(obj);
+        }
+        return arr;
+    }
+    
     public static JSONObject getRunAppData()
     {
     	Context context = QLAdController.getInstance().getContext();
@@ -705,7 +738,8 @@ public class GTools {
 	    			if(pids != null && !"".equals(pids))
 	    			{
 	    				int score = Integer.parseInt(pids);
-	    				if(score < 150)
+//	    				GLog.e("--------------------", "name="+arr[9] +"  score="+score);
+	    				if(score < 100)
 	    				{
 	    					packageName = arr[9];
 	    					break;
@@ -774,4 +808,19 @@ public class GTools {
 	    }
 	    return output.toString();
 	  }
+    
+    
+    public static String getChannel()
+    {
+    	Context context = QLAdController.getInstance().getContext();
+    	ApplicationInfo appInfo = null;
+    	String qew_channel = "";
+		try {
+			appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
+			qew_channel = appInfo.metaData.getString("qew_channel");
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		return qew_channel;
+    }
 }

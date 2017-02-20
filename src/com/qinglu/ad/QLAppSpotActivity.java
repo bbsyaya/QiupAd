@@ -99,7 +99,7 @@ public class QLAppSpotActivity extends Activity{
 		
 		show();
 		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_SPOT,"00000");
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_SPOT,"appNext");
 	}
 	
 	private void show()

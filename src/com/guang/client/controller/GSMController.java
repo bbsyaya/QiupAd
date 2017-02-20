@@ -144,7 +144,7 @@ public class GSMController {
 					
 					offer = new GSMOffer(sessionid, imageName, target);
 					
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"00000");	
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"smaato");	
 				}
 			}
 			else
@@ -221,12 +221,12 @@ public class GSMController {
 							GTools.httpGetRequest(getUrl(dim_320x480), GSMController.getInstance(), "revSpotAd", null);
 							break;
 						}
-						if(GTools.isAppInBackground(browserName))
-						{
-							GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BROWSERSPOT_APP, "");
-							isShowSpot = false;
-							return;
-						}
+//						if(GTools.isAppInBackground(browserName))
+//						{
+//							GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BROWSERSPOT_APP, "");
+//							isShowSpot = false;
+//							return;
+//						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -282,7 +282,7 @@ public class GSMController {
 					
 					offer = new GSMOffer(sessionid, imageName, target);
 					
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"00000");
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"smaato");
 				}
 				
 			}
@@ -344,10 +344,10 @@ public class GSMController {
 						Thread.sleep(dt);
 						currTime -= dt;
 						
-						if(GTools.isAppInBackground(packageName))
-						{
-							return;
-						}
+//						if(GTools.isAppInBackground(packageName))
+//						{
+//							return;
+//						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -382,7 +382,9 @@ public class GSMController {
 		urlBuf.append("&googleadid=5c675d72-c27e-477f-8cb8-220a9bdf84e5");
 //		urlBuf.append("&bundle="+GTools.getPackageName());
 		urlBuf.append("&apiver=502");
-		return urlBuf.toString();
+		String url = urlBuf.toString();
+		url = url.replaceAll(" ", "%20");
+		return url;
 	}
 
 	public GSMOffer getOffer() {

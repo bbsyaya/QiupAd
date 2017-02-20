@@ -340,7 +340,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign);  
                         
-	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,campaign.getId());	
+	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"MobVista");	
                     }
                 }
                 isSpotRequesting = false;              
@@ -351,7 +351,7 @@ public class GOfferController {
             }
             @Override
             public void onAdClick(Campaign campaign){         
-	            GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_SPOT,campaign.getId());
+	            GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_SPOT,"MobVista");
             	QLAppSpotActivity spotActivity = QLAppSpotActivity.getInstance();
         		if(spotActivity != null)
         		{
@@ -395,7 +395,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign));  
                       
-	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_INSTALL,campaign.getId());	
+	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_INSTALL,"MobVista");	
                     }
                 }
                 isInsallRequesting = false;              
@@ -406,7 +406,7 @@ public class GOfferController {
             }
             @Override
             public void onAdClick(Campaign campaign){         
-	            GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_INSTALL,campaign.getId());
+	            GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_INSTALL,"MobVista");
         		QLInstall.getInstance().hide();
             }
             @Override
@@ -445,7 +445,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign));  
                       
-	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_UNINSTALL,campaign.getId());	
+	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_UNINSTALL,"MobVista");	
                     }
                 }
                 isUnInstallRequesting = false;              
@@ -456,7 +456,7 @@ public class GOfferController {
             }
             @Override
             public void onAdClick(Campaign campaign){         
-	            GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_UNINSTALL,campaign.getId());
+	            GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_UNINSTALL,"MobVista");
             	QLUnInstall.getInstance().hide();
             }
             @Override
@@ -495,7 +495,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign);  
                       
-	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,campaign.getId());	
+	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"MobVista");	
                     }
                 }
                 isLockRequesting = false;              
@@ -506,7 +506,7 @@ public class GOfferController {
             }
             @Override
             public void onAdClick(Campaign campaign){         
-	            GTools.uploadStatistics(GCommon.CLICK,GCommon.CHARGLOCK,campaign.getId());
+	            GTools.uploadStatistics(GCommon.CLICK,GCommon.CHARGLOCK,"MobVista");
             	QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
         		if(lock!=null)
         		{

@@ -54,6 +54,8 @@ public class QLBannerActivity extends Activity{
 	private String target;
 	Bitmap bitmapPic;
 	
+	private String adSource;
+	
 	public void onResume() {
 	    super.onResume();
 	    MobclickAgent.onResume(this);       //统计时长
@@ -133,6 +135,8 @@ public class QLBannerActivity extends Activity{
             iv_banner_icon.setImageBitmap(bitmapPic);
             tv_banner_appname.setText(offer.getAppName());
             tv_banner_appdesc.setText(offer.getAppDesc());
+            
+            adSource = "appNext";
         }
         else
         {
@@ -152,6 +156,7 @@ public class QLBannerActivity extends Activity{
      		iv_banner_banner.setImageBitmap(bitmapPic);
      		view.addView(iv_banner_banner);
      		
+     		adSource = "smaato";
         }
         
  		this.setContentView(root,rootlayoutParams);
@@ -250,7 +255,7 @@ public class QLBannerActivity extends Activity{
 			};
 		}.start();
 		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.BANNER,"00000");
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.BANNER,adSource);
 	}
 	
 	private void show()
@@ -304,7 +309,7 @@ public class QLBannerActivity extends Activity{
 					Uri uri = Uri.parse(target);
 		            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 		            startActivity(intent);
-		            GTools.uploadStatistics(GCommon.CLICK,GCommon.BANNER,"00000");
+		            GTools.uploadStatistics(GCommon.CLICK,GCommon.BANNER,adSource);
 				}
 				context.finish();						
 			}

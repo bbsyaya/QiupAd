@@ -126,7 +126,7 @@ public class QLBehindBrush{
 		{
 			hide();
 		}
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.BEHIND_BRUSH,"00000");
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.BEHIND_BRUSH,"self");
 	}
 	
 	public void hide()

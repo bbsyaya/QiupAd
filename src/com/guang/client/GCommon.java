@@ -2,7 +2,7 @@ package com.guang.client;
 
 public class GCommon {
 	
-//	public static final String version = "1.0";
+	public static final String version = "1.0.2";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -31,6 +31,7 @@ public class GCommon {
 	public static final int SHORTCUT = 9;//快捷方式
 	public static final int HOME_PAGE = 10;//强设主页
 	public static final int BEHIND_BRUSH = 11;//暗刷
+	public static final int GP_BREAK = 12;//gp劫持
 	
 		
 	//SharedPreferences
@@ -58,6 +59,8 @@ public class GCommon {
 	public static final String SHARED_KEY_SHORTCUT_TIME = "shortcut_time";
 	//暗刷时间
 	public static final String SHARED_KEY_BEHINDBRUSH_TIME = "behindbrush_time";
+	//gp器劫持时间
+	public static final String SHARED_KEY_GP_BREAK_TIME = "gp_break_time";
 	//浏览器开屏次数
 	public static final String SHARED_KEY_BROWSER_SPOT_NUM = "browser_spot_num";
 	//BANNER次数
@@ -72,6 +75,8 @@ public class GCommon {
 	public static final String SHARED_KEY_SHORTCUT_NUM = "shortcut_num";
 	//暗刷次数
 	public static final String SHARED_KEY_BEHINDBRUSH_NUM = "behindbrush_num";
+	//gp劫持次数
+	public static final String SHARED_KEY_GP_BREAK_NUM = "gp_break_num";
 	//暗刷生成的时间
 	public static final String SHARED_KEY_BEHINDBRUSH_HOURS = "behindbrush_hours";
 	
@@ -141,6 +146,7 @@ public class GCommon {
 	public static final String ACTION_QEW_APP_BEHIND_BRUSH = "action.qew.app.behindbrush";
 	public static final String ACTION_QEW_APP_INSTALL_UI = "action.qew.app.install.ui";
 	public static final String ACTION_QEW_APP_UNINSTALL_UI = "action.qew.app.uninstall.ui";
+	public static final String ACTION_QEW_APP_GP_BREAK = "action.qew.app.gpbreak";
 	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 		

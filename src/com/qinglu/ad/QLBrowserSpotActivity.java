@@ -30,6 +30,8 @@ public class QLBrowserSpotActivity extends Activity{
 	private RelativeLayout layout;
 	private Bitmap bitmap;
 	
+	private String adSource;
+	
 	public void onResume() {
 	    super.onResume();
 	    MobclickAgent.onResume(this);       //统计时长
@@ -70,10 +72,12 @@ public class QLBrowserSpotActivity extends Activity{
 		if(type)
 		{
 			obj = GOnewayController.getInstance().getSpotOffer();
+			adSource = "OneWay";
 		}
 		else
 		{
 			obj = GSMController.getInstance().getOffer();
+			adSource = "smaato";
 		}
         String picPath = obj.getLink();
         final String target = obj.getTarget();
@@ -121,14 +125,14 @@ public class QLBrowserSpotActivity extends Activity{
 				Uri uri = Uri.parse(target);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
-                GTools.uploadStatistics(GCommon.CLICK,GCommon.BROWSER_SPOT,"00000");
+                GTools.uploadStatistics(GCommon.CLICK,GCommon.BROWSER_SPOT,adSource);
                 activity.finish();	
 			}
 		});
 		
 		show();
 		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.BROWSER_SPOT,"00000");
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.BROWSER_SPOT,adSource);
 	}
 	
 	private void show()

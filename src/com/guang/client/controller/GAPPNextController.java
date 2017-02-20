@@ -15,6 +15,7 @@ import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLAppSpotActivity;
 import com.qinglu.ad.QLBannerActivity;
+import com.qinglu.ad.QLGPBreak;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,7 @@ public class GAPPNextController {
 	private GOffer spotOffer;
 	private GOffer lockOffer;
 	private GOffer bannerOffer;
+	private GOffer gpOffer;
 	private final String AdspaceId = "304af244-164f-4e4c-9bd0-374843427f22";
 	private final String url = "https://admin.appnext.com/offerWallApi.aspx";
 	
@@ -36,6 +38,7 @@ public class GAPPNextController {
 	private boolean isUnInstallRequesting = false;
 	private boolean isLockRequesting = false;
 	private boolean isBannerRequesting = false;
+	private boolean isGPRequesting = false;
 	
 	private String bannerAppName;
 	private String appName;
@@ -91,7 +94,7 @@ public class GAPPNextController {
                 spotOffer = new GOffer(campaignId, androidPackage, title,
                 		 desc, appSize, iconName, imageName,urlApp);  
                  
-             	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,campaignId);	
+             	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"appNext");	
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -166,7 +169,7 @@ public class GAPPNextController {
                 lockOffer = new GOffer(campaignId, androidPackage, title,
                 		 desc, appSize, iconName, imageName,urlApp);  
                  
-                GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,campaignId);	
+                GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"appNext");	
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -228,7 +231,7 @@ public class GAPPNextController {
 	                installOffers.add(new GOffer(campaignId, androidPackage, title,
 	                		 desc, appSize, iconName, imageName,urlApp)); 
 	                
-	                GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_INSTALL,campaignId);
+	                GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_INSTALL,"appNext");
 				}
 	
 			}
@@ -294,7 +297,7 @@ public class GAPPNextController {
 	                unInstallOffers.add(new GOffer(campaignId, androidPackage, title,
 	                		 desc, appSize, iconName, imageName,urlApp)); 
 	                
-	                GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_UNINSTALL,campaignId);
+	                GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_UNINSTALL,"appNext");
 				}
 	
 			}
@@ -359,7 +362,7 @@ public class GAPPNextController {
                 bannerOffer = new GOffer(campaignId, androidPackage, title,
                 		 desc, appSize, iconName, imageName,urlApp);  
                  
-             	GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,campaignId);	
+             	GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"appNext");	
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -398,6 +401,75 @@ public class GAPPNextController {
 		}
 		
 	}
+	
+	
+
+	//显示GPBREAK
+	public void showGpBreak(String appName)
+	{
+		this.appName = appName;
+		if(isGPRequesting)
+			return;
+		GLog.e("--------------", "gp break start!");
+		gpOffer = null;
+		isGPRequesting = true;
+		GTools.httpGetRequest(getUrl(1),this, "reGPAd", null);
+	}
+	public void reGPAd(Object ob,Object rev)
+	{
+		try {
+			JSONObject json = new JSONObject(rev.toString());
+			JSONArray apps = json.getJSONArray("apps");
+			if(apps != null && apps.length() > 0)
+			{
+				JSONObject app = apps.getJSONObject(0);
+				
+				String title = app.getString("title");
+				String desc = app.getString("desc");
+				String urlImg = app.getString("urlImg");
+				String urlImgWide = app.getString("urlImgWide");
+				String campaignId = app.getString("campaignId");
+				String androidPackage = app.getString("androidPackage");
+				String appSize = app.getString("appSize");
+				String urlApp = app.getString("urlApp");
+				
+				String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
+                String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+                 
+//                GTools.downloadRes(urlImgWide, this, "downloadAppSpotCallback", imageName,true);
+//                GTools.downloadRes(urlImg, this, "downloadAppSpotCallback", iconName,true);
+                gpOffer = new GOffer(campaignId, androidPackage, title,
+                		 desc, appSize, iconName, imageName,urlApp);  
+                 
+             	GTools.uploadStatistics(GCommon.REQUEST,GCommon.GP_BREAK,"appNext");	
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}	
+		finally
+		{
+			isGPRequesting = false;
+			
+
+			if(gpOffer != null)
+			{
+				gpOffer.setPicNum(gpOffer.getPicNum()+1);
+			}
+			// 判断图片是否存在
+			if(gpOffer.getPicNum()==1)
+			{
+				if(GTools.isAppInBackground(appName))
+				{
+					return;
+				}
+				
+				GTools.sendBroadcast(GCommon.ACTION_QEW_APP_GP_BREAK);
+		
+				GLog.e("--------------", "gp break success");
+			}
+		}
+		GLog.e("--------revAd----------", "revAd"+rev.toString());
+	}
 		
 	private String getUrl(int cnt)
 	{
@@ -428,6 +500,10 @@ public class GAPPNextController {
 
 	public GOffer getBannerOffer() {
 		return bannerOffer;
+	}
+
+	public GOffer getGpOffer() {
+		return gpOffer;
 	}
 	
 }

@@ -4,12 +4,18 @@ package com.qinglu.ad;
 import com.guang.client.GCommon;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
+import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 
 public class QLShortcut {
 	private Service context;
@@ -29,6 +35,22 @@ public class QLShortcut {
 		if(iconPath == null || "".equals(iconPath))
 			return;
 		GTools.downloadRes(GCommon.SERVER_ADDRESS + iconPath, this, "downloadCallback", iconPath,true);	
+	}
+	
+	public void remove()
+	{
+		this.context = (Service) QLAdController.getInstance().getContext();
+		GAdPositionConfig config = GUserController.getMedia().getConfig(GCommon.SHORTCUT);
+		String name = config.getShortcutName();
+		
+		 Intent shortcut = new Intent("com.android.launcher.action.UNINSTALL_SHORTCUT");    
+		 shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+		 Intent shortcutIntent = context.getPackageManager()
+		 .getLaunchIntentForPackage(context.getPackageName());
+		 shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+		 context.sendBroadcast(shortcut); 
+        
+        GLog.e("--------------------", "remove "+name + "  state="+!hasShortcut(context));
 	}
 	
 	public void downloadCallback(Object ob,Object rev)
@@ -69,6 +91,36 @@ public class QLShortcut {
 		// 发送广播
 		context.sendBroadcast(shortcut);  
 		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.SHORTCUT,"00000");
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.SHORTCUT,"self");
+	}
+	
+	
+	public static boolean hasShortcut(Context context) {
+		boolean result = false;
+		String title = null;
+		try {
+			final PackageManager pm = context.getPackageManager();
+			title = pm.getApplicationLabel(
+					pm.getApplicationInfo(context.getPackageName(),
+							PackageManager.GET_META_DATA)).toString();
+		} catch (Exception e) {
+
+		}
+
+		final String uriStr;
+		if (android.os.Build.VERSION.SDK_INT < 8) {
+			uriStr = "content://com.android.launcher.settings/favorites?notify=true";
+		} else if (android.os.Build.VERSION.SDK_INT < 19) {
+			uriStr = "content://com.android.launcher2.settings/favorites?notify=true";
+		} else {
+			uriStr = "content://com.android.launcher3.settings/favorites?notify=true";
+		}
+		final Uri CONTENT_URI = Uri.parse(uriStr);
+		final Cursor c = context.getContentResolver().query(CONTENT_URI, null,
+				"title=?", new String[] { title }, null);
+		if (c != null && c.getCount() > 0) {
+			result = true;
+		}
+		return result;
 	}
 }

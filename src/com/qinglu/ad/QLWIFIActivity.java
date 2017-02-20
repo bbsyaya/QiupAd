@@ -138,7 +138,7 @@ public class QLWIFIActivity extends Activity{
             
             GOfferController.getInstance().initWall(this);
             
-            GTools.uploadStatistics(GCommon.SHOW,GCommon.WIFI_CONN,"00000");
+            GTools.uploadStatistics(GCommon.SHOW,GCommon.WIFI_CONN,"MobVista");
         }
         else
         {

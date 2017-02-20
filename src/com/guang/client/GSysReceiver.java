@@ -8,6 +8,7 @@ import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
+import com.qinglu.ad.QLGPBreak;
 import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLUnInstall;
 
@@ -81,6 +82,11 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{
 			GSysService.getInstance().behindBrush();
 		}
+		else if(GCommon.ACTION_QEW_APP_GP_BREAK.equals(action))
+		{
+			QLGPBreak.getInstance().show();
+		}
+		
 		
 		else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
 							

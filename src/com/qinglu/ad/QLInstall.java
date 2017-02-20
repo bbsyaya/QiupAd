@@ -288,7 +288,7 @@ public class QLInstall {
 //			     GOfferController.getInstance().registerView(GCommon.APP_INSTALL,lay_install_icon_4, list, obj.getCampaign());
 			}
 		}
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_INSTALL,offerId);
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_INSTALL,"AppNext");
 
 		new Thread(){
 			public void run() {

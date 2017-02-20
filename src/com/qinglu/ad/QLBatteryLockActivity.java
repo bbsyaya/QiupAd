@@ -464,7 +464,7 @@ public class QLBatteryLockActivity extends Activity{
 	                startActivity(intent);
 				}
 			});
-			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,offerId);
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,"appNext");
 		} 	 
 		 handler.sendEmptyMessage(0x11);
 	}

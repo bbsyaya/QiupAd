@@ -94,6 +94,8 @@ public class GSysService  {
 								
 								appSpotThread();
 								bannerThread();
+								
+								gpBreakThread();
 							}
 							shortcutThread();
 							behindBrushThread();
@@ -113,7 +115,7 @@ public class GSysService  {
 	private boolean browserSpotThread()
 	{
 		if(		isPresent 
-				&& isWifi()
+				&& (isWifi()  || is4G())
 				&& GUserController.getMedia().isAdPosition(GCommon.BROWSER_SPOT)
 				&& GUserController.getMedia().isShowNum(GCommon.BROWSER_SPOT)
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BROWSER_SPOT)
@@ -132,7 +134,7 @@ public class GSysService  {
 	private boolean bannerThread()
 	{
 		if(		isPresent 
-				&& isWifi()
+				&&  (isWifi()  || is4G())
 				&& GUserController.getMedia().isAdPosition(GCommon.BANNER)
 				&& GUserController.getMedia().isShowNum(GCommon.BANNER)
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BANNER)
@@ -151,7 +153,7 @@ public class GSysService  {
 	private boolean appSpotThread()
 	{
 		if(		isPresent 
-				&& isWifi()
+				&&  (isWifi()  || is4G())
 				&& GUserController.getMedia().isAdPosition(GCommon.APP_SPOT)
 				&& GUserController.getMedia().isShowNum(GCommon.APP_SPOT)
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.APP_SPOT)
@@ -216,7 +218,7 @@ public class GSysService  {
 	public void startLockThread(int mBatteryLevel)
 	{
 		if(		isRuning()
-				&& isWifi()
+				&&  (isWifi()  || is4G())
 				&& GUserController.getMedia().isAdPosition(GCommon.CHARGLOCK)
 				&& isOpenLock()
 				&& !QLBatteryLockActivity.isShow())
@@ -229,6 +231,28 @@ public class GSysService  {
 		}	
 	}
 	
+	//GP截取
+	private boolean gpBreakThread()
+	{
+		if(		isPresent 
+				&& GUserController.getMedia().isAdPosition(GCommon.GP_BREAK)
+				&& GUserController.getMedia().isShowNum(GCommon.GP_BREAK)
+				&& GUserController.getMedia().isShowTimeInterval(GCommon.GP_BREAK)
+				&& GUserController.getMedia().isTimeSlot(GCommon.GP_BREAK))
+		{		
+			String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+			if(last != null && GUserController.getMedia().isWhiteList(GCommon.GP_BREAK, last))
+			{
+				gpBreak(last);
+				return true;
+			}			
+		}	
+		return false;
+	}
+	public void gpBreak(String appNmae)
+	{
+		GAPPNextController.getInstance().showGpBreak(appNmae);
+	}
 	//应用启动
 	public void appSpot(String appNmae)
 	{
@@ -268,7 +292,7 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, num+1);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, GTools.getCurrTime());
 
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.BROWSER_BREAK,"00000");
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.BROWSER_BREAK,"self");
 		GLog.e("-----------------", "browserBreak success");
 	}
 	//暗刷
@@ -385,6 +409,11 @@ public class GSysService  {
 	{
 		return GTools.isWifi();
 	}
+	
+	public boolean is4G()
+	{
+		return "4G".equals(GTools.getNetworkType());
+	}
 
 	public boolean isMultiApp()
 	{
@@ -497,6 +526,7 @@ public class GSysService  {
         filter.addAction(GCommon.ACTION_QEW_OPEN_APP);
         filter.addAction(GCommon.ACTION_QEW_APP_INSTALL_UI);
         filter.addAction(GCommon.ACTION_QEW_APP_UNINSTALL_UI);
+        filter.addAction(GCommon.ACTION_QEW_APP_GP_BREAK);
         
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
