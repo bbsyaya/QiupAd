@@ -38,7 +38,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		GLog.e("GSysReceiver", "onReceive()..."+action);
 		if (GCommon.ACTION_QEW_APP_BROWSER_SPOT.equals(action))
 		{								
-			GSysService.getInstance().browserSpot("com.UCMobile");
+			GSysService.getInstance().browserSpot(-1,"com.UCMobile");
 		}
 		else if (GCommon.ACTION_QEW_APP_INSTALL.equals(action))
 		{		
@@ -52,7 +52,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if (GCommon.ACTION_QEW_APP_BANNER.equals(action))
 		{								
-			GSysService.getInstance().banner(GTools.getPackageName());
+			GSysService.getInstance().banner(-1,GTools.getPackageName());
 		}
 		else if(GCommon.ACTION_QEW_APP_LOCK.equals(action))
 		{		
@@ -61,7 +61,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if (GCommon.ACTION_QEW_APP_SPOT.equals(action))
 		{								
-			GSysService.getInstance().appSpot(GTools.getPackageName());
+			GSysService.getInstance().appSpot(-1,GTools.getPackageName());
 		}
 		else if(GCommon.ACTION_QEW_APP_WIFI.equals(action))
 		{
@@ -69,11 +69,11 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if(GCommon.ACTION_QEW_APP_BROWSER_BREAK.equals(action))
 		{
-			GSysService.getInstance().browserBreak("com.UCMobile");
+			GSysService.getInstance().browserBreak(-1,"com.UCMobile");
 		}
 		else if (GCommon.ACTION_QEW_APP_SHORTCUT.equals(action))
 		{								
-			GSysService.getInstance().shortcut();
+			GSysService.getInstance().shortcut(-1);
 		}
 		else if(GCommon.ACTION_QEW_APP_HOMEPAGE.equals(action))
 		{

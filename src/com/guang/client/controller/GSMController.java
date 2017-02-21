@@ -38,9 +38,13 @@ public class GSMController {
 	private final String url = "http://soma.smaato.net/oapi/reqAd.jsp";
 	private String browserName;
 	private String appName;
+	
 	private long flow = 0;//流量
 	private boolean isShowBanner = false;//是否显示banner标记
 	private boolean isShowSpot = false;//是否显示插屏标记
+	
+	private long spotAdPositionId;
+	private long bannerAdPositionId;
 	
 	private final String dim_320x50 = "xxlarge";
 	private final String dim_320x480 = "full_320x480";
@@ -68,9 +72,10 @@ public class GSMController {
 		getNetIp();
 	}
 	
-	public void showBanner(final String appName)
+	public void showBanner(long adPositionId,final String appName)
 	{
 		this.appName = appName;
+		this.bannerAdPositionId = adPositionId;
 		if(p_ip == null)
 		{
 			getNetIp();
@@ -84,7 +89,7 @@ public class GSMController {
 		new Thread(){
 			public void run() {
 				try {
-					long t = (long) (GUserController.getMedia().getConfig(GCommon.BANNER).getBannerDelyTime()*60*1000);
+					long t = (long) (GUserController.getMedia().getConfig(bannerAdPositionId).getBannerDelyTime()*60*1000);
 					GLog.e("---------------------------", "banner sleep="+t);
 					Thread.sleep(t);
 					if(GTools.isAppInBackground(appName))
@@ -190,16 +195,17 @@ public class GSMController {
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	
 		
-		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, num+1);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME,GTools.getCurrTime());	
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME+bannerAdPositionId,GTools.getCurrTime());	
 		
 		GLog.e("--------------", "banner success");
 	}
 	
-	public void showSpot(String browserName)
+	public void showSpot(long adPositionId,String browserName)
 	{
 		this.browserName = browserName;
+		this.spotAdPositionId = adPositionId;
 		if(p_ip == null)
 		{
 			getNetIp();
@@ -223,7 +229,7 @@ public class GSMController {
 					try {
 						Thread.sleep(2000);
 						long nflow = GTools.getAppFlow(browserName);
-						long flows = (long) (GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT).getBrowerSpotFlow()*1024*1024);
+						long flows = (long) (GUserController.getMedia().getConfig(spotAdPositionId).getBrowerSpotFlow()*1024*1024);
 						if(nflow - flow > flows)
 						{
 							flow = nflow;
@@ -291,7 +297,7 @@ public class GSMController {
 					GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
 					
 					GLog.e("----------------------", "切换Oneway");
-					GOnewayController.getInstance().showSpot(browserName);
+					GOnewayController.getInstance().showSpot(spotAdPositionId,browserName);
 				}
 				else
 				{
@@ -307,12 +313,12 @@ public class GSMController {
 			else
 			{
 				GLog.e("----------------------", "切换Oneway");
-				GOnewayController.getInstance().showSpot(browserName);
+				GOnewayController.getInstance().showSpot(spotAdPositionId,browserName);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 			GLog.e("----------------------", "切换Oneway");
-			GOnewayController.getInstance().showSpot(browserName);
+			GOnewayController.getInstance().showSpot(spotAdPositionId,browserName);
 		}
 		finally
 		{
@@ -340,17 +346,17 @@ public class GSMController {
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	
 		
-		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, num+1);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, GTools.getCurrTime());
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM+spotAdPositionId, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM+spotAdPositionId, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME+spotAdPositionId, GTools.getCurrTime());
 		
 		GLog.e("--------------", "browser spot success");
 		
-		if(!GUserController.getMedia().isShowNum(GCommon.BROWSER_SPOT))
+		if(!GUserController.getMedia().isShowNum(spotAdPositionId))
 			return;
 		//如果没有退出浏览器，一段时间后继续弹出广告
 		final String packageName = browserName;
-		final long time = (long) (GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT).getBrowerSpotTwoTime()*60*1000);
+		final long time = (long) (GUserController.getMedia().getConfig(spotAdPositionId).getBrowerSpotTwoTime()*60*1000);
 		
 		new Thread(){
 			long currTime = time;
@@ -373,7 +379,7 @@ public class GSMController {
 				if(!GTools.isAppInBackground(packageName))
 				{
 					long nflow = GTools.getAppFlow(packageName);
-					long flows = (long) (GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT).getBrowerSpotFlow()*1024*1024);
+					long flows = (long) (GUserController.getMedia().getConfig(spotAdPositionId).getBrowerSpotFlow()*1024*1024);
 					if(nflow - flow > flows && !isShowSpot)
 					{
 						isShowSpot = true;

@@ -15,7 +15,6 @@ import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLAppSpotActivity;
 import com.qinglu.ad.QLBannerActivity;
-import com.qinglu.ad.QLGPBreak;
 
 import android.content.Context;
 import android.content.Intent;
@@ -40,6 +39,12 @@ public class GAPPNextController {
 	private boolean isBannerRequesting = false;
 	private boolean isGPRequesting = false;
 	
+	private long spotAdPositionId;
+	private long installAdPositionId;
+	private long unInstallAdPositionId;
+	private long lockAdPositionId;
+	private long bannerAdPositionId;
+	
 	private String bannerAppName;
 	private String appName;
 	
@@ -58,9 +63,10 @@ public class GAPPNextController {
 	}
 	
 	//显示应用插屏
-	public void showAppSpot(String appName)
+	public void showAppSpot(long adPositionId,String appName)
 	{
 		this.appName = appName;
+		this.spotAdPositionId = adPositionId;
 		if(isSpotRequesting)
 			return;
 		GLog.e("--------------", "app spot start!");
@@ -126,9 +132,9 @@ public class GAPPNextController {
 			intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 			context.startActivity(intent);	
 			
-			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
-			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM, num+1);
-			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME,GTools.getCurrTime());
+			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+spotAdPositionId, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM+spotAdPositionId, num+1);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME+spotAdPositionId,GTools.getCurrTime());
 			GLog.e("--------------", "app spot success!");
 		}
 		

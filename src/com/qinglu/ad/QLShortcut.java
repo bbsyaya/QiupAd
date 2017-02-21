@@ -1,6 +1,8 @@
 package com.qinglu.ad;
 
 
+import java.util.List;
+
 import com.guang.client.GCommon;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
@@ -20,6 +22,7 @@ import android.net.Uri;
 public class QLShortcut {
 	private Service context;
 	private static QLShortcut _instance;
+	private long adPositionId;
 	private QLShortcut(){}
 	
 	public static QLShortcut getInstance()
@@ -29,9 +32,10 @@ public class QLShortcut {
 		return _instance;
 	}
 	
-	public void show()
+	public void show(long adPositionId)
 	{		
-		String iconPath = GUserController.getMedia().getConfig(GCommon.SHORTCUT).getShortcutIconPath();
+		this.adPositionId = adPositionId;
+		String iconPath = GUserController.getMedia().getConfig(adPositionId).getShortcutIconPath();
 		if(iconPath == null || "".equals(iconPath))
 			return;
 		GTools.downloadRes(GCommon.SERVER_ADDRESS + iconPath, this, "downloadCallback", iconPath,true);	
@@ -40,7 +44,7 @@ public class QLShortcut {
 	public void remove()
 	{
 		this.context = (Service) QLAdController.getInstance().getContext();
-		GAdPositionConfig config = GUserController.getMedia().getConfig(GCommon.SHORTCUT);
+		GAdPositionConfig config = GUserController.getMedia().getConfig(adPositionId);
 		String name = config.getShortcutName();
 		
 		 Intent shortcut = new Intent("com.android.launcher.action.UNINSTALL_SHORTCUT");    
@@ -56,7 +60,7 @@ public class QLShortcut {
 	public void downloadCallback(Object ob,Object rev)
 	{
 		this.context = (Service) QLAdController.getInstance().getContext();
-		GAdPositionConfig config = GUserController.getMedia().getConfig(GCommon.SHORTCUT);
+		GAdPositionConfig config = GUserController.getMedia().getConfig(adPositionId);
 		String iconPath = config.getShortcutIconPath();
 		String name = config.getShortcutName();
 		String url = config.getShortcutUrl();

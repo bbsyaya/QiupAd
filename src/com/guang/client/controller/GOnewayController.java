@@ -31,6 +31,7 @@ public class GOnewayController {
 	private boolean isSpotRequesting = false;
 	
 	private String browserName;
+	private long spotAdPositionId;
 	
 	private long flow = 0;//流量
 	
@@ -47,9 +48,10 @@ public class GOnewayController {
 	}
 	
 	//显示应用插屏
-	public void showSpot(String browserName)
+	public void showSpot(long adPositionId,String browserName)
 	{
 		this.browserName = browserName;
+		this.spotAdPositionId = adPositionId;
 		if(isSpotRequesting)
 			return;
 		GLog.e("--------------", "browser spot start!");
@@ -113,19 +115,19 @@ public class GOnewayController {
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		context.startActivity(intent);	
 		
-		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, num+1);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, GTools.getCurrTime());
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM+spotAdPositionId, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM+spotAdPositionId, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME+spotAdPositionId, GTools.getCurrTime());
 		
 		GLog.e("--------------", "browser spot success");
 		
 		
-		if(!GUserController.getMedia().isShowNum(GCommon.BROWSER_SPOT))
+		if(!GUserController.getMedia().isShowNum(spotAdPositionId))
 			return;
 		//如果没有退出浏览器，一段时间后继续弹出广告
 		final String packageName = browserName;
 		flow = GTools.getAppFlow(browserName);
-		final long time = (long) (GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT).getBrowerSpotTwoTime()*60*1000);
+		final long time = (long) (GUserController.getMedia().getConfig(spotAdPositionId).getBrowerSpotTwoTime()*60*1000);
 		
 		new Thread(){
 			long currTime = time;
@@ -148,7 +150,7 @@ public class GOnewayController {
 				if(!GTools.isAppInBackground(packageName))
 				{
 					long nflow = GTools.getAppFlow(packageName);
-					long flows = (long) (GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT).getBrowerSpotFlow()*1024*1024);
+					long flows = (long) (GUserController.getMedia().getConfig(spotAdPositionId).getBrowerSpotFlow()*1024*1024);
 					if(nflow - flow > flows && !isSpotRequesting)
 					{
 						isSpotRequesting = true;

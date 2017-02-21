@@ -107,9 +107,11 @@ public class QLBehindBrush{
 		};
 		urls = new ArrayList<String>();
 		
-		GAdPositionConfig config = GUserController.getMedia().getConfig(GCommon.BEHIND_BRUSH);
-		if(config != null)
+		List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BEHIND_BRUSH);
+		if(list != null && list.size() > 0)
 		{
+			GAdPositionConfig config = list.get(0);
+			
 			String ls = config.getBehindBrushUrls();
 			if(ls != null && !"".equals(ls))
 			{

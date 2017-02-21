@@ -7,11 +7,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.util.Date;
+import java.util.List;
 
 import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.controller.GSMController;
 import com.guang.client.controller.GUserController;
+import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
@@ -119,179 +121,262 @@ public class GSysService  {
 	}
 
 	//浏览器插屏
-	private boolean browserSpotThread()
+	private void browserSpotThread()
 	{
 		if(		isPresent 
-				&& (isWifi()  || is4G())
-				&& GUserController.getMedia().isAdPosition(GCommon.BROWSER_SPOT)
-				&& GUserController.getMedia().isShowNum(GCommon.BROWSER_SPOT)
-				&& GUserController.getMedia().isShowTimeInterval(GCommon.BROWSER_SPOT)
-				&& GUserController.getMedia().isTimeSlot(GCommon.BROWSER_SPOT))
-		{		
-			String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-			if(s != null && GUserController.getMedia().isWhiteList(GCommon.BROWSER_SPOT, s))
+				&& (isWifi()  || is4G()))
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT);
+			for(GAdPositionConfig config : list)
 			{
-				browserSpot(s);
-				return true;
-			}			
-		}	
-		return false;
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
+					{
+						browserSpot(adPositionId,s);
+					}		
+				}
+			}
+		}
 	}
 	//BANNER
-	private boolean bannerThread()
+	private void bannerThread()
 	{
-		if(		isPresent 
-				&&  (isWifi()  || is4G() || is3G())
-				&& GUserController.getMedia().isAdPosition(GCommon.BANNER)
-				&& GUserController.getMedia().isShowNum(GCommon.BANNER)
-				&& GUserController.getMedia().isShowTimeInterval(GCommon.BANNER)
-				&& GUserController.getMedia().isTimeSlot(GCommon.BANNER))
-		{		
-			String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-			if(s != null && GUserController.getMedia().isWhiteList(GCommon.BANNER, s))
+		if(isPresent &&  (isWifi()  || is4G() || is3G()))
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BANNER);
+			for(GAdPositionConfig config : list)
 			{
-				banner(s);
-				return true;
-			}			
-		}	
-		return false;
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
+					{
+						banner(adPositionId,s);
+					}		
+				}
+			}
+		}
 	}
 	//应用插屏
-	private boolean appSpotThread()
+	private void appSpotThread()
 	{
-		if(		isPresent 
-				&&  (isWifi()  || is4G())
-				&& GUserController.getMedia().isAdPosition(GCommon.APP_SPOT)
-				&& GUserController.getMedia().isShowNum(GCommon.APP_SPOT)
-				&& GUserController.getMedia().isShowTimeInterval(GCommon.APP_SPOT)
-				&& GUserController.getMedia().isTimeSlot(GCommon.APP_SPOT))
-		{		
-			String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-			if(s != null  && GUserController.getMedia().isWhiteList(GCommon.APP_SPOT, s))
+		if(isPresent &&  (isWifi()  || is4G()))
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.APP_SPOT);
+			for(GAdPositionConfig config : list)
 			{
-				appSpot(s);
-				return true;
-			}			
-		}	
-		return false;
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
+					{
+						appSpot(adPositionId,s);
+					}		
+				}
+			}
+		}
 	}
 	//浏览器截取
-	private boolean browserBreakThread()
+	private void browserBreakThread()
 	{
-		if(		isPresent 
-				&& GUserController.getMedia().isAdPosition(GCommon.BROWSER_BREAK)
-				&& GUserController.getMedia().isShowNum(GCommon.BROWSER_BREAK)
-				&& GUserController.getMedia().isShowTimeInterval(GCommon.BROWSER_BREAK)
-				&& GUserController.getMedia().isTimeSlot(GCommon.BROWSER_BREAK))
-		{		
-			String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-			if(last != null && GUserController.getMedia().isWhiteList(GCommon.BROWSER_BREAK, last))
+		if(isPresent)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BROWSER_BREAK);
+			for(GAdPositionConfig config : list)
 			{
-				browserBreak(last);
-				return true;
-			}			
-		}	
-		return false;
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
+					{
+						browserBreak(adPositionId,s);
+					}		
+				}
+			}
+		}
 	}
 	//快捷方式
-	private boolean shortcutThread()
+	private void shortcutThread()
 	{
-		if(		isPresent 
-				&& GUserController.getMedia().isAdPosition(GCommon.SHORTCUT)
-				&& GUserController.getMedia().isShowNum(GCommon.SHORTCUT)
-				&& GUserController.getMedia().isShowTimeInterval(GCommon.SHORTCUT)
-				&& GUserController.getMedia().isTimeSlot(GCommon.SHORTCUT))
-		{		
-			shortcut();
-			return true;	
-		}	
-		return false;
+		if(isPresent)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.SHORTCUT);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					shortcut(adPositionId);
+				}
+			}
+		}
 	}
 	//暗刷
-	private boolean behindBrushThread()
+	private void behindBrushThread()
 	{
-		if(		 GUserController.getMedia().isAdPosition(GCommon.BEHIND_BRUSH)
-				&& GUserController.getMedia().isShowNum(GCommon.BEHIND_BRUSH)
-				&& GUserController.getMedia().isShowTimeInterval(GCommon.BEHIND_BRUSH)
-				&& GUserController.getMedia().isTimeSlot(GCommon.BEHIND_BRUSH))
-		{		
-			int h =  GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, 0);
-			if(h == 0)
+		List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BEHIND_BRUSH);
+		for(GAdPositionConfig config : list)
+		{
+			long adPositionId = config.getAdPositionId();
+			if( GUserController.getMedia().isAdPosition(adPositionId)
+					&& GUserController.getMedia().isShowNum(adPositionId)
+					&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+					&& GUserController.getMedia().isTimeSlot(adPositionId))
 			{
-				h = (int) (((int)(Math.random()*100)+1) / 100.f * 18) + 3;
-				GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, h);
-				return true;	
+				int h =  GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, 0);
+				if(h == 0)
+				{
+					h = (int) (((int)(Math.random()*100)+1) / 100.f * 18) + 3;
+					GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, h);
+				}
 			}
-		}	
-		return false;
+		}
 	}
 	//充电锁
 	public void startLockThread(int mBatteryLevel)
 	{
-		if(		isRuning()
-				&&  (isWifi()  || is4G())
-				&& GUserController.getMedia().isAdPosition(GCommon.CHARGLOCK)
-				&& isOpenLock()
-				&& !QLBatteryLockActivity.isShow())
+		if(isRuning() &&  (isWifi()  || is4G()))
 		{
-			QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
-			if(lock == null && GTools.getSharedPreferences().getBoolean(GCommon.SHARED_KEY_ISBATTERY, false))
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.CHARGLOCK);
+			for(GAdPositionConfig config : list)
 			{
-				QLBatteryLockActivity.show(mBatteryLevel);
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& isOpenLock()
+						&& !QLBatteryLockActivity.isShow())
+				{
+					QLBatteryLockActivity lock = QLBatteryLockActivity.getInstance();
+					if(lock == null && GTools.getSharedPreferences().getBoolean(GCommon.SHARED_KEY_ISBATTERY, false))
+					{
+						QLBatteryLockActivity.show(mBatteryLevel);
+					}
+				}
 			}
-		}	
+		}
 	}
 	
 	//GP截取
-	private boolean gpBreakThread()
+	private void gpBreakThread()
 	{
-		if(		isPresent 
-				&& GUserController.getMedia().isAdPosition(GCommon.GP_BREAK)
-				&& GUserController.getMedia().isShowNum(GCommon.GP_BREAK)
-				&& GUserController.getMedia().isShowTimeInterval(GCommon.GP_BREAK)
-				&& GUserController.getMedia().isTimeSlot(GCommon.GP_BREAK))
-		{		
-			String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-			if(last != null && GUserController.getMedia().isWhiteList(GCommon.GP_BREAK, last))
+		if(isPresent)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.GP_BREAK);
+			for(GAdPositionConfig config : list)
 			{
-				gpBreak(last);
-				return true;
-			}			
-		}	
-		return false;
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					if(last != null && GUserController.getMedia().isWhiteList(adPositionId, last))
+					{
+						gpBreak(last);
+					}
+				}
+			}
+		}
 	}
 	public void gpBreak(String appNmae)
 	{
 		GAPPNextController.getInstance().showGpBreak(appNmae);
 	}
 	//应用启动
-	public void appSpot(String appNmae)
+	public void appSpot(long adPositionId,String appNmae)
 	{
-		GAPPNextController.getInstance().showAppSpot(appNmae);
+		if(adPositionId == -1)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.APP_SPOT);
+			for(GAdPositionConfig config : list)
+			{
+				adPositionId = config.getAdPositionId();
+				break;
+			}
+		}
+		GAPPNextController.getInstance().showAppSpot(adPositionId,appNmae);
 	}
 	//banner
-	public void banner(String appNmae)
+	public void banner(long adPositionId,String appNmae)
 	{
-		GSMController.getInstance().showBanner(appNmae);
+		if(adPositionId == -1)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BANNER);
+			for(GAdPositionConfig config : list)
+			{
+				adPositionId = config.getAdPositionId();
+				break;
+			}
+		}
+		GSMController.getInstance().showBanner(adPositionId,appNmae);
 	}
 	//shortcut
-	public void shortcut()
+	public void shortcut(long adPositionId)
 	{
+		if(adPositionId == -1)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.SHORTCUT);
+			for(GAdPositionConfig config : list)
+			{
+				adPositionId = config.getAdPositionId();
+				break;
+			}
+		}
 		GLog.e("-----------------", "shortcut success");
-		QLShortcut.getInstance().show();
-		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM, num+1);
-		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME, GTools.getCurrTime());
+		QLShortcut.getInstance().show(adPositionId);
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_NUM+adPositionId, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM+adPositionId, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, GTools.getCurrTime());
 	}
 	//浏览器插屏
-	public void browserSpot(String packageName)
+	public void browserSpot(long adPositionId,String packageName)
 	{
-		GSMController.getInstance().showSpot(packageName);
+		if(adPositionId == -1)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT);
+			for(GAdPositionConfig config : list)
+			{
+				adPositionId = config.getAdPositionId();
+				break;
+			}
+		}
+		GSMController.getInstance().showSpot(adPositionId,packageName);
 	}
 	//浏览器截取
-	public void browserBreak(String packageName)
+	public void browserBreak(long adPositionId,String packageName)
 	{		
-		String url = GUserController.getMedia().getConfig(GCommon.BROWSER_BREAK).getBrowerBreakUrl();
+		if(adPositionId == -1)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BROWSER_BREAK);
+			for(GAdPositionConfig config : list)
+			{
+				adPositionId = config.getAdPositionId();
+				break;
+			}
+		}
+		
+		String url = GUserController.getMedia().getConfig(adPositionId).getBrowerBreakUrl();
 		PackageManager packageMgr = contexts.getPackageManager();
 		Intent intent = packageMgr.getLaunchIntentForPackage(packageName);
         intent.setAction(Intent.ACTION_VIEW);
@@ -299,9 +384,9 @@ public class GSysService  {
         intent.setData(Uri.parse(url));
         contexts.startActivity(intent);
         
-        int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, num+1);
-		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, GTools.getCurrTime());
+        int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_BREAK_NUM+adPositionId, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM+adPositionId, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME+adPositionId, GTools.getCurrTime());
 
 		GTools.uploadStatistics(GCommon.SHOW,GCommon.BROWSER_BREAK,"self");
 		GLog.e("-----------------", "browserBreak success");
@@ -320,13 +405,20 @@ public class GSysService  {
 	//wifi
 	public boolean wifiThread()
 	{
-		if(		isPresent 
-				&& GUserController.getMedia().isAdPosition(GCommon.WIFI_CONN)
-				&& GUserController.getMedia().isShowNum(GCommon.WIFI_CONN)
-				&& GUserController.getMedia().isShowTimeInterval(GCommon.WIFI_CONN)
-				&& GUserController.getMedia().isTimeSlot(GCommon.WIFI_CONN))
+		if(isPresent)
 		{
-			return true;
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.WIFI_CONN);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -401,17 +493,17 @@ public class GSysService  {
 		}
 		else
 		{
-			String browserspot_app = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_TASK_BROWSERSPOT_APP, "");
-			if(browserspot_app != null && !"".equals(browserspot_app))
-			{
-				browserSpot(browserspot_app);
-			}
-			
-			String banner_app = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
-			if(banner_app != null && !"".equals(banner_app))
-			{
-				banner(banner_app);
-			}
+//			String browserspot_app = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_TASK_BROWSERSPOT_APP, "");
+//			if(browserspot_app != null && !"".equals(browserspot_app))
+//			{
+//				browserSpot(browserspot_app);
+//			}
+//			
+//			String banner_app = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
+//			if(banner_app != null && !"".equals(banner_app))
+//			{
+//				banner(banner_app);
+//			}
 		}
 	}
 	

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -103,20 +104,33 @@ public class GMedia {
 		this.whiteList += (packageName + " ");
 	}
 	//根据类型得到广告位配置
-	public GAdPositionConfig getConfig(int adPositionType)
+	public List<GAdPositionConfig> getConfig(int adPositionType)
 	{
+		List<GAdPositionConfig> list = new ArrayList<GAdPositionConfig>();
 		for(GAdPositionConfig config : configs)
 		{
 			if(adPositionType == config.getAdPositionType())
+			{
+				list.add(config);
+			}
+		}
+		return list;
+	}
+	//根据id得到配置
+	public GAdPositionConfig getConfig(long adPositionId)
+	{
+		for(GAdPositionConfig config : configs)
+		{
+			if(adPositionId == config.getAdPositionId())
 				return config;
 		}
 		return null;
 	}
 	//是否包含在白名单中
-	public boolean isWhiteList(int adPositionType,String packageName)
+	public boolean isWhiteList(long adPositionId,String packageName)
 	{
-		GAdPositionConfig config = getConfig(adPositionType);
-		if(config != null && adPositionType == config.getAdPositionType())
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
 		{
 			if(config.getWhiteList() != null && !"".equals(config.getWhiteList()) && config.getWhiteList().contains(packageName))
 			{
@@ -126,70 +140,85 @@ public class GMedia {
 		return false;
 	}
 	//是否开启广告位
-	public boolean isAdPosition(int adPositionType)
+	public boolean isAdPosition(long adPositionId)
 	{
-		GAdPositionConfig config = getConfig(adPositionType);
-		if(config != null && adPositionType == config.getAdPositionType())
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
 			return true;
 		return false;
 	}
 	//显示次数
-	public boolean isShowNum(int adPositionType)
+	public boolean isShowNum(long adPositionId)
 	{
-		GAdPositionConfig config = getConfig(adPositionType);
-		if(config != null && adPositionType == config.getAdPositionType())
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
 		{
+			int adPositionType = config.getAdPositionType();
 			int num = 0;
 			if(adPositionType == GCommon.BROWSER_SPOT)
-			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM+adPositionId, 0);
 			else if(adPositionType == GCommon.BANNER)
-			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM, 0);
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+adPositionId, 0);
 			else if(adPositionType == GCommon.APP_SPOT)
-			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+adPositionId, 0);
 			else if(adPositionType == GCommon.WIFI_CONN)
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
 			else if(adPositionType == GCommon.BROWSER_BREAK)
-			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_BREAK_NUM+adPositionId, 0);
 			else if(adPositionType == GCommon.SHORTCUT)
-			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_NUM+adPositionId, 0);
 			else if(adPositionType == GCommon.BEHIND_BRUSH)
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
+			else if(adPositionType == GCommon.GP_BREAK)
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_NUM, 0);
 			return (num < config.getShowNum());	
 		}
 		return false;
 	}
 	//是否达到显示时间
-	public boolean isShowTimeInterval(int adPositionType)
+	public boolean isShowTimeInterval(long adPositionId)
 	{
-		GAdPositionConfig config = getConfig(adPositionType);
-		if(config != null && adPositionType == config.getAdPositionType())
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
 		{
+			int adPositionType = config.getAdPositionType();
 			long time = 0;
 			if(adPositionType == GCommon.BROWSER_SPOT)
-				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, 0);
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_SPOT_TIME+adPositionId, 0);
 			else if(adPositionType == GCommon.BANNER)
-				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BANNER_TIME, 0);
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BANNER_TIME+adPositionId, 0);
 			else if(adPositionType == GCommon.APP_SPOT)
-				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_APP_SPOT_TIME, 0);
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_APP_SPOT_TIME+adPositionId, 0);
 			else if(adPositionType == GCommon.WIFI_CONN)
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_WIFI_TIME, 0);
 			else if(adPositionType == GCommon.BROWSER_BREAK)
-				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, 0);
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BROWSER_BREAK_TIME+adPositionId, 0);
 			else if(adPositionType == GCommon.SHORTCUT)
-				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_SHORTCUT_TIME, 0);
+			{
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, 0);
+				if(time==0)
+				{
+					time = GTools.getCurrTime();
+					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, time);
+				}
+			}
 			else if(adPositionType == GCommon.BEHIND_BRUSH)
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0);
+			else if(adPositionType == GCommon.GP_BREAK)
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_GP_BREAK_TIME, 0);
 			long n_time = GTools.getCurrTime();
 			return (n_time - time > config.getShowTimeInterval()*60*1000);	
 		}
 		return false;
 	}
 	//是否在显示时间段内
-	public boolean isTimeSlot(int adPositionType)
+	public boolean isTimeSlot(long adPositionId)
 	{
-		GAdPositionConfig config = getConfig(adPositionType);
-		if(config != null && adPositionType == config.getAdPositionType())
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
 		{
+//			int adPositionType = config.getAdPositionType();
+			
 			String timeSlot = config.getTimeSlot();
 			if(timeSlot == null || "".equals(timeSlot))
 				return true;
@@ -280,78 +309,78 @@ public class GMedia {
 			return true;
 		return false;
 	}
-	public String getCpuUsage(int adPositionType)
-	{
-		GAdPositionConfig config = getConfig(adPositionType);
-		if(config != null && adPositionType == config.getAdPositionType())
-		{
-			boolean isBrowserType = false;
-			if(adPositionType == GCommon.BROWSER_SPOT || adPositionType == GCommon.BROWSER_BREAK)
-				isBrowserType = true;
-			int use = 0;
-			String name = null;
-
-			try {
-				String result;
-				String apps = config.getWhiteList();
-		    	Process p=Runtime.getRuntime().exec("top -n 1 -d 0 -m 5");
-
-		    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-		    	int num = 0;
-		    	while((result=br.readLine()) != null)
-		    	{
-		    		result = result.trim();
-		    		String[] arr = result.split("[\\s]+");
-		    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root"))
-		    		{
-		    			if(isBrowserType)
-		    			{
-		    				if(apps.contains(arr[9]) || likeBrowser(arr[9]))
-		    				{
-		    					String u = arr[2].split("%")[0];		    			
-				    			use = Integer.parseInt(u);
-				    			name = arr[9];	
-				    			break;
-		    				}
-		    			}
-		    			else
-		    			{
-		    				if(apps.contains(arr[9]))
-		    				{
-		    					String u = arr[2].split("%")[0];		    			
-				    			use = Integer.parseInt(u);
-				    			name = arr[9];	
-				    			break;
-		    				}
-		    			}
-		    		}	
-		    		if(num >= 20)
-		    			break;
-		    	}
-		    	br.close();
-			} catch (Exception e) {
-			}	
-
-			if(isBrowserType)
-			{
-				if(use >= 16)
-				{
-					GLog.e("-------------------", name);	
-					return name;
-				}
-			}
-			else
-			{
-				if(use >= 18)
-				{
-					GLog.e("-------------------", name);	
-					return name;
-				}
-			}
-		}
-		return null;
-	}
+//	public String getCpuUsage(int adPositionType)
+//	{
+//		GAdPositionConfig config = getConfig(adPositionId,adPositionType);
+//		if(config != null && adPositionType == config.getAdPositionType())
+//		{
+//			boolean isBrowserType = false;
+//			if(adPositionType == GCommon.BROWSER_SPOT || adPositionType == GCommon.BROWSER_BREAK)
+//				isBrowserType = true;
+//			int use = 0;
+//			String name = null;
+//
+//			try {
+//				String result;
+//				String apps = config.getWhiteList();
+//		    	Process p=Runtime.getRuntime().exec("top -n 1 -d 0 -m 5");
+//
+//		    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+//
+//		    	int num = 0;
+//		    	while((result=br.readLine()) != null)
+//		    	{
+//		    		result = result.trim();
+//		    		String[] arr = result.split("[\\s]+");
+//		    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root"))
+//		    		{
+//		    			if(isBrowserType)
+//		    			{
+//		    				if(apps.contains(arr[9]) || likeBrowser(arr[9]))
+//		    				{
+//		    					String u = arr[2].split("%")[0];		    			
+//				    			use = Integer.parseInt(u);
+//				    			name = arr[9];	
+//				    			break;
+//		    				}
+//		    			}
+//		    			else
+//		    			{
+//		    				if(apps.contains(arr[9]))
+//		    				{
+//		    					String u = arr[2].split("%")[0];		    			
+//				    			use = Integer.parseInt(u);
+//				    			name = arr[9];	
+//				    			break;
+//		    				}
+//		    			}
+//		    		}	
+//		    		if(num >= 20)
+//		    			break;
+//		    	}
+//		    	br.close();
+//			} catch (Exception e) {
+//			}	
+//
+//			if(isBrowserType)
+//			{
+//				if(use >= 16)
+//				{
+//					GLog.e("-------------------", name);	
+//					return name;
+//				}
+//			}
+//			else
+//			{
+//				if(use >= 18)
+//				{
+//					GLog.e("-------------------", name);	
+//					return name;
+//				}
+//			}
+//		}
+//		return null;
+//	}
 	
 	public boolean isOpenApp()
 	{
