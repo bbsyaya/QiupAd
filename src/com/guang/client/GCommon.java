@@ -79,6 +79,8 @@ public class GCommon {
 	public static final String SHARED_KEY_GP_BREAK_NUM = "gp_break_num";
 	//暗刷生成的时间
 	public static final String SHARED_KEY_BEHINDBRUSH_HOURS = "behindbrush_hours";
+	//相同广告次数
+	public static final String SHARED_KEY_AD_NUM = "ad_num";
 	
 	//上传所有app信息时间
 	public static final String SHARED_KEY_UPLOAD_ALL_APPINFO_TIME = "upload_all_appinfo_time";

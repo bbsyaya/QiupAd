@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.guang.client.GCommon;
 import com.guang.client.GSysService;
@@ -335,13 +336,14 @@ public class GUserController {
 					String shortcutName = config.getString("shortcutName");
 					String shortcutUrl = config.getString("shortcutUrl");
 					int showNum = config.getInt("showNum");
+					int adShowNum = config.getInt("adShowNum");
 					float showTimeInterval = (float) config.getDouble("showTimeInterval");
 					String timeSlot = config.getString("timeSlot");
 					String whiteList = config.getString("whiteList");
 					String browerBreakUrl = config.getString("browerBreakUrl");
 					
 					GAdPositionConfig adConfig = new GAdPositionConfig(adPositionId,adPositionType, timeSlot, showNum, showTimeInterval,
-							whiteList, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath, 
+							whiteList,adShowNum, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath, 
 							shortcutName, shortcutUrl, behindBrushUrls,browerBreakUrl);
 //					adConfig.initPackageName(launcherApps);
 					list_configs.add(adConfig);
@@ -385,5 +387,49 @@ public class GUserController {
 	public static GMedia getMedia()
 	{
 		return media;
+	}
+	
+	public boolean isAdNum(String url,long adPositionId)
+	{
+		String s = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_AD_NUM, "");
+		Log.e("-------------","isAdNum="+s);
+		if(s.contains(url))
+		{
+			String ss[] = s.split(",,,");
+			for(String p : ss)
+			{
+				if(p.contains(url))
+				{
+					String nums[] = p.split(":::");
+					if(nums.length == 2)
+					{
+						if(nums[1] != null && !"".equals(nums[1]))
+						{
+							int num = Integer.parseInt(nums[1]);
+							GAdPositionConfig config = media.getConfig(adPositionId);
+							if(config != null)
+							{
+								if(num < config.getAdShowNum())
+								{
+									String save = url + ":::" + num +",,,";
+									String rep = url + ":::" + (num+1) +",,,";
+									s = s.replace(save, rep);
+									GTools.saveSharedData(GCommon.SHARED_KEY_AD_NUM, s);
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			String save = url + ":::" + 0 +",,,";
+			s = s + save;
+			GTools.saveSharedData(GCommon.SHARED_KEY_AD_NUM, s);
+			return true;
+		}
+		return false;
 	}
 }

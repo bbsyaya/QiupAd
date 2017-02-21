@@ -149,14 +149,22 @@ public class GSMController {
 					GTools.saveSharedData(GCommon.SHARED_KEY_TASK_BANNER_APP, "");
 					
 					GLog.e("----------------------", "切换AppNext");
-					GAPPNextController.getInstance().showBanner(appName);
+					GAPPNextController.getInstance().showBanner(bannerAdPositionId,appName);
 				}
 				else
 				{
 					String imageName = link.substring(link.length()/3*2,link.length());
-					GTools.downloadRes(link, this, "downloadBannerCallback", imageName,true);
-					
-					offer = new GSMOffer(sessionid, imageName, target);
+					if(GUserController.getInstance().isAdNum(imageName, bannerAdPositionId))
+					{
+						GTools.downloadRes(link, this, "downloadBannerCallback", imageName,true);
+						
+						offer = new GSMOffer(sessionid, imageName, target);
+					}
+					else
+					{
+						GLog.e("----------------------", "切换AppNext");
+						GAPPNextController.getInstance().showBanner(bannerAdPositionId,appName);
+					}
 					
 					
 				}
@@ -164,12 +172,12 @@ public class GSMController {
 			else
 			{
 				GLog.e("----------------------", "切换AppNext");
-				GAPPNextController.getInstance().showBanner(appName);
+				GAPPNextController.getInstance().showBanner(bannerAdPositionId,appName);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 			GLog.e("----------------------", "切换AppNext");
-			GAPPNextController.getInstance().showBanner(appName);
+			GAPPNextController.getInstance().showBanner(bannerAdPositionId,appName);
 		}	
 		finally
 		{
@@ -302,9 +310,17 @@ public class GSMController {
 				else
 				{
 					String imageName = link.substring(link.length()/3*2,link.length());
-					GTools.downloadRes(link, this, "downloadSpotCallback", imageName,true);
-					
-					offer = new GSMOffer(sessionid, imageName, target);
+					if(GUserController.getInstance().isAdNum(imageName, spotAdPositionId))
+					{
+						GTools.downloadRes(link, this, "downloadSpotCallback", imageName,true);
+						
+						offer = new GSMOffer(sessionid, imageName, target);
+					}
+					else
+					{
+						GLog.e("----------------------", "切换Oneway");
+						GOnewayController.getInstance().showSpot(spotAdPositionId,browserName);
+					}
 					
 					
 				}

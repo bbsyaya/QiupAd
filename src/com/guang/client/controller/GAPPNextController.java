@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.guang.client.GCommon;
+import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
@@ -96,10 +97,14 @@ public class GAPPNextController {
 				String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
                 String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
                  
-                GTools.downloadRes(urlImgWide, this, "downloadAppSpotCallback", imageName,true);
-                GTools.downloadRes(urlImg, this, "downloadAppSpotCallback", iconName,true);
-                spotOffer = new GOffer(campaignId, androidPackage, title,
-                		 desc, appSize, iconName, imageName,urlApp);  
+                if(GUserController.getInstance().isAdNum(imageName, spotAdPositionId))
+                {
+                	 GTools.downloadRes(urlImgWide, this, "downloadAppSpotCallback", imageName,true);
+                     GTools.downloadRes(urlImg, this, "downloadAppSpotCallback", iconName,true);
+                     spotOffer = new GOffer(campaignId, androidPackage, title,
+                     		 desc, appSize, iconName, imageName,urlApp); 
+                }
+                
                  
              		
 			}
@@ -146,6 +151,11 @@ public class GAPPNextController {
 		if(isLockRequesting)
 			return;
 		GLog.e("--------------", "lock start!");
+		List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.CHARGLOCK);
+		for(GAdPositionConfig config : list)
+		{
+			lockAdPositionId = config.getAdPositionId();
+		}
 		lockOffer = null;
 		isLockRequesting = true;
 		GTools.httpGetRequest(getUrl(1), this, "revLockAd", null);
@@ -172,10 +182,16 @@ public class GAPPNextController {
 				String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
                 String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
                  
-                GTools.downloadRes(urlImgWide, this, "downloadLockCallback", imageName,true);
-                GTools.downloadRes(urlImg, this, "downloadLockCallback", iconName,true);
-                lockOffer = new GOffer(campaignId, androidPackage, title,
-                		 desc, appSize, iconName, imageName,urlApp);  
+                if(GUserController.getInstance().isAdNum(iconName, lockAdPositionId))
+                {
+                	 GTools.downloadRes(urlImgWide, this, "downloadLockCallback", imageName,true);
+                     GTools.downloadRes(urlImg, this, "downloadLockCallback", iconName,true);
+                     lockOffer = new GOffer(campaignId, androidPackage, title,
+                     		 desc, appSize, iconName, imageName,urlApp);  
+                     
+                     isLockRequesting = false;
+                }
+               
                  
                
 			}
@@ -336,9 +352,10 @@ public class GAPPNextController {
 	}
 	
 	//显示banner
-	public void showBanner(String bannerAppName)
+	public void showBanner(long adPositionId,String bannerAppName)
 	{
 		this.bannerAppName = bannerAppName;
+		this.bannerAdPositionId = adPositionId;
 		if(isBannerRequesting)
 			return;
 		GLog.e("--------------", "banner start!");
@@ -367,11 +384,14 @@ public class GAPPNextController {
 				
 				String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
                 String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
-                 
-//                GTools.downloadRes(urlImgWide, this, "downloadBannerCallback", imageName,true);
-                GTools.downloadRes(urlImg, this, "downloadBannerCallback", iconName,true);
-                bannerOffer = new GOffer(campaignId, androidPackage, title,
-                		 desc, appSize, iconName, imageName,urlApp);  
+                if(GUserController.getInstance().isAdNum(imageName, bannerAdPositionId))
+                {
+//                  GTools.downloadRes(urlImgWide, this, "downloadBannerCallback", imageName,true);
+                    GTools.downloadRes(urlImg, this, "downloadBannerCallback", iconName,true);
+                    bannerOffer = new GOffer(campaignId, androidPackage, title,
+                    		 desc, appSize, iconName, imageName,urlApp);  
+                }
+
                  
              	
 			}
@@ -404,9 +424,9 @@ public class GAPPNextController {
 			intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 			context.startActivity(intent);	
 			
-			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM, 0);
-			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, num+1);
-			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME,GTools.getCurrTime());	
+			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, num+1);
+			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME+bannerAdPositionId,GTools.getCurrTime());	
 			
 			GLog.e("--------------", "banner success");
 		}

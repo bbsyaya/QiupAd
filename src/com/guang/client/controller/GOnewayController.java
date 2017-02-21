@@ -80,9 +80,13 @@ public class GOnewayController {
 					String target = app.getString("clickUrl");
 					
 					String imageName = link.substring(link.length()/3*2,link.length());
-					GTools.downloadRes(link, this, "downloadSpotCallback", imageName,true);
+					if(GUserController.getInstance().isAdNum(imageName, spotAdPositionId))
+					{
+						GTools.downloadRes(link, this, "downloadSpotCallback", imageName,true);
+						
+						spotOffer = new GSMOffer(sessionid, imageName, target);
+					}
 					
-					spotOffer = new GSMOffer(sessionid, imageName, target);
 					
 					
 				}
