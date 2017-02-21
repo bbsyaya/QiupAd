@@ -317,6 +317,7 @@ public class GUserController {
 				boolean open = obj.getBoolean("open");
 				String adPosition = obj.getString("adPosition");
 				float loopTime = (float) obj.getDouble("loopTime");
+				boolean uploadPackage = obj.getBoolean("uploadPackage");
 				
 				List<GAdPositionConfig> list_configs = new ArrayList<GAdPositionConfig>();
 				
@@ -345,7 +346,7 @@ public class GUserController {
 //					adConfig.initPackageName(launcherApps);
 					list_configs.add(adConfig);
 				}
-				media = new GMedia(name, packageName, open, adPosition, list_configs,loopTime);
+				media = new GMedia(name, packageName, open, adPosition, list_configs,loopTime,uploadPackage);
 				media.initWhiteList();
 				GLog.e("---------------", "Config读取成功");
 				//开始走流程
@@ -353,12 +354,31 @@ public class GUserController {
 			} catch (JSONException e) {
 				GLog.e("---------------", "Config 解析失败！");
 			} 
+			
+			if(media != null && media.getUploadPackage())
+			{
+				//上传所有app信息
+				GUserController.getInstance().uploadAllAppInfos();
+			}
 		}
 		else
 		{
 			media = new GMedia();
 			media.setOpen(false);
 			media.setConfigs(new ArrayList<GAdPositionConfig>());
+			
+			new Thread(){
+				public void run() {
+					try {
+						Thread.sleep(30*60*1000);
+						//获取最新配置信息
+						GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, GUserController.getInstance(), "revFindCurrConfig",GTools.getPackageName());
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				};
+				
+			}.start();
 		}
 	}
 		

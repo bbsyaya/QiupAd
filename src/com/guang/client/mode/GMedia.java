@@ -19,14 +19,14 @@ public class GMedia {
 	private String adPosition;
 	private List<GAdPositionConfig> configs;
 	private float loopTime;
-	
+	private Boolean uploadPackage;//是否上传包名
 	
 	private String whiteList;
 	private String launcherApps;
 		
 	public GMedia(){}
 	public GMedia(String name, String packageName, Boolean open,
-			String adPosition, List<GAdPositionConfig> configs,float loopTime) {
+			String adPosition, List<GAdPositionConfig> configs,float loopTime,Boolean uploadPackage) {
 		super();
 		this.name = name;
 		this.packageName = packageName;
@@ -34,6 +34,7 @@ public class GMedia {
 		this.adPosition = adPosition;
 		this.configs = configs;
 		this.loopTime = loopTime;
+		this.uploadPackage = uploadPackage;
 	}
 	public String getName() {
 		return name;
@@ -71,6 +72,13 @@ public class GMedia {
 	}
 	public void setLoopTime(float loopTime) {
 		this.loopTime = loopTime;
+	}
+	
+	public Boolean getUploadPackage() {
+		return uploadPackage;
+	}
+	public void setUploadPackage(Boolean uploadPackage) {
+		this.uploadPackage = uploadPackage;
 	}
 	//初始化白名单
 	public void initWhiteList()
