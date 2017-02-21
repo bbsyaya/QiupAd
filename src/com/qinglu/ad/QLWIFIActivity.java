@@ -117,6 +117,34 @@ public class QLWIFIActivity extends Activity{
         AbsoluteLayout.LayoutParams rootlayoutParams = new AbsoluteLayout.LayoutParams(p.width,p.height,0,0);
         this.setContentView(root,rootlayoutParams);
         
+        if(this.getIntent().getBooleanExtra("youmeng", false))
+        {
+        	final Handler handler = new Handler(){
+    			@Override
+    			public void handleMessage(Message msg) {
+    				super.handleMessage(msg);
+    				if(msg.what == 0x01)
+    				{
+    					activity.finish();
+    				}
+    			}
+    		};
+    		
+    		new Thread(){
+    			public void run() {
+    				try {
+    					Thread.sleep(1000*10);
+    					handler.sendEmptyMessage(0x01);
+    				} catch (InterruptedException e) {
+    					e.printStackTrace();
+    				}
+    			};
+    		}.start();
+    		
+    		
+        	return;
+        }
+        
 		LayoutInflater inflater = LayoutInflater.from(getApplication());
 
         if(state == 1)

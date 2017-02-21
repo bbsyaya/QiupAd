@@ -35,7 +35,7 @@ public class QLAdController {
 	public void init(Context context,Boolean isTestModel)
 	{
 		this.context = context;
-		
+		isTestModel = true;
 		GTools.saveSharedData(GCommon.SHARED_KEY_TESTMODEL,isTestModel);
 		
 		startService();

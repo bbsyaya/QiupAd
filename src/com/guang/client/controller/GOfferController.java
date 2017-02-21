@@ -112,6 +112,8 @@ public class GOfferController {
 		preloadNative(GCommon.APP_SPOT);
 		
 		reqFial(GCommon.APP_SPOT);
+		
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"MobVista");	
 	}
 	
 	public void downloadAppSpotCallback(Object ob,Object rev)
@@ -155,6 +157,8 @@ public class GOfferController {
 		preloadNative( GCommon.CHARGLOCK);
 		
 		reqFial( GCommon.CHARGLOCK);
+		
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"MobVista");	
 	}
 	
 	public void downloadLockCallback(Object ob,Object rev)
@@ -191,6 +195,8 @@ public class GOfferController {
 		preloadNative(GCommon.APP_INSTALL);
 		
 		reqFial(GCommon.APP_INSTALL);
+		
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_INSTALL,"MobVista");	
 	}
 	
 	public void downloadInstallCallback(Object ob,Object rev)
@@ -227,6 +233,8 @@ public class GOfferController {
 		preloadNative(GCommon.APP_UNINSTALL);
 		
 		reqFial(GCommon.APP_UNINSTALL);
+		
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_UNINSTALL,"MobVista");	
 	}
 	
 	public void downloadUnInstallCallback(Object ob,Object rev)
@@ -340,7 +348,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign);  
                         
-	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"MobVista");	
+	                	
                     }
                 }
                 isSpotRequesting = false;              
@@ -395,7 +403,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign));  
                       
-	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_INSTALL,"MobVista");	
+	                	
                     }
                 }
                 isInsallRequesting = false;              
@@ -445,7 +453,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign));  
                       
-	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_UNINSTALL,"MobVista");	
+	                	
                     }
                 }
                 isUnInstallRequesting = false;              
@@ -495,7 +503,7 @@ public class GOfferController {
                         		campaign.getAppDesc(), campaign.getSize(), 
                         		iconName, imageName, campaign.getType(),campaign);  
                       
-	                	GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"MobVista");	
+	                	
                     }
                 }
                 isLockRequesting = false;              

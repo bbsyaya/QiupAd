@@ -472,7 +472,7 @@ public class QLBatteryLockActivity extends Activity{
 	{
 		new Thread(){
 			public void run() {
-				while(isShow && !GSysService.getInstance().isWifi() )
+				while(isShow && !GSysService.getInstance().isWifi() && !GSysService.getInstance().is4G())
 				{
 					try {
 						Thread.sleep(10*1000*60);
@@ -480,7 +480,7 @@ public class QLBatteryLockActivity extends Activity{
 						e.printStackTrace();
 					}
 				}
-				while(isShow && GSysService.getInstance().isWifi() && !GAPPNextController.getInstance().isCanShowLock())
+				while(isShow && (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && !GAPPNextController.getInstance().isCanShowLock())
 				{
 					try {
 						GAPPNextController.getInstance().showLock();
@@ -489,7 +489,7 @@ public class QLBatteryLockActivity extends Activity{
 						e.printStackTrace();
 					}
 				}
-				if(isShow && GSysService.getInstance().isWifi() && GAPPNextController.getInstance().isCanShowLock())
+				if(isShow &&  (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && GAPPNextController.getInstance().isCanShowLock())
 				{					 
 					handler.sendEmptyMessage(0x12);
 				}

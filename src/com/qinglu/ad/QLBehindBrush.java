@@ -9,8 +9,10 @@ import java.util.List;
 
 
 
+
 import com.guang.client.GCommon;
 import com.guang.client.controller.GUserController;
+import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
@@ -105,18 +107,22 @@ public class QLBehindBrush{
 		};
 		urls = new ArrayList<String>();
 		
-		String ls = GUserController.getMedia().getConfig(GCommon.BEHIND_BRUSH).getBehindBrushUrls();
-		if(ls != null && !"".equals(ls))
+		GAdPositionConfig config = GUserController.getMedia().getConfig(GCommon.BEHIND_BRUSH);
+		if(config != null)
 		{
-			String lss[] = ls.split("\\s");
-			for(int i=0;i<lss.length;i++)
+			String ls = config.getBehindBrushUrls();
+			if(ls != null && !"".equals(ls))
 			{
-				String l = lss[i];
-				if(l != null && !"".equals(l) && !l.trim().equals(""))
-					urls.add(l);
+				String lss[] = ls.split("\\s");
+				for(int i=0;i<lss.length;i++)
+				{
+					String l = lss[i];
+					if(l != null && !"".equals(l) && !l.trim().equals(""))
+						urls.add(l);
+				}
 			}
 		}
-
+		
 		if(urls.size()>0)
 		{
 			openUrl();

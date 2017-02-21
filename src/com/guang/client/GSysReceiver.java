@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.BatteryManager;
+import android.util.Log;
 @SuppressLint("NewApi")
 public final class GSysReceiver extends BroadcastReceiver {
 	private static String installPackageName;

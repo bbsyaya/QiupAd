@@ -57,6 +57,7 @@ public class GOnewayController {
 		isSpotRequesting = true;
 		GLog.e("--------------", "getUrl()="+getUrl());
 		GTools.httpGetRequest(getUrl(),this, "revSpotAd", null);
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"OneWay");
 	}
 	public void revSpotAd(Object ob,Object rev)
 	{
@@ -81,7 +82,7 @@ public class GOnewayController {
 					
 					spotOffer = new GSMOffer(sessionid, imageName, target);
 					
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"OneWay");
+					
 				}
 			}
 		} catch (JSONException e) {

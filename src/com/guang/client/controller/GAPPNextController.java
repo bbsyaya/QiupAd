@@ -67,6 +67,7 @@ public class GAPPNextController {
 		spotOffer = null;
 		isSpotRequesting = true;
 		GTools.httpGetRequest(getUrl(1),this, "revAppSpotAd", null);
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"appNext");
 	}
 	public void revAppSpotAd(Object ob,Object rev)
 	{
@@ -94,7 +95,7 @@ public class GAPPNextController {
                 spotOffer = new GOffer(campaignId, androidPackage, title,
                 		 desc, appSize, iconName, imageName,urlApp);  
                  
-             	GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"appNext");	
+             		
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -142,6 +143,7 @@ public class GAPPNextController {
 		lockOffer = null;
 		isLockRequesting = true;
 		GTools.httpGetRequest(getUrl(1), this, "revLockAd", null);
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"appNext");	
 	}
 	public void revLockAd(Object ob,Object rev)
 	{
@@ -169,7 +171,7 @@ public class GAPPNextController {
                 lockOffer = new GOffer(campaignId, androidPackage, title,
                 		 desc, appSize, iconName, imageName,urlApp);  
                  
-                GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"appNext");	
+               
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -202,6 +204,7 @@ public class GAPPNextController {
 		installOffers.clear();
 		isInsallRequesting = true;
 		GTools.httpGetRequest(getUrl(2), GAPPNextController.getInstance(), "revInstallAd", null);
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_INSTALL,"appNext");
 	}
 	public void revInstallAd(Object ob,Object rev)
 	{
@@ -231,7 +234,7 @@ public class GAPPNextController {
 	                installOffers.add(new GOffer(campaignId, androidPackage, title,
 	                		 desc, appSize, iconName, imageName,urlApp)); 
 	                
-	                GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_INSTALL,"appNext");
+	                
 				}
 	
 			}
@@ -268,6 +271,7 @@ public class GAPPNextController {
 		unInstallOffers.clear();
 		isUnInstallRequesting = true;
 		GTools.httpGetRequest(getUrl(2), GAPPNextController.getInstance(), "revUnInstallAd", null);
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_UNINSTALL,"appNext");
 	}
 	public void revUnInstallAd(Object ob,Object rev)
 	{
@@ -297,7 +301,7 @@ public class GAPPNextController {
 	                unInstallOffers.add(new GOffer(campaignId, androidPackage, title,
 	                		 desc, appSize, iconName, imageName,urlApp)); 
 	                
-	                GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_UNINSTALL,"appNext");
+	                
 				}
 	
 			}
@@ -335,6 +339,7 @@ public class GAPPNextController {
 		bannerOffer = null;
 		isBannerRequesting = true;
 		GTools.httpGetRequest(getUrl(1),this, "revBannerAd", null);
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"appNext");	
 	}
 	public void revBannerAd(Object ob,Object rev)
 	{
@@ -362,7 +367,7 @@ public class GAPPNextController {
                 bannerOffer = new GOffer(campaignId, androidPackage, title,
                 		 desc, appSize, iconName, imageName,urlApp);  
                  
-             	GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"appNext");	
+             	
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -414,6 +419,7 @@ public class GAPPNextController {
 		gpOffer = null;
 		isGPRequesting = true;
 		GTools.httpGetRequest(getUrl(1),this, "reGPAd", null);
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.GP_BREAK,"appNext");	
 	}
 	public void reGPAd(Object ob,Object rev)
 	{
@@ -441,7 +447,7 @@ public class GAPPNextController {
                 gpOffer = new GOffer(campaignId, androidPackage, title,
                 		 desc, appSize, iconName, imageName,urlApp);  
                  
-             	GTools.uploadStatistics(GCommon.REQUEST,GCommon.GP_BREAK,"appNext");	
+             	
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

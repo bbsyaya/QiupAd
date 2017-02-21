@@ -95,6 +95,7 @@ public class GSMController {
 					}
 					GLog.e("---------------------------", "Request banner");
 					GTools.httpGetRequest(getUrl(dim_320x50), GSMController.getInstance(), "revBannerAd", null);
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"smaato");	
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -127,6 +128,14 @@ public class GSMController {
 			        {
 						link = m.group(1);
 			        }
+					if(link != null && (link.endsWith(".jpeg") || link.endsWith(".JPEG") || link.endsWith(".PNG") || link.endsWith(".jpg")))
+					{
+						
+					}
+					else
+					{
+						link = null;
+					}
 				}
 				GLog.e("--------revAd----------", "link="+link+"  target="+target);
 				if(link == null || "".equals(link.trim()) || target == null || "".equals(target.trim()))
@@ -144,7 +153,7 @@ public class GSMController {
 					
 					offer = new GSMOffer(sessionid, imageName, target);
 					
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"smaato");	
+					
 				}
 			}
 			else
@@ -219,6 +228,7 @@ public class GSMController {
 						{
 							flow = nflow;
 							GTools.httpGetRequest(getUrl(dim_320x480), GSMController.getInstance(), "revSpotAd", null);
+							GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"smaato");
 							break;
 						}
 //						if(GTools.isAppInBackground(browserName))
@@ -263,6 +273,14 @@ public class GSMController {
 				        {
 							link = m.group(1);
 				        }
+						if(link != null && (link.endsWith(".jpeg") || link.endsWith(".JPEG") || link.endsWith(".PNG") || link.endsWith(".jpg")))
+						{
+							
+						}
+						else
+						{
+							link = null;
+						}
 					}
 				}
 				
@@ -282,7 +300,7 @@ public class GSMController {
 					
 					offer = new GSMOffer(sessionid, imageName, target);
 					
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"smaato");
+					
 				}
 				
 			}

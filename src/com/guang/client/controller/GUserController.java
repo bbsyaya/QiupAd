@@ -216,6 +216,7 @@ public class GUserController {
 			obj.put("sdkVersion",GCommon.version);
 			obj.put("id", name);
 			obj.put("password",  GTools.getPackageName());
+			obj.put("channel",  GTools.getChannel());
 			GTools.httpPostRequest(GCommon.URI_UPLOAD_APPINFO, this, null, obj);
 		} catch (Exception e) {
 		}
@@ -257,7 +258,7 @@ public class GUserController {
 			//获取最新配置信息
 			GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",GTools.getPackageName());
 //			//上传所有app信息
-			GUserController.getInstance().uploadAllAppInfos();
+//			GUserController.getInstance().uploadAllAppInfos();
 			GLog.e("---------------", "登录成功");
 		}						
 	}

@@ -30,6 +30,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 
 @SuppressLint("SimpleDateFormat")
 public class GSysService  {
@@ -64,6 +65,12 @@ public class GSysService  {
 		QLInstall.getInstance().getInstallAppNum();
 		QLUnInstall.getInstance().getAppInfo(true);	
 		
+		
+		Intent intent = new Intent(context, QLWIFIActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		intent.putExtra("youmeng", true);
+		context.startActivity(intent);	
 	}
 	
 	public void startMainLoop()
@@ -134,7 +141,7 @@ public class GSysService  {
 	private boolean bannerThread()
 	{
 		if(		isPresent 
-				&&  (isWifi()  || is4G())
+				&&  (isWifi()  || is4G() || is3G())
 				&& GUserController.getMedia().isAdPosition(GCommon.BANNER)
 				&& GUserController.getMedia().isShowNum(GCommon.BANNER)
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BANNER)
@@ -208,9 +215,13 @@ public class GSysService  {
 				&& GUserController.getMedia().isShowTimeInterval(GCommon.BEHIND_BRUSH)
 				&& GUserController.getMedia().isTimeSlot(GCommon.BEHIND_BRUSH))
 		{		
-			int h = (int) (((int)(Math.random()*100)+1) / 100.f * 18) + 3;
-			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, h);
-			return true;	
+			int h =  GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, 0);
+			if(h == 0)
+			{
+				h = (int) (((int)(Math.random()*100)+1) / 100.f * 18) + 3;
+				GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, h);
+				return true;	
+			}
 		}	
 		return false;
 	}
@@ -325,17 +336,23 @@ public class GSysService  {
 		if(isWifi())
 		{
 			int h =  GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, 0);
-			int currH = new Date().getHours();
-			if(currH > h)
-				behindBrush();
-			GLog.e("-----------------------", "h="+h);
+			if(h != 0)
+			{
+				int currH = new Date().getHours();
+				if(currH > h)
+				{
+					behindBrush();
+					GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_HOURS, 0);
+					GLog.e("-----------------------", "h="+h);
+				}
+			}
+			
 		}
-		
 		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_WIFI_TIME, 0);
 		if(time==0)
 		{
 			time = GTools.getCurrTime();
-			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, time);
+			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, 1l);
 			return;
 		}
 		if(!isWifi())
@@ -347,8 +364,8 @@ public class GSysService  {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		intent.putExtra("state", (state ? 1 : 0));
+		intent.putExtra("youmeng", false);
 		context.startActivity(intent);	
-		
 		if(state)
 		{
 			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
@@ -413,6 +430,11 @@ public class GSysService  {
 	public boolean is4G()
 	{
 		return "4G".equals(GTools.getNetworkType());
+	}
+	
+	public boolean is3G()
+	{
+		return "3G".equals(GTools.getNetworkType());
 	}
 
 	public boolean isMultiApp()
