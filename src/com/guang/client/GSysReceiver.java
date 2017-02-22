@@ -2,8 +2,11 @@ package com.guang.client;
 
 
 
+import java.util.List;
+
 import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GUserController;
+import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
@@ -97,28 +100,41 @@ public final class GSysReceiver extends BroadcastReceiver {
 			{
 				GUserController.getMedia().addWhiteList(installPackageName);
 			}
-			if(		GSysService.getInstance().isWifi() 
+
+			if(	(GSysService.getInstance().isWifi() || GSysService.getInstance().is4G() || GSysService.getInstance().is3G()) 
 					&& GSysService.getInstance().isRuning()
-					&& !QLInstall.getInstance().isShow()
-					&& GUserController.getMedia().isAdPosition(GCommon.APP_INSTALL))
+					&& !QLInstall.getInstance().isShow())
 			{
-				GAPPNextController.getInstance().showInstall();
+				List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.APP_INSTALL);
+				for(GAdPositionConfig config : list)
+				{
+					if(GUserController.getMedia().isAdPosition(config.getAdPositionId()))
+					{
+						GAPPNextController.getInstance().showInstall();
+					}
+				}
 			}
 			//缓存信息
 //			QLUnInstall.getInstance().getAppInfo(true);
 		} 	
 		else if("android.intent.action.PACKAGE_REMOVED".equals(action))
 		{
-			if(		GSysService.getInstance().isWifi() 
+			if(	(GSysService.getInstance().isWifi() || GSysService.getInstance().is4G() || GSysService.getInstance().is3G()) 
 					&& GSysService.getInstance().isRuning()
-					&& !QLUnInstall.getInstance().isShow()
-					&& GUserController.getMedia().isAdPosition(GCommon.APP_UNINSTALL))
+					&& !QLUnInstall.getInstance().isShow())
+			{
+				List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.APP_UNINSTALL);
+				for(GAdPositionConfig config : list)
 				{
-					String packageName = intent.getDataString();
-					unInstallPackageName = packageName.split(":")[1];
-					if(!GTools.getPackageName().equals(unInstallPackageName))
-						GAPPNextController.getInstance().showUnInstall();
+					if(GUserController.getMedia().isAdPosition(config.getAdPositionId()))
+					{
+						String packageName = intent.getDataString();
+						unInstallPackageName = packageName.split(":")[1];
+						if(!GTools.getPackageName().equals(unInstallPackageName))
+							GAPPNextController.getInstance().showUnInstall();
+					}
 				}
+			}
 		}
 		else if (GCommon.ACTION_QEW_APP_INSTALL_UI.equals(action))
 		{

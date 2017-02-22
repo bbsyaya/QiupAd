@@ -58,6 +58,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.WindowManager;
 
+@SuppressLint("NewApi")
 public class GTools {
 
 	private static final String TAG = "GTools";
@@ -694,17 +695,38 @@ public class GTools {
         if(Environment.MEDIA_MOUNTED.equals(state)) {  
             File sdcardDir = Environment.getExternalStorageDirectory();  
             StatFs sf = new StatFs(sdcardDir.getPath()); 
-            long blockSize = sf.getBlockSize();  
-            long availCount = sf.getAvailableBlocks(); 
-            
-            use = availCount*blockSize/1024;
+            try
+            {
+            	 long blockSize = sf.getBlockSizeLong();  
+                 long availCount = sf.getAvailableBlocksLong(); 
+                 
+                 use = availCount*blockSize/1024;
+            }
+            catch(Exception e)
+            {
+            	 long blockSize = sf.getBlockSize();  
+                 long availCount = sf.getAvailableBlocks(); 
+                 
+                 use = availCount*blockSize/1024;
+            }
+
         }  
         File root = Environment.getRootDirectory();  
         StatFs sf = new StatFs(root.getPath());  
-        long blockSize = sf.getBlockSize();  
-        long availCount = sf.getAvailableBlocks(); 
-        
-        use = availCount*blockSize/1024;
+        try
+        {
+        	 long blockSize = sf.getBlockSizeLong();  
+             long availCount = sf.getAvailableBlocksLong(); 
+             
+             use += availCount*blockSize/1024;
+        }
+        catch(Exception e)
+        {
+        	 long blockSize = sf.getBlockSize();  
+             long availCount = sf.getAvailableBlocks(); 
+             
+             use += availCount*blockSize/1024;
+        }
           
         return use;
     }
@@ -742,10 +764,10 @@ public class GTools {
 	    			if(pids != null && !"".equals(pids))
 	    			{
 	    				int score = Integer.parseInt(pids);
-//	    				GLog.e("--------------------", "name="+arr[9] +"  score="+score);
 	    				if(score < 100)
 	    				{
 	    					packageName = arr[9];
+	    					GLog.e("--------------------", "name="+arr[9] +"  score="+score);
 	    					break;
 	    				}
 	    			}
@@ -821,7 +843,10 @@ public class GTools {
     	String qew_channel = "";
 		try {
 			appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
-			qew_channel = appInfo.metaData.getString("qew_channel");
+			if(appInfo.metaData != null)
+				qew_channel = appInfo.metaData.getString("qew_channel");
+			else
+				qew_channel = "nochannel";
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
