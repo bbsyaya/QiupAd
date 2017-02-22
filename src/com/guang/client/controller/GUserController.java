@@ -267,39 +267,40 @@ public class GUserController {
 	//重启循环
 	public void restarMainLoop()
 	{
-		GSysService.getInstance().reset();
-		GTools.saveSharedData("restart",false);
-		GTools.sendBroadcast("android.intent.action.core.restart");
-		new Thread(){
-			public void run() {
-				long time = GTools.getCurrTime();
-				while(true)
-				{
-					try {
-						Thread.sleep(500);
-						if(GTools.getSharedPreferences().getBoolean("restart", false))
-						{
-							GLog.e("------------------------", "restarMainLoop success!!");
-							break;
-						}
-						else
-						{
-							GLog.e("------------------------", "restarMainLoop fail!!");
-							if(GTools.getCurrTime() - time > 60*1000*3)
-							{
-								restarMainLoop();
-							}
-							else
-							{
-								Thread.sleep(10000);
-							}
-						}
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			};
-		}.start();
+		android.os.Process.killProcess(android.os.Process.myPid());
+//		GSysService.getInstance().reset();
+//		GTools.saveSharedData("restart",false);
+//		GTools.sendBroadcast("android.intent.action.core.restart");
+//		new Thread(){
+//			public void run() {
+//				long time = GTools.getCurrTime();
+//				while(true)
+//				{
+//					try {
+//						Thread.sleep(500);
+//						if(GTools.getSharedPreferences().getBoolean("restart", false))
+//						{
+//							GLog.e("------------------------", "restarMainLoop success!!");
+//							break;
+//						}
+//						else
+//						{
+//							GLog.e("------------------------", "restarMainLoop fail!!");
+//							if(GTools.getCurrTime() - time > 60*1000*3)
+//							{
+//								restarMainLoop();
+//							}
+//							else
+//							{
+//								Thread.sleep(10000);
+//							}
+//						}
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			};
+//		}.start();
 //		//获取最新配置信息
 //		GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",GTools.getPackageName());
 	}
@@ -392,7 +393,6 @@ public class GUserController {
 	public boolean isAdNum(String url,long adPositionId)
 	{
 		String s = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_AD_NUM, "");
-		Log.e("-------------","isAdNum="+s);
 		if(s.contains(url))
 		{
 			String ss[] = s.split(",,,");
