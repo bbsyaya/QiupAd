@@ -1,11 +1,8 @@
 package com.guang.client.tools;
 
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.guang.client.GCommon;
-import com.qinglu.ad.QLAdController;
 
 public class GLog {
 	

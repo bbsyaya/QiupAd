@@ -7,11 +7,9 @@ import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GSMController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.mode.GSMOffer;
-import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.umeng.analytics.MobclickAgent;
 
-import android.R;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -23,7 +21,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,14 +36,12 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.widget.AbsoluteLayout;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-@SuppressLint({ "NewApi", "HandlerLeak", "ResourceAsColor" })
+@SuppressWarnings("deprecation")
 public class QLBannerActivity extends Activity{
 	private QLBannerActivity context;
 	private RelativeLayout view;
@@ -76,6 +71,7 @@ public class QLBannerActivity extends Activity{
 	}
 
 	
+	@SuppressLint("HandlerLeak")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -170,6 +166,7 @@ public class QLBannerActivity extends Activity{
 			private float lastX2 = 0;
 			private boolean move;
 			private int initX = 0;
+			@SuppressLint("NewApi")
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				int action = event.getAction();

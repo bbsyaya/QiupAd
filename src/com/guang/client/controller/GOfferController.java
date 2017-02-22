@@ -133,7 +133,7 @@ public class GOfferController {
 		}
 		if(b)
 		{
-			QLAppSpotActivity.getInstance().hide();
+			QLAppSpotActivity.hide();
 			Context context = QLAdController.getInstance().getContext();
 			Intent intent = new Intent(context, QLAppSpotActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -363,7 +363,7 @@ public class GOfferController {
             	QLAppSpotActivity spotActivity = QLAppSpotActivity.getInstance();
         		if(spotActivity != null)
         		{
-        			spotActivity.hide();
+        			QLAppSpotActivity.hide();
         		}
             }
             @Override

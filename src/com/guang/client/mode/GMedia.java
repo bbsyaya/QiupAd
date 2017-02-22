@@ -1,15 +1,15 @@
 package com.guang.client.mode;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.annotation.SuppressLint;
+
 import com.guang.client.GCommon;
-import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
 public class GMedia {
@@ -220,6 +220,8 @@ public class GMedia {
 		return false;
 	}
 	//是否在显示时间段内
+	@SuppressWarnings("deprecation")
+	@SuppressLint("SimpleDateFormat")
 	public boolean isTimeSlot(long adPositionId)
 	{
 		GAdPositionConfig config = getConfig(adPositionId);

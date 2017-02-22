@@ -13,7 +13,7 @@ public class GStrokeCircleView extends View {
 
 	private final int mCircleLineStrokeWidth = 4;
 
-	private final int mTxtStrokeWidth = 2;
+//	private final int mTxtStrokeWidth = 2;
 
 	// 画圆所在的距形区域
 	private final RectF mRectF;

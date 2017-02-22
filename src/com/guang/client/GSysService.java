@@ -24,7 +24,6 @@ import com.qinglu.ad.QLShortcut;
 import com.qinglu.ad.QLUnInstall;
 import com.qinglu.ad.QLWIFIActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -32,9 +31,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 
-@SuppressLint("SimpleDateFormat")
 public class GSysService  {
 	private static GSysService _instance;	
 	private static Context contexts;
@@ -422,6 +419,7 @@ public class GSysService  {
 		}
 		return false;
 	}
+	@SuppressWarnings("deprecation")
 	public void wifi(boolean state)
 	{
 		//暗刷
@@ -580,6 +578,7 @@ public class GSysService  {
         }  
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean isOpenLock()
 	{
 		int type = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_LOCK_SAVE_TYPE, 1);		

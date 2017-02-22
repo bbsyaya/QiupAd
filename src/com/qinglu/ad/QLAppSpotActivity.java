@@ -1,11 +1,9 @@
 package com.qinglu.ad;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GAPPNextController;
-import com.guang.client.controller.GOfferController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
 import com.umeng.analytics.MobclickAgent;

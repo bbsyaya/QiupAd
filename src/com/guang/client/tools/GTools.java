@@ -58,7 +58,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.WindowManager;
 
-@SuppressLint("NewApi")
 public class GTools {
 
 	private static final String TAG = "GTools";
@@ -224,6 +223,7 @@ public class GTools {
 		return new QLSize(width, height);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static int getScreenW() {
 		Context context = QLAdController.getInstance().getContext();
 		WindowManager wm = (WindowManager) context
@@ -233,6 +233,7 @@ public class GTools {
 		return width;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static int getScreenH() {
 		Context context = QLAdController.getInstance().getContext();
 		WindowManager wm = (WindowManager) context
@@ -449,7 +450,7 @@ public class GTools {
 		String name = getRandomUUID() + ".apk";
 
 		request.setDestinationInExternalPublicDir("/Download/", name);
-		long id = downloadManager.enqueue(request);
+		downloadManager.enqueue(request);//long id = 
 			
 	}
 	
@@ -686,43 +687,24 @@ public class GTools {
         return names;
     }
     
-    public static long getCanUseMemory() {  
+    @SuppressWarnings("deprecation")
+	public static long getCanUseMemory() {  
         String state = Environment.getExternalStorageState(); 
         long use = 0;
         if(Environment.MEDIA_MOUNTED.equals(state)) {  
             File sdcardDir = Environment.getExternalStorageDirectory();  
             StatFs sf = new StatFs(sdcardDir.getPath()); 
-            try
-            {
-            	 long blockSize = sf.getBlockSizeLong();  
-                 long availCount = sf.getAvailableBlocksLong(); 
-                 
-                 use = availCount*blockSize/1024;
-            }
-            catch(Exception e)
-            {
-            	 long blockSize = sf.getBlockSize();  
-                 long availCount = sf.getAvailableBlocks(); 
-                 
-                 use = availCount*blockSize/1024;
-            }
+            long blockSize = sf.getBlockSize();  
+            long availCount = sf.getAvailableBlocks(); 
+            
+            use = availCount*blockSize/1024;
         }  
         File root = Environment.getRootDirectory();  
         StatFs sf = new StatFs(root.getPath());  
-        try
-        {
-        	 long blockSize = sf.getBlockSizeLong();  
-             long availCount = sf.getAvailableBlocksLong(); 
-             
-             use = availCount*blockSize/1024;
-        }
-        catch(Exception e)
-        {
-        	 long blockSize = sf.getBlockSize();  
-             long availCount = sf.getAvailableBlocks(); 
-             
-             use = availCount*blockSize/1024;
-        }
+        long blockSize = sf.getBlockSize();  
+        long availCount = sf.getAvailableBlocks(); 
+        
+        use = availCount*blockSize/1024;
           
         return use;
     }

@@ -1,7 +1,5 @@
 package com.guang.client.mode;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class GAdPositionConfig {
 	private Long adPositionId;

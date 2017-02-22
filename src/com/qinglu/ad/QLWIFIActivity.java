@@ -1,22 +1,15 @@
 package com.qinglu.ad;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GOfferController;
-import com.guang.client.mode.GOffer;
-import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.umeng.analytics.MobclickAgent;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,7 +17,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -37,10 +29,8 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 @SuppressLint("NewApi")
 public class QLWIFIActivity extends Activity{

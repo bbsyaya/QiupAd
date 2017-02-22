@@ -7,9 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import com.guang.client.GCommon;
 import com.guang.client.GSysService;
@@ -19,7 +17,6 @@ import com.guang.client.mode.GUser;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
-@SuppressLint("NewApi")
 public class GUserController {
 	public static final String TAG = "GUserController";
 	private static GUserController instance;

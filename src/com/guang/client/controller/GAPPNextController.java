@@ -41,8 +41,8 @@ public class GAPPNextController {
 	private boolean isGPRequesting = false;
 	
 	private long spotAdPositionId;
-	private long installAdPositionId;
-	private long unInstallAdPositionId;
+//	private long installAdPositionId;
+//	private long unInstallAdPositionId;
 	private long lockAdPositionId;
 	private long bannerAdPositionId;
 	
@@ -126,7 +126,7 @@ public class GAPPNextController {
 		// 判断图片是否存在
 		if(spotOffer.getPicNum()==2)
 		{
-			QLAppSpotActivity.getInstance().hide();
+			QLAppSpotActivity.hide();
 			if(GTools.isAppInBackground(appName))
 			{
 				return;

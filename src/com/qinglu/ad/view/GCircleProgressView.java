@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class GCircleProgressView extends View {
-	private static final String TAG = "CircleProgressBar";
 
 	private int mMaxProgress = 100;
 
@@ -18,7 +17,7 @@ public class GCircleProgressView extends View {
 
 	private final int mCircleLineStrokeWidth = 8;
 
-	private final int mTxtStrokeWidth = 2;
+//	private final int mTxtStrokeWidth = 2;
 
 	// 画圆所在的距形区域
 	private final RectF mRectF;

@@ -15,7 +15,7 @@ import android.content.Context;
 
 public class QLAdController {
 	private static QLAdController controller;
-	private static Context context;
+	private Context context;
 	
 	private QLAdController()
 	{
