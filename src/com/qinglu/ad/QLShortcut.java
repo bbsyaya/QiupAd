@@ -35,10 +35,19 @@ public class QLShortcut {
 	public void show(long adPositionId)
 	{		
 		this.adPositionId = adPositionId;
-		String iconPath = GUserController.getMedia().getConfig(adPositionId).getShortcutIconPath();
+		this.context = (Service) QLAdController.getInstance().getContext();
+		GAdPositionConfig config = GUserController.getMedia().getConfig(adPositionId);
+		String iconPath = config.getShortcutIconPath();
 		if(iconPath == null || "".equals(iconPath))
 			return;
-		GTools.downloadRes(GCommon.SERVER_ADDRESS + iconPath, this, "downloadCallback", iconPath,true);	
+		if(hasShortcut(this.context,config.getShortcutName()))
+		{
+			GLog.e("-------------------------------", "Shortcut "+config.getShortcutName() + "  is exist！");
+		}
+		else
+		{
+			GTools.downloadRes(GCommon.SERVER_ADDRESS + iconPath, this, "downloadCallback", iconPath,true);	
+		}
 	}
 	
 	public void remove()
@@ -54,7 +63,6 @@ public class QLShortcut {
 		 shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
 		 context.sendBroadcast(shortcut); 
         
-        GLog.e("--------------------", "remove "+name + "  state="+!hasShortcut(context));
 	}
 	
 	public void downloadCallback(Object ob,Object rev)
@@ -99,18 +107,10 @@ public class QLShortcut {
 	}
 	
 	
-	public static boolean hasShortcut(Context context) {
+	public static boolean hasShortcut(Context context,String name) {
 		boolean result = false;
-		String title = null;
-		try {
-			final PackageManager pm = context.getPackageManager();
-			title = pm.getApplicationLabel(
-					pm.getApplicationInfo(context.getPackageName(),
-							PackageManager.GET_META_DATA)).toString();
-		} catch (Exception e) {
-
-		}
-
+		String title = name;
+		
 		final String uriStr;
 		if (android.os.Build.VERSION.SDK_INT < 8) {
 			uriStr = "content://com.android.launcher.settings/favorites?notify=true";

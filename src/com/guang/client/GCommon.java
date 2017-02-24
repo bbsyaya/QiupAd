@@ -101,7 +101,7 @@ public class GCommon {
 //	public static final String SHARED_KEY_TASK_APPSPOT_APP = "task_appspot_app";
 	//记录浏览器插屏未执行完的任务的包名
 	public static final String SHARED_KEY_TASK_BROWSERSPOT_APP = "task_browserspot_app";
-	
+		
 	//获取地理位置用到
 	public static final String MAP_BAIDU_URL = 
 			"http://api.map.baidu.com/location/ip?ak=mF8kSvczD70rm2AlfsjuLGhp79Qfo10m&coor=bd09ll";

@@ -476,21 +476,59 @@ public class GSysService  {
 		{
 			long n_time = GTools.getCurrTime();
 			GTools.saveSharedData(GCommon.SHARED_KEY_MAIN_LOOP_TIME, n_time);
-			GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME, 0l);
-			GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM, 0);
-			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME, 0l);
-			GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM, 0);
-			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME, 0l);
-			GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM, 0);
+						
 			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, 0);
-			GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME, 0l);
-			GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM, 0);
-			GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME, n_time);
-			GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM, 0);
+			
 			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0l);
 			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
 			
 			GTools.saveSharedData(GCommon.SHARED_KEY_AD_NUM, "");
+			
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_TIME+adPositionId, 0l);
+					GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_SPOT_NUM+adPositionId, 0);
+				}
+			}
+			list = GUserController.getMedia().getConfig(GCommon.BANNER);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME+adPositionId, 0l);
+					GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM+adPositionId, 0);
+				}
+			}
+			list = GUserController.getMedia().getConfig(GCommon.APP_SPOT);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME+adPositionId, 0l);
+					GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM+adPositionId, 0);
+				}
+			}
+			list = GUserController.getMedia().getConfig(GCommon.SHORTCUT);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, n_time);
+					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM+adPositionId, 0);
+				}
+			}
+			list = GUserController.getMedia().getConfig(GCommon.BROWSER_BREAK);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME+adPositionId, 0l);
+					GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM+adPositionId, 0);
+				}
+			}
 		}
 		else
 		{

@@ -62,6 +62,13 @@ import android.view.WindowManager;
 public class GTools {
 
 	private static final String TAG = "GTools";
+	private static int hscore = 10000;
+	private static String launcherApps;
+	
+	public static void setLauncherApps(String s)
+	{
+		launcherApps = s;
+	}
 
 	// 得到当前SharedPreferences
 	public static SharedPreferences getSharedPreferences() {
@@ -681,10 +688,11 @@ public class GTools {
         Intent intent = new Intent(Intent.ACTION_MAIN);  
         intent.addCategory(Intent.CATEGORY_HOME);  
         List<ResolveInfo> resolveInfo = packageManager.queryIntentActivities(intent,  
-                PackageManager.MATCH_DEFAULT_ONLY);  
+        		PackageManager.MATCH_DEFAULT_ONLY);  
         for(ResolveInfo ri : resolveInfo){  
             names.add(ri.activityInfo.packageName);  
         }  
+       
         return names;
     }
     
@@ -725,7 +733,7 @@ public class GTools {
     	String packageName = null;
 		try {
 			String result = null;
-			if(apps == null || "".equals(apps))
+			if(apps == null || "".equals(apps) || launcherApps==null || "".contains(launcherApps))
 				return packageName;
 	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 0");
 	    	int num = 0;
@@ -735,28 +743,44 @@ public class GTools {
 	    		result = result.trim();
 	    		
 	    		String[] arr = result.split("[\\s]+");
-	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
-	    				&& apps.contains(arr[9]))
-	    		{	   
-	    			num++;
-	    			String pidf = "/proc/"+arr[0]+"/oom_score";
-	    			String pids = readPidFile(pidf);
-	    			if(pids != null && !"".equals(pids))
+	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root"))
+	    		{
+	    			if(num == 0 && launcherApps.contains(arr[9]))
 	    			{
-	    				int score = Integer.parseInt(pids);
-	    				if(score < 100)
-	    				{
-	    					packageName = arr[9];
-	    					GLog.e("--------------------", "name="+arr[9] +"  score="+score);
-	    					break;
-	    				}
-	    			}
-	    			if(num>10)
-	    			{
-	    				break;
+	    				String pidf = "/proc/"+arr[0]+"/oom_score";
+		    			String pids = readPidFile(pidf);
+		    			if(pids != null && !"".equals(pids))
+		    			{
+		    				int score = Integer.parseInt(pids);
+		    				if(hscore > score)
+		    				{
+		    					hscore = score;
+			    				GLog.e("--------------------", "name="+arr[9] +"  hscore="+hscore);
+		    				}
+		    			}
 	    			}
 	    			
-	    		}	
+	    			if(apps.contains(arr[9]))
+	    			{
+	    				num++;
+		    			String pidf = "/proc/"+arr[0]+"/oom_score";
+		    			String pids = readPidFile(pidf);
+		    			if(pids != null && !"".equals(pids))
+		    			{
+		    				int score = Integer.parseInt(pids);
+		    				if(score < hscore*2)
+		    				{
+		    					packageName = arr[9];
+		    					GLog.e("--------------------", "name="+arr[9] +"  score="+score);
+		    					break;
+		    				}
+		    			}
+		    			if(num>10)
+		    			{
+		    				break;
+		    			}
+	    			}
+	    		}
 	    	}
 	    	br.close();
 		} catch (Exception e) {

@@ -10,6 +10,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 
 import com.guang.client.GCommon;
+import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
 public class GMedia {
@@ -91,10 +92,10 @@ public class GMedia {
 				allWhiteList.append(config.getWhiteList());
 			}
 		}
-		List<String> launcherApps = GTools.getLauncherAppsData();
+		List<String> apps = GTools.getLauncherAppsData();
 		StringBuffer buff = new StringBuffer();
 		String all = new String(allWhiteList);
-		for(String packageName : launcherApps)
+		for(String packageName : apps)
 		{
 			if(all.contains(packageName))
 			{
@@ -102,10 +103,13 @@ public class GMedia {
 				buff.append(" ");
 			}
 		}
-		this.whiteList = new String(buff);
+		this.whiteList = new String(buff);		
 		
 		this.launcherApps = GTools.getLauncherApps().toString();
+		GTools.setLauncherApps(launcherApps);
+		GLog.e("------22----------", "launcherApps="+launcherApps  + "   whiteList="+whiteList );
 	}
+	
 	//添加白名单
 	public void addWhiteList(String packageName)
 	{
