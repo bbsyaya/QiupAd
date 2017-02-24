@@ -2,7 +2,7 @@ package com.guang.client;
 
 public class GCommon {
 	
-	public static final String version = "1.0.5";
+	public static final String version = "1.0.6";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求

@@ -348,7 +348,7 @@ public class GUserController {
 				}
 				media = new GMedia(name, packageName, open, adPosition, list_configs,loopTime,uploadPackage);
 				media.initWhiteList();
-				GLog.e("---------------", "Config读取成功");
+				GLog.e("---------------", "Config读取成功!!");
 				//开始走流程
 				GSysService.getInstance().startMainLoop();
 			} catch (JSONException e) {

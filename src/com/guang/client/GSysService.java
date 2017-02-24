@@ -54,6 +54,7 @@ public class GSysService  {
 	
 	public void start(final Context context) {
 		contexts = context;
+		reset();
 		GTools.saveSharedData(GCommon.SHARED_KEY_SERVICE_RUN_TIME,GTools.getCurrTime());
 		registerListener();
 		GUserController.getInstance().login();

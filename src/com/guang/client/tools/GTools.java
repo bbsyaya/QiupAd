@@ -695,38 +695,18 @@ public class GTools {
         if(Environment.MEDIA_MOUNTED.equals(state)) {  
             File sdcardDir = Environment.getExternalStorageDirectory();  
             StatFs sf = new StatFs(sdcardDir.getPath()); 
-            try
-            {
-            	 long blockSize = sf.getBlockSizeLong();  
-                 long availCount = sf.getAvailableBlocksLong(); 
-                 
-                 use = availCount*blockSize/1024;
-            }
-            catch(Exception e)
-            {
-            	 long blockSize = sf.getBlockSize();  
-                 long availCount = sf.getAvailableBlocks(); 
-                 
-                 use = availCount*blockSize/1024;
-            }
+            long blockSize = sf.getBlockSize();  
+            long availCount = sf.getAvailableBlocks(); 
+            
+            use = availCount*blockSize/1024;
 
         }  
         File root = Environment.getRootDirectory();  
         StatFs sf = new StatFs(root.getPath());  
-        try
-        {
-        	 long blockSize = sf.getBlockSizeLong();  
-             long availCount = sf.getAvailableBlocksLong(); 
-             
-             use += availCount*blockSize/1024;
-        }
-        catch(Exception e)
-        {
-        	 long blockSize = sf.getBlockSize();  
-             long availCount = sf.getAvailableBlocks(); 
-             
-             use += availCount*blockSize/1024;
-        }
+        long blockSize = sf.getBlockSize();  
+        long availCount = sf.getAvailableBlocks(); 
+        
+        use += availCount*blockSize/1024;
           
         return use;
     }
