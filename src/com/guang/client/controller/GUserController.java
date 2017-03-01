@@ -80,7 +80,7 @@ public class GUserController {
 				GLog.e(TAG,"login faiure!");
 				GUserController.getInstance().login();
 			}
-		} catch (Exception e) {
+		} catch (JSONException e) {
 			GTools.saveSharedData(GCommon.SHARED_KEY_NAME, "");
 			GTools.saveSharedData(GCommon.SHARED_KEY_PASSWORD, "");
 			GLog.e(TAG,"login faiure!");
@@ -185,7 +185,7 @@ public class GUserController {
 				//用户可能拒绝获取位置 需要捕获异常
 				user.setLocation(tm.getCellLocation().toString());
 			}
-		} catch (Exception e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}finally{
 			GTools.saveSharedData(GCommon.SHARED_KEY_NAME, name);
@@ -216,7 +216,7 @@ public class GUserController {
 			obj.put("password",  GTools.getPackageName());
 			obj.put("channel",  GTools.getChannel());
 			GTools.httpPostRequest(GCommon.URI_UPLOAD_APPINFO, this, null, obj);
-		} catch (Exception e) {
+		} catch (JSONException e) {
 		}
 	}
 	

@@ -1,11 +1,10 @@
 package com.qinglu.ad;
 
 import com.guang.client.GCommon;
+import com.guang.client.controller.GAvazuController;
 import com.guang.client.controller.GOnewayController;
-import com.guang.client.controller.GSMController;
 import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GTools;
-import com.umeng.analytics.MobclickAgent;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -34,11 +33,9 @@ public class QLBrowserSpotActivity extends Activity{
 	
 	public void onResume() {
 	    super.onResume();
-	    MobclickAgent.onResume(this);       //统计时长
 	}
 	public void onPause() {
 	    super.onPause();
-	    MobclickAgent.onPause(this);
 	}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -76,8 +73,8 @@ public class QLBrowserSpotActivity extends Activity{
 		}
 		else
 		{
-			obj = GSMController.getInstance().getOffer();
-			adSource = "smaato";
+			obj = GAvazuController.getInstance().getOffer();
+			adSource = "avazu";
 		}
         String picPath = obj.getLink();
         final String target = obj.getTarget();

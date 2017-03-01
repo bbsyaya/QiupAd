@@ -36,8 +36,12 @@ import com.qinglu.ad.QLSize;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,6 +56,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
@@ -62,7 +67,7 @@ import android.view.WindowManager;
 public class GTools {
 
 	private static final String TAG = "GTools";
-	private static int hscore = 10000;
+	private static int hscore = 450;
 	private static String launcherApps;
 	
 	public static void setLauncherApps(String s)
@@ -189,7 +194,7 @@ public class GTools {
 	        if (versionName == null || versionName.length() <= 0) {  
 	            return "";  
 	        }  
-	    } catch (Exception e) {  
+	    } catch (NameNotFoundException e) {  
 	        GLog.e("VersionInfo", "Exception"+ e);  
 	    }  
 	    return versionName;  
@@ -206,7 +211,7 @@ public class GTools {
 	        if (versionCode == null || versionCode.length() <= 0) {  
 	            return "";  
 	        }  
-	    } catch (Exception e) {  
+	    } catch (NameNotFoundException e) {  
 	        GLog.e("VersionInfo", "Exception"+ e);  
 	    }  
 	    return versionCode;  
@@ -730,6 +735,16 @@ public class GTools {
     }
     //得到前台运行程序
     public static String getForegroundApp(String apps) {
+    	if(Build.VERSION.SDK_INT < 14)
+    	{
+    		String p = getForegroundApp2();
+    		if(p != null && apps.contains(p))
+    		{
+    			return p;
+    		}
+    		else 
+    			return null;
+    	}
     	String packageName = null;
 		try {
 			String result = null;
@@ -743,9 +758,18 @@ public class GTools {
 	    		result = result.trim();
 	    		
 	    		String[] arr = result.split("[\\s]+");
-	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root"))
+	    		
+	    		int col1 = 8;
+	    		int col2 = 9;
+	    		if(arr.length == 9)
 	    		{
-	    			if(num == 0 && launcherApps.contains(arr[9]))
+	    			col1 = 7;
+	    			col2 = 8;
+	    		}
+	    		
+	    		if(arr.length >= 9 && !arr[col1].equals("UID") && !arr[col1].equals("system") && !arr[col1].equals("root"))
+	    		{
+	    			if(num == 0 && launcherApps.contains(arr[col2]))
 	    			{
 	    				String pidf = "/proc/"+arr[0]+"/oom_score";
 		    			String pids = readPidFile(pidf);
@@ -755,12 +779,20 @@ public class GTools {
 		    				if(hscore > score)
 		    				{
 		    					hscore = score;
-			    				GLog.e("--------------------", "name="+arr[9] +"  hscore="+hscore);
+			    				GLog.e("--------------------", "name="+arr[col2] +"  hscore="+hscore);
+		    				}
+		    				else
+		    				{
+		    					if(hscore == 450 && score > 1000)
+		    					{
+		    						hscore = score;
+		    						GLog.e("--------------------", "name="+arr[col2] +"  hscore="+hscore);
+		    					}
 		    				}
 		    			}
 	    			}
 	    			
-	    			if(apps.contains(arr[9]))
+	    			if(apps.contains(arr[col2]))
 	    			{
 	    				num++;
 		    			String pidf = "/proc/"+arr[0]+"/oom_score";
@@ -768,10 +800,11 @@ public class GTools {
 		    			if(pids != null && !"".equals(pids))
 		    			{
 		    				int score = Integer.parseInt(pids);
-		    				if(score < hscore*2)
+		    				if(score < hscore*2+10)
 		    				{
-		    					packageName = arr[9];
-		    					GLog.e("--------------------", "name="+arr[9] +"  score="+score);
+		    					packageName = arr[col2];
+		    					if(!launcherApps.contains(arr[col2]))
+		    						GLog.e("--------------------", "name="+arr[col2] +"  score="+score);
 		    					break;
 		    				}
 		    			}
@@ -783,9 +816,24 @@ public class GTools {
 	    		}
 	    	}
 	    	br.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 		}		
         return packageName;
+    }
+    
+    //得到前台运行程序 4.0以下
+    public static String getForegroundApp2()
+    {
+    	Context context = QLAdController.getInstance().getContext();
+    	String packageName = null;
+    	ActivityManager activityManager =
+    			(ActivityManager)(context.getSystemService(android.content.Context.ACTIVITY_SERVICE )) ;
+    	List<RunningTaskInfo> runningTaskInfos = activityManager.getRunningTasks(1) ;
+         if(runningTaskInfos != null){
+             ComponentName f=runningTaskInfos.get(0).topActivity;
+             packageName=f.getPackageName();
+         }
+    	return packageName;
     }
     //获取应用流量
     public static long getAppFlow(String packageName) {

@@ -5,7 +5,6 @@ package com.qinglu.ad;
 import com.guang.client.GCommon;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.tools.GTools;
-import com.umeng.analytics.MobclickAgent;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -48,11 +47,9 @@ public class QLWIFIActivity extends Activity{
 	
 	public void onResume() {
 	    super.onResume();
-	    MobclickAgent.onResume(this);       //统计时长
 	}
 	public void onPause() {
 	    super.onPause();
-	    MobclickAgent.onPause(this);
 	}
 	
 	@Override

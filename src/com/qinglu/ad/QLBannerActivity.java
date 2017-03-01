@@ -4,11 +4,10 @@ package com.qinglu.ad;
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GAPPNextController;
-import com.guang.client.controller.GSMController;
+import com.guang.client.controller.GAvazuController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GTools;
-import com.umeng.analytics.MobclickAgent;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -53,11 +52,9 @@ public class QLBannerActivity extends Activity{
 	
 	public void onResume() {
 	    super.onResume();
-	    MobclickAgent.onResume(this);       //统计时长
 	}
 	public void onPause() {
 	    super.onPause();
-	    MobclickAgent.onPause(this);
 	}
 	
 	@Override
@@ -136,7 +133,7 @@ public class QLBannerActivity extends Activity{
         }
         else
         {
-        	GSMOffer obj = GSMController.getInstance().getOffer();
+        	GSMOffer obj = GAvazuController.getInstance().getOffer();
             String bannerPicPath = obj.getLink();
             target = obj.getTarget();
 
@@ -152,7 +149,7 @@ public class QLBannerActivity extends Activity{
      		iv_banner_banner.setImageBitmap(bitmapPic);
      		view.addView(iv_banner_banner);
      		
-     		adSource = "smaato";
+     		adSource = "avazu";
         }
         
  		this.setContentView(root,rootlayoutParams);

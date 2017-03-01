@@ -6,7 +6,6 @@ import com.guang.client.GCommon;
 import com.guang.client.controller.GAPPNextController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
-import com.umeng.analytics.MobclickAgent;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,11 +40,9 @@ public class QLAppSpotActivity extends Activity{
 	
 	public void onResume() {
 	    super.onResume();
-	    MobclickAgent.onResume(this);       //统计时长
 	}
 	public void onPause() {
 	    super.onPause();
-	    MobclickAgent.onPause(this);
 	}
 	
 	@Override

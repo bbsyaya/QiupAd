@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import com.guang.client.GCommon;
 import com.guang.client.tools.GLog;
@@ -416,13 +417,16 @@ public class GMedia {
 				else
 				{
 					GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(!launcherApps.contains(name))
+					if(name == null || !launcherApps.contains(name))
 						GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, false);
 				}
 			}
 			else
 			{
-				GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, launcherApps.contains(name));
+				if(name != null)
+					GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, launcherApps.contains(name));
+				else
+					GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER, false);
 			}
 		}
 		return false;

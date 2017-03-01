@@ -189,10 +189,7 @@ public class GAPPNextController {
                      lockOffer = new GOffer(campaignId, androidPackage, title,
                      		 desc, appSize, iconName, imageName,urlApp);  
                      
-                     isLockRequesting = false;
                 }
-               
-                 
                
 			}
 		} catch (JSONException e) {

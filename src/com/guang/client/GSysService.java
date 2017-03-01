@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.guang.client.controller.GAPPNextController;
+import com.guang.client.controller.GAvazuController;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.controller.GSMController;
 import com.guang.client.controller.GUserController;
@@ -31,6 +32,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 
 public class GSysService  {
 	private static GSysService _instance;	
@@ -61,16 +63,11 @@ public class GSysService  {
 		GOfferController.getInstance().initMobVista();
 		GAPPNextController.getInstance();
 		GSMController.getInstance().init();
+		GAvazuController.getInstance().init();
 		
 		QLInstall.getInstance().getInstallAppNum();
 		QLUnInstall.getInstance().getAppInfo(true);	
 		
-		
-		Intent intent = new Intent(context, QLWIFIActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		intent.putExtra("youmeng", true);
-		context.startActivity(intent);	
 	}
 	
 	public void startMainLoop()
@@ -84,7 +81,7 @@ public class GSysService  {
 				boolean open = false;
 
 				while(isMainLoop())
-				{				
+				{	
 					try {	
 						if(open)
 							Thread.sleep(10000);
@@ -93,7 +90,6 @@ public class GSysService  {
 						if(isPresent && GUserController.getMedia().getOpen())
 						{
 							open = GUserController.getMedia().isOpenApp();
-
 							if(open)
 							{
 								browserSpotThread();
@@ -108,9 +104,11 @@ public class GSysService  {
 							behindBrushThread();
 						}
 						
-
-					} catch (Exception e) {
+					} catch(InterruptedException e)
+					{
+						
 					}
+							
 				}	
 				GUserController.getInstance().restarMainLoop();
 				GLog.e("------------------------", "restarMainLoop");
@@ -327,7 +325,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GSMController.getInstance().showBanner(adPositionId,appNmae);
+		GAvazuController.getInstance().showBanner(adPositionId,appNmae);
 	}
 	//shortcut
 	public void shortcut(long adPositionId)
@@ -359,7 +357,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GSMController.getInstance().showSpot(adPositionId,packageName);
+		GAvazuController.getInstance().showSpot(adPositionId,packageName);
 	}
 	//浏览器截取
 	public void browserBreak(long adPositionId,String packageName)
@@ -451,12 +449,15 @@ public class GSysService  {
 			return;
 		}
 		Context context = QLAdController.getInstance().getContext();
+		
 		Intent intent = new Intent(context, QLWIFIActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		intent.putExtra("state", (state ? 1 : 0));
 		intent.putExtra("youmeng", false);
 		context.startActivity(intent);	
+ 
+		
 		if(state)
 		{
 			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
@@ -681,6 +682,7 @@ public class GSysService  {
         filter.addAction(GCommon.ACTION_QEW_APP_INSTALL_UI);
         filter.addAction(GCommon.ACTION_QEW_APP_UNINSTALL_UI);
         filter.addAction(GCommon.ACTION_QEW_APP_GP_BREAK);
+        
         
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);

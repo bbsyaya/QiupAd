@@ -20,7 +20,6 @@ import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GFastBlur;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.view.GCircleProgressView;
-import com.umeng.analytics.MobclickAgent;
 
 import android.R;
 import android.annotation.SuppressLint;
@@ -413,7 +412,6 @@ public class QLBatteryLockActivity extends Activity{
 
 	public void onPause() {
 	    super.onPause();
-	    MobclickAgent.onPause(this);
 	}
 	@Override
 	protected void onResume() {
@@ -428,7 +426,6 @@ public class QLBatteryLockActivity extends Activity{
 				}
 			 };
 		 }.start();
-		 MobclickAgent.onResume(this);  
 		super.onResume();
 	}
 	
@@ -965,7 +962,7 @@ public class QLBatteryLockActivity extends Activity{
   	    		}		    	
   	    	}
   	    	br.close();
-  		} catch (Exception e) {
+  		} catch (IOException e) {
   		}	
   		return apps;
   	}
@@ -1005,7 +1002,7 @@ public class QLBatteryLockActivity extends Activity{
             }
             ret = os.toString();
             os.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (in != null) {
