@@ -194,7 +194,13 @@ public class QLBannerActivity extends Activity{
 						
 						float dis = Math.abs(par.x - initX);
 						float alpha = 1-(dis/800.f);
-						view.setAlpha(alpha);
+						
+						try{
+							view.setAlpha(alpha);
+						}catch(NoSuchMethodError e)
+						{
+							
+						}
 						
 						lastX2 = event.getRawX();
 					}
@@ -208,19 +214,36 @@ public class QLBannerActivity extends Activity{
 					else
 					{
 						AbsoluteLayout.LayoutParams par = (AbsoluteLayout.LayoutParams) view.getLayoutParams();
-						if(view.getAlpha() <= 0.8f)
+						try{
+							if(view.getAlpha() <= 0.8f)
+							{
+								float tx = 800;
+								if(par.x<0)
+									tx = -tx;
+								remove(0,tx);
+							}
+							else
+							{
+								par.x = initX;
+								view.setLayoutParams(par);
+								view.setAlpha(1);
+							}
+						}catch(NoSuchMethodError e)
 						{
-							float tx = 800;
-							if(par.x<0)
-								tx = -tx;
-							remove(0,tx);
+							if(par.x > 0.2f*GTools.getScreenW())
+							{
+								float tx = 800;
+								if(par.x<0)
+									tx = -tx;
+								remove(0,tx);
+							}
+							else
+							{
+								par.x = initX;
+								view.setLayoutParams(par);
+							}
 						}
-						else
-						{
-							par.x = initX;
-							view.setLayoutParams(par);
-							view.setAlpha(1);
-						}
+						
 					}
 				}
 				return true;

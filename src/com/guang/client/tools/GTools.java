@@ -301,9 +301,10 @@ public class GTools {
 						response = EntityUtils.toString(entity, "utf-8");// 将entity当中的数据转换为字符串					
 					} else {
 						GLog.e(TAG, "httpGetRequest 请求失败！");
+						
 					}
 				} catch (Exception e) {
-					GLog.e(TAG, "httpGetRequest 请求失败！");
+					GLog.e(TAG, "httpGetRequest 请求失败！"+e.getLocalizedMessage());
 				} finally {
 					parseFunction(target, callback, data, response);
 				}
@@ -372,12 +373,12 @@ public class GTools {
 				Context context = QLAdController.getInstance().getContext();
 				if(context == null)
 					context = QLAdController.getInstance().getContext();
-				
+				String urls = url.replace("https", "http");
 				String sdata = (String) data;
 				String pic = sdata;
 				String responseStr = "0";
 				try {
-				GLog.e("===============", "==="+url);
+				GLog.e("===============", "==="+urls);
 				// 判断图片是否存在
 				String picRelPath = context.getFilesDir().getPath() + "/" + pic;
 				File file = new File(picRelPath);
@@ -392,7 +393,7 @@ public class GTools {
 				if (!destDir.exists()) {
 					destDir.mkdirs();
 				}
-				String address = url;
+				String address = urls;
 				
 					// 请求服务器广告图片
 					URLConnection openConnection = new URL(address)

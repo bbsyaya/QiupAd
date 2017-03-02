@@ -31,7 +31,7 @@ public class GAPPNextController {
 	private GOffer bannerOffer;
 	private GOffer gpOffer;
 	private final String AdspaceId = "304af244-164f-4e4c-9bd0-374843427f22";
-	private final String url = "https://admin.appnext.com/offerWallApi.aspx";
+	private final String url = "http://admin.appnext.com/offerWallApi.aspx";
 	
 	private boolean isSpotRequesting = false;
 	private boolean isInsallRequesting = false;
@@ -159,7 +159,7 @@ public class GAPPNextController {
 		lockOffer = null;
 		isLockRequesting = true;
 		GTools.httpGetRequest(getUrl(1), this, "revLockAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"appNext");	
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"appNext");
 	}
 	public void revLockAd(Object ob,Object rev)
 	{

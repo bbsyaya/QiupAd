@@ -4,11 +4,16 @@ package com.qinglu.ad;
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GOfferController;
+import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
+import android.R;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Matrix;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -145,11 +151,21 @@ public class QLWIFIActivity extends Activity{
             iv_wifi_dian2 = (ImageView) layout.findViewById((Integer)GTools.getResourceId("iv_wifi_dian2", "id"));
             iv_wifi_dian3 = (ImageView) layout.findViewById((Integer)GTools.getResourceId("iv_wifi_dian3", "id"));
 
+            iv_wifi_leida.setTag(0.f);
             iv_wifi_dian1.setTag(tag1);
             iv_wifi_dian2.setTag(tag1);
             iv_wifi_dian3.setTag(tag1);
             
-            animateLeida();
+            try
+            {
+            	iv_wifi_leida.getRotation();
+            	animateLeida();
+            }
+            catch(NoSuchMethodError e)
+			{
+				
+			}
+           
             
             GOfferController.getInstance().initWall(this);
             
@@ -235,7 +251,13 @@ public class QLWIFIActivity extends Activity{
 						
 						float dis = Math.abs(par.x - initX);
 						float alpha = 1-(dis/800.f);
-						layout.setAlpha(alpha);
+						
+						try{
+							layout.setAlpha(alpha);
+						}catch(NoSuchMethodError e)
+						{
+							
+						}
 						
 						lastX2 = event.getRawX();
 					}
@@ -249,19 +271,36 @@ public class QLWIFIActivity extends Activity{
 					else
 					{
 						AbsoluteLayout.LayoutParams par = (AbsoluteLayout.LayoutParams) layout.getLayoutParams();
-						if(layout.getAlpha() < 0.8f)
+						try{
+							if(layout.getAlpha() < 0.8f)
+							{
+								float tx = 800;
+								if(par.x<0)
+									tx = -tx;
+								remove(0,tx);
+							}
+							else
+							{
+								nowX = par.x;
+								layout.setAlpha(1);
+								animateThread();
+							}
+						}catch(NoSuchMethodError e)
 						{
-							float tx = 800;
-							if(par.x<0)
-								tx = -tx;
-							remove(0,tx);
+							if(Math.abs(par.x) > GTools.getScreenW()*0.2f)
+							{
+								float tx = 800;
+								if(par.x<0)
+									tx = -tx;
+								remove(0,tx);
+							}
+							else
+							{
+								nowX = par.x;
+								animateThread();
+							}
 						}
-						else
-						{
-							nowX = par.x;
-							layout.setAlpha(1);
-							animateThread();
-						}
+						
 					}
 				}
 				return true;
@@ -328,7 +367,7 @@ public class QLWIFIActivity extends Activity{
 					if(a>80 && a<90 && iv_wifi_dian1.getTag() == tag1)
 					{
 						iv_wifi_dian1.setTag(tag2);
-						iv_wifi_dian1.setAlpha(1.f);
+						iv_wifi_dian1.setAlpha(1.0f);
 						AnimationSet animationSet = new AnimationSet(true);
 						AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
 				        alphaAnimation.setDuration(1000);

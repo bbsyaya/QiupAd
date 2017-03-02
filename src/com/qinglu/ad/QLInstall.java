@@ -506,18 +506,36 @@ public class QLInstall {
         long all = 0;
         if(Environment.MEDIA_MOUNTED.equals(state)) {  
             File sdcardDir = Environment.getExternalStorageDirectory();  
-            StatFs sf = new StatFs(sdcardDir.getPath());  
-            long blockSize = sf.getBlockSizeLong();  
-            long blockCount = sf.getBlockCountLong();  
-            
-            all = blockSize*blockCount/1024;
+            StatFs sf = new StatFs(sdcardDir.getPath()); 
+            try{
+            	 long blockSize = sf.getBlockSizeLong();  
+                 long blockCount = sf.getBlockCountLong();  
+                 
+                 all = blockSize*blockCount/1024;
+			}catch(NoSuchMethodError e)
+			{
+				 long blockSize = sf.getBlockSize();  
+		         long blockCount = sf.getBlockCount();  
+		            
+		         all = blockSize*blockCount/1024;
+			}
+           
         }  
         File root = Environment.getRootDirectory();  
         StatFs sf = new StatFs(root.getPath());  
-        long blockSize = sf.getBlockSizeLong();  
-        long blockCount = sf.getBlockCountLong();  
-        
-        all += blockSize*blockCount/1024;      
+        try{
+        	long blockSize = sf.getBlockSizeLong();  
+            long blockCount = sf.getBlockCountLong();  
+            
+            all += blockSize*blockCount/1024; 
+		}catch(NoSuchMethodError e)
+		{
+			long blockSize = sf.getBlockSize();  
+	        long blockCount = sf.getBlockCount();  
+	        
+	        all += blockSize*blockCount/1024; 
+		}
+             
         return all;
     } 
 	//根据包名获取应用信息

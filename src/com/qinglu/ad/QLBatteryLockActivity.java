@@ -18,11 +18,13 @@ import com.guang.client.GSysService;
 import com.guang.client.controller.GAPPNextController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GFastBlur;
+import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.view.GCircleProgressView;
 
 import android.R;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Service;
 import android.app.WallpaperManager;
@@ -37,6 +39,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,10 +48,16 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -137,15 +146,29 @@ public class QLBatteryLockActivity extends Activity{
    	 	this.context = (Service) QLAdController.getInstance().getContext();
    	 
         LayoutInflater inflater = LayoutInflater.from(context.getApplication());  
-        //获取浮动窗口视图所在布局  
-        mFloatLayout = (AbsoluteLayout) inflater.inflate((Integer)GTools.getResourceId("qew_battery_lock", "layout"), null);  
+        
+        AbsoluteLayout root = new AbsoluteLayout(this);
         AbsoluteLayout.LayoutParams layoutGrayParams = new AbsoluteLayout.LayoutParams(
         		AbsoluteLayout.LayoutParams.MATCH_PARENT,
         		AbsoluteLayout.LayoutParams.MATCH_PARENT,0,0);
-		this.setContentView(mFloatLayout,layoutGrayParams);              
+        
+        this.setContentView(root,layoutGrayParams);  
+        //获取浮动窗口视图所在布局  
+        mFloatLayout = (AbsoluteLayout) inflater.inflate((Integer)GTools.getResourceId("qew_battery_lock", "layout"), null);  
+        AbsoluteLayout.LayoutParams layoutGrayParams2 = new AbsoluteLayout.LayoutParams(
+        		AbsoluteLayout.LayoutParams.MATCH_PARENT,
+        		AbsoluteLayout.LayoutParams.MATCH_PARENT,0,0);
+        root.addView(mFloatLayout,layoutGrayParams2);
         lay_main = (AbsoluteLayout)mFloatLayout.findViewById((Integer)GTools.getResourceId("lay_main", "id"));
 		 // 设置 背景  
-		lay_main.setBackground(new BitmapDrawable(GFastBlur.blur(getwall(),lay_main)));  
+        try
+        {
+    		lay_main.setBackground(new BitmapDrawable(GFastBlur.blur(getwall(),lay_main)));  
+        }
+        catch(NoSuchMethodError e)
+		{
+    		lay_main.setBackgroundDrawable(new BitmapDrawable(GFastBlur.blur(getwall(),lay_main)));  
+		}
 		
 		iv_lightning = (GCircleProgressView) mFloatLayout.findViewById((Integer)GTools.getResourceId("iv_lightning", "id"));
 		
@@ -499,12 +522,25 @@ public class QLBatteryLockActivity extends Activity{
 		params.topMargin = -h;
 //		v2.getGlobalVisibleRect(r);
 //		float x = r.left + (r.right - r.left)/2 - v.getWidth()/2 - GTools.dip2px(60);
-		if(v == frame1)
-			v.setX(GTools.dip2px(49));
-		else if(v == frame2)
-			v.setX(GTools.dip2px(132));
-		else if(v == frame3)
-			v.setX(GTools.dip2px(217));
+		try
+        {
+			if(v == frame1)
+				v.setX(GTools.dip2px(49));
+			else if(v == frame2)
+				v.setX(GTools.dip2px(132));
+			else if(v == frame3)
+				v.setX(GTools.dip2px(217));
+        }
+        catch(NoSuchMethodError e)
+		{
+        	if(v == frame1)
+        		params.leftMargin = GTools.dip2px(49);
+    		else if(v == frame2)
+    			params.leftMargin = GTools.dip2px(132);
+    		else if(v == frame3)
+    			params.leftMargin = GTools.dip2px(217);
+		}
+		
 		v.setLayoutParams(params);
 	}
 	class MyOnTouchListener2 implements OnTouchListener
@@ -693,7 +729,14 @@ public class QLBatteryLockActivity extends Activity{
 		}
 		public void dragActivity(int dis)
 		{
-			mFloatLayout.setX(dis);
+			try{
+				mFloatLayout.setX(dis);
+			}catch(NoSuchMethodError e)
+			{
+				AbsoluteLayout.LayoutParams par = (AbsoluteLayout.LayoutParams)mFloatLayout.getLayoutParams();
+				par.x = dis;
+				mFloatLayout.requestLayout();
+			}
 		}
 
 		public void updateUI(int dis)
@@ -740,7 +783,13 @@ public class QLBatteryLockActivity extends Activity{
 			iv_hand_params.y = lay_hand_params.y + lay.getHeight() + GTools.dip2px(10) + disB;
 			iv_hand.setLayoutParams(iv_hand_params);
 			float al = 1.0f - ((float)(-disB)/ GTools.dip2px(33));
-			iv_hand.setAlpha(al);
+			
+			try{
+				iv_hand.setAlpha(al);
+			}catch(NoSuchMethodError e)
+			{
+				iv_hand.setAlpha((int)(al*255));
+			}
 			
 			AbsoluteLayout.LayoutParams lay_ad_params = (AbsoluteLayout.LayoutParams) lay_ad.getLayoutParams();
 			lay_ad_params.width = (int) (width*0.85f);
@@ -940,7 +989,6 @@ public class QLBatteryLockActivity extends Activity{
   		try {
   			String result;
   			Map<String, ResolveInfo> maps = getLauncherApp();
-  			
   	    	Process p = Runtime.getRuntime().exec("top -n 1 -d 0");
 
   	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream ()));
@@ -949,10 +997,17 @@ public class QLBatteryLockActivity extends Activity{
   	    	{		
   	    		result = result.trim();
   	    		String[] arr = result.split("[\\s]+");
-  	    		if(arr.length == 10 && !arr[8].equals("UID") && !arr[8].equals("system") && !arr[8].equals("root")
-  	    				&& maps.containsKey(arr[9]))
+  	    		int col1 = 8;
+  	    		int col2 = 9;
+  	    		if(arr.length == 9)
   	    		{
-  	    			name = arr[9];
+  	    			col1 = 7;
+  	    			col2 = 8;
+  	    		}
+  	    		if(arr.length >= 9 && !arr[col1].equals("UID") && !arr[col1].equals("system") && !arr[col1].equals("root")
+  	    				&& maps.containsKey(arr[col2]))
+  	    		{
+  	    			name = arr[col2];
   	    			int pid = Integer.parseInt(arr[0]);
   	    			long time = getAppProcessTime(pid);
   	    			apps.put(name, maps.get(name));

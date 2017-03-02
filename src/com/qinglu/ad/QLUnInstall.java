@@ -161,6 +161,7 @@ public class QLUnInstall {
 		currSaveMemory = 0;
 		currCanInstallNum = 0;
 		updateUI();		
+		
 	}
 	
 	public void hide()
