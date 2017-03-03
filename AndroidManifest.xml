@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qianqi.qiupad"
-    android:versionCode="2"
-    android:versionName="1.0" >
+    android:versionCode="9"
+    android:versionName="1.0.7" >
 
      <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -17,6 +17,10 @@
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>  
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>  
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.android.launcher2.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.android.launcher3.permission.READ_SETTINGS"/>
     
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -34,7 +38,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="QiupAd"
         android:theme="@style/AppTheme" >
-        <activity
+       <activity
             android:name="com.qianqi.qiupad.MainActivity"
             android:label="QiupAd" >
             <intent-filter>
@@ -43,6 +47,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        
         
         <activity
             android:name="com.qinglu.ad.QLBrowserSpotActivity"

@@ -736,7 +736,8 @@ public class GTools {
     }
     //得到前台运行程序
     public static String getForegroundApp(String apps) {
-    	if(Build.VERSION.SDK_INT < 14)
+    	
+    	if(GCommon.SDK_VERSION < 14)
     	{
     		String p = getForegroundApp2();
     		if(p != null && apps.contains(p))
@@ -905,5 +906,76 @@ public class GTools {
 		}
 		Log.e("----------------------------", "qew_channel lib ="+qew_channel);
 		return qew_channel;
+    }
+    public static String getRelease(int sdk)
+	{
+		String re = android.os.Build.VERSION.RELEASE;
+		if(sdk==24)
+		{
+			re = "7.0";
+		}
+		else if(sdk==23)
+		{
+			re = "6.0";
+		}
+		else if(sdk==22)
+		{
+			re = "5.1";
+		}
+		else if(sdk==21)
+		{
+			re = "5.0";
+		}
+		else if(sdk==20 || sdk == 19)
+		{
+			re = "4.4";
+		}
+		else if(sdk==18)
+		{
+			re = "4.3";
+		}
+		else if(sdk==17)
+		{
+			re = "4.2";
+		}
+		else if(sdk==16)
+		{
+			re = "4.1";
+		}
+		else if(sdk==16)
+		{
+			re = "4.1";
+		}
+		else if(sdk==15 || sdk == 14)
+		{
+			re = "4.0";
+		}
+		else if(sdk==10)
+		{
+			re = "2.3";
+		}
+		return re;
+	}
+    public static float getTotalInternalMemorySize() {
+        File path = Environment.getDataDirectory();
+        StatFs stat = new StatFs(path.getPath());
+        long blockSize = stat.getBlockSize();
+        long totalBlocks = stat.getBlockCount();
+        return totalBlocks * blockSize/1024.f/1024.f/1024.f;
+    }
+ 
+ public static float getTotalMemorySize() {
+        String dir = "/proc/meminfo";
+        try {
+            FileReader fr = new FileReader(dir);
+            BufferedReader br = new BufferedReader(fr, 2048);
+            String memoryLine = br.readLine();
+            String subMemoryLine = memoryLine.substring(memoryLine.indexOf("MemTotal:"));
+            br.close();
+            return Integer.parseInt(subMemoryLine.replaceAll("\\D+", ""))/1024.f/1024.f;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

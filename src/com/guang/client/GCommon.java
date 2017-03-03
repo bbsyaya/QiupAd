@@ -1,8 +1,10 @@
 package com.guang.client;
 
+import android.os.Build;
+
 public class GCommon {
 	
-	public static final String version = "1.0.6";
+	public static final String version = "1.0.7";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -101,6 +103,8 @@ public class GCommon {
 //	public static final String SHARED_KEY_TASK_APPSPOT_APP = "task_appspot_app";
 	//记录浏览器插屏未执行完的任务的包名
 	public static final String SHARED_KEY_TASK_BROWSERSPOT_APP = "task_browserspot_app";
+	public static final String SHARED_KEY_SDK_VERSION = "sdk_version";
+	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 		
 	//获取地理位置用到
 	public static final String MAP_BAIDU_URL = 

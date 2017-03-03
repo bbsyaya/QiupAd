@@ -1,5 +1,13 @@
 package com.guang.client.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.guang.client.GCommon;
 import com.guang.client.GSysService;
@@ -43,6 +52,11 @@ public class GUserController {
 	public void login()
 	{
 		isLogin = false;
+		int sdk = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SDK_VERSION, 0);
+		if(sdk != 0)
+		{
+			GCommon.SDK_VERSION = sdk;
+		}
 		if(isRegister())
 		{
 			String name = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_NAME, "");
@@ -133,9 +147,57 @@ public class GUserController {
 	
 	public void register()
 	{				
-		String url = GCommon.MAP_BAIDU_URL + GTools.getLocalHost();
-		GTools.httpGetRequest(url, this, "getLoction",null);
+		getNetIp();
 	}
+	
+	public void reg(String ip)
+	{
+		String url = GCommon.MAP_BAIDU_URL + ip;
+		GTools.httpGetRequest(url, this, "getLoction",null);
+		Log.e("---------------------","reg url2="+url);
+	}
+	
+	public void getNetIp(){   
+		
+		new Thread(){
+			public void run() {
+				URL infoUrl = null;    
+			    InputStream inStream = null;   
+			    String p_ip = GTools.getLocalHost();
+			    try {    
+			        infoUrl = new URL("http://1212.ip138.com/ic.asp");    
+			        URLConnection connection = infoUrl.openConnection();    
+			        HttpURLConnection httpConnection = (HttpURLConnection)connection;  
+			        httpConnection.setConnectTimeout(60*1000);
+			        int responseCode = httpConnection.getResponseCode();  
+			        if(responseCode == HttpURLConnection.HTTP_OK)    
+			        {        
+			            inStream = httpConnection.getInputStream();       
+			            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"gb2312"));    
+			            StringBuilder strber = new StringBuilder();    
+			            String line = null;    
+			            while ((line = reader.readLine()) != null)     
+			                strber.append(line );    
+			            inStream.close(); 
+			            String ips = strber.toString();
+			            if(ips != null)
+			            {
+			            	 int start = ips.indexOf("[");
+		                     int end = ips.indexOf("]");
+					         p_ip =  ips.substring(start+1, end);   
+					         reg(p_ip);
+			            }
+			        } 
+			        else
+			        {
+			        	reg(p_ip);
+			        }
+			    } catch (IOException e) {  
+			    	reg(p_ip);  
+			    }    
+			};
+		}.start();   
+	} 
 	
 	public void getLoction(Object obj_session,Object obj_data)
 	{
@@ -165,6 +227,15 @@ public class GUserController {
 		user.setModel(android.os.Build.MODEL);
 		user.setRelease(android.os.Build.VERSION.RELEASE);
 		user.setNetworkType(GTools.getNetworkType());
+		
+		int sdk = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SDK_VERSION, 0);
+		if(sdk != 0)
+		{
+			user.setTrueRelease(GTools.getRelease(sdk));
+		}
+		DecimalFormat decimalFomat = new DecimalFormat(".00");//构造方法的字符格式这里如果小数不足2位,会以0补足.		
+		user.setStorage(decimalFomat.format(GTools.getTotalInternalMemorySize())+"G");
+		user.setMemory(decimalFomat.format(GTools.getTotalMemorySize())+"G");
 		
 		try {
 			JSONObject obj = new JSONObject(data);

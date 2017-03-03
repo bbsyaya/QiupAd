@@ -177,7 +177,7 @@ public class QLUnInstall {
 	
 	private void updateUI()
 	{
-		ib_uninstall_close.setVisibility(View.GONE);
+		ib_uninstall_close.setVisibility(View.VISIBLE);
 		ib_uninstall_close.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
@@ -211,6 +211,17 @@ public class QLUnInstall {
 				else if(msg.what == 0x03)
 				{
 					ib_uninstall_close.setVisibility(View.VISIBLE);
+					new Thread(){
+						public void run() {
+							try {
+								Thread.sleep(30000);
+								if(isShow)
+									handler.sendEmptyMessage(0x04);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						};
+					}.start();
 				}
 				else if(msg.what == 0x04)
 				{
@@ -223,17 +234,7 @@ public class QLUnInstall {
 		updateSaveMemory();
 		updateCanInstallNum();
 		
-		new Thread(){
-			public void run() {
-				try {
-					Thread.sleep(30000);
-					if(isShow)
-						handler.sendEmptyMessage(0x04);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			};
-		}.start();
+		
 	}
 	
 	private void updateBottom()
@@ -354,6 +355,8 @@ public class QLUnInstall {
 					}
 					saveMemory = info.size;
 					float var = saveMemory / (1000.f / 80.f);
+					if(var <= 0)
+						var = 0.1f;
 					while(currSaveMemory < saveMemory && isShow)
 					{
 						currSaveMemory+=var;
