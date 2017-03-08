@@ -29,21 +29,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		
-		btn = (Button) findViewById(R.id.install);
-		btn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_INSTALL));
-			}
-		});
-		
-		btn = (Button) findViewById(R.id.uninstall);
-		btn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_UNINSTALL));
-			}
-		});
+	
 		
 		btn = (Button) findViewById(R.id.banner);
 		btn.setOnClickListener(new OnClickListener() {
@@ -57,7 +43,7 @@ public class MainActivity extends Activity {
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-//				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_LOCK));
+				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_LOCK));
 			}
 		});
 		
@@ -69,13 +55,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		
-		btn = (Button) findViewById(R.id.wifi);
-		btn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_WIFI));
-			}
-		});
+
 		
 		btn = (Button) findViewById(R.id.browser_break);
 		btn.setOnClickListener(new OnClickListener() {
@@ -93,13 +73,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		
-		btn = (Button) findViewById(R.id.home_page);
-		btn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_HOMEPAGE));
-			}
-		});
+		
 		
 		btn = (Button) findViewById(R.id.behind_brush);
 		btn.setOnClickListener(new OnClickListener() {

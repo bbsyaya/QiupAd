@@ -2,26 +2,26 @@ package com.qinglu.ad;
 
 
 
+import java.util.List;
+
 import com.guang.client.GCommon;
-import com.guang.client.controller.GAPPNextController;
-import com.guang.client.controller.GAvazuController;
+import com.guang.client.controller.GAdinallController;
 import com.guang.client.mode.GOffer;
-import com.guang.client.mode.GSMOffer;
 import com.guang.client.tools.GTools;
+import com.qinglu.ad.view.GWebView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View.OnTouchListener;
 import android.view.Window;
@@ -34,12 +34,13 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AbsoluteLayout;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
+@SuppressLint("SetJavaScriptEnabled")
 @SuppressWarnings("deprecation")
 public class QLBannerActivity extends Activity{
 	private QLBannerActivity context;
@@ -49,6 +50,12 @@ public class QLBannerActivity extends Activity{
 	Bitmap bitmapPic;
 	
 	private String adSource;
+	
+	private WebView webView;
+	private WebView webView2;
+	private Handler handler;
+	private List<String>  imgtrackings;
+	private List<String>  thclkurls;
 	
 	public void onResume() {
 	    super.onResume();
@@ -89,7 +96,7 @@ public class QLBannerActivity extends Activity{
 			title_h = getResources().getDimensionPixelSize(resourceId);
 		}
 		
-		l_height = GTools.dip2px(80);
+		l_height = (int) (height*0.66f*0.156f);;
 		
 		final LayoutParams p = getWindow().getAttributes();  //获取对话框当前的参数值    
 //		p.width = width*2;  
@@ -108,49 +115,91 @@ public class QLBannerActivity extends Activity{
  		
  		root.addView(view);
  		
-        boolean type = getIntent().getBooleanExtra("type", false);
+ 		GOffer offer = GAdinallController.getInstance().getBannerOffer();
+		adSource = "Adinall";
+		
+		int w = (int) (GTools.getScreenW()*0.66f);
+		int h = (int) (w*0.156f);
+		
+		RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(w,h);
+		layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		layoutParams2.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        webView = new GWebView(this);
+		//添加mFloatLayout  
+        view.addView(webView,layoutParams2);  
+		
+		webView.getSettings().setJavaScriptEnabled(true);
+		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+		
+		
+		 
+		webView.setWebViewClient(new WebViewClient(){
+			 @Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				 if(target == null)
+				 {
+					 target = url;
+					 GTools.uploadStatistics(GCommon.CLICK,GCommon.BANNER,adSource);
+					 openBrowser(target);
+					 if(thclkurls == null || thclkurls.size() == 0)
+					 {
+						hide(false);
+					 }
+					 else
+					 {
+						 updateClick();
+					 }
+				 }
+				 
+				return true;
+			}
+		 });
+		
+		webView.loadData(offer.getAdm(), "text/html; charset=UTF-8", null);
+		
+		RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(1,1);
+		layoutParams3.addRule(RelativeLayout.CENTER_IN_PARENT);
+        webView2 = new WebView(this);
+		//添加mFloatLayout  
+        view.addView(webView2,layoutParams3);  
+		
+        webView2.getSettings().setJavaScriptEnabled(true);
+        webView2.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+		
         
-        if(type)
-        {	
-        	LayoutInflater inflater = LayoutInflater.from(getApplication());
-        	RelativeLayout view2 = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_banner", "layout"), null);
-        	view.addView(view2);
-        	
-    		GOffer offer = GAPPNextController.getInstance().getBannerOffer();
-    		String bannerPicPath = offer.getIconUrl();
-            target = offer.getUrlApp();
-            
-            ImageView iv_banner_icon = (ImageView) view2.findViewById((Integer)GTools.getResourceId("iv_banner_icon", "id"));
-            TextView tv_banner_appname = (TextView) view2.findViewById((Integer)GTools.getResourceId("tv_banner_appname", "id"));
-            TextView tv_banner_appdesc = (TextView) view2.findViewById((Integer)GTools.getResourceId("tv_banner_appdesc", "id"));
-       
-            bitmapPic = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
-            iv_banner_icon.setImageBitmap(bitmapPic);
-            tv_banner_appname.setText(offer.getAppName());
-            tv_banner_appdesc.setText(offer.getAppDesc());
-            
-            adSource = "appNext";
-        }
-        else
-        {
-        	GSMOffer obj = GAvazuController.getInstance().getOffer();
-            String bannerPicPath = obj.getLink();
-            target = obj.getTarget();
-
-     		ImageView iv_banner_banner = new ImageView(this);
-     		
-     		RelativeLayout.LayoutParams imageLayoutParams = new RelativeLayout.LayoutParams((int) (width*0.85f), GTools.dip2px(50));		
-             imageLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-             imageLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-     		iv_banner_banner.setLayoutParams(imageLayoutParams);
-     		iv_banner_banner.setScaleType(ScaleType.FIT_XY);
-     		
-     		bitmapPic = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ bannerPicPath) ;
-     		iv_banner_banner.setImageBitmap(bitmapPic);
-     		view.addView(iv_banner_banner);
-     		
-     		adSource = "avazu";
-        }
+        webView2.setWebViewClient(new WebViewClient(){
+			 @Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				
+				 view.loadUrl(url);
+				return true;
+			}
+		 });
+        
+        imgtrackings = offer.getImgtrackings();
+		thclkurls = offer.getThclkurls();
+		
+		handler = new Handler(){
+			@Override
+			public void dispatchMessage(Message msg) {
+				super.dispatchMessage(msg);
+				if(msg.what == 0x01)
+				{
+					webView2.loadUrl(imgtrackings.get(0));
+					imgtrackings.remove(0);
+				}
+				else if(msg.what == 0x02)
+				{
+					webView2.loadUrl(thclkurls.get(0));
+					thclkurls.remove(0);
+					if(thclkurls.size() == 0)
+					{
+						hide(false);
+					}
+				}
+			}
+		};
+		
         
  		this.setContentView(root,rootlayoutParams);
 		
@@ -273,6 +322,43 @@ public class QLBannerActivity extends Activity{
 		}.start();
 		
 		GTools.uploadStatistics(GCommon.SHOW,GCommon.BANNER,adSource);
+		updateShow();
+	}
+	
+	
+	private void updateShow()
+	{
+		new Thread(){
+			public void run() {
+				while(imgtrackings != null && imgtrackings.size() > 0)
+				{
+					handler.sendEmptyMessage(0x01);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+	}
+	
+	private void updateClick()
+	{
+		new Thread(){
+			public void run() {
+				while(thclkurls != null && thclkurls.size() > 0)
+				{
+					handler.sendEmptyMessage(0x02);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+		
 	}
 	
 	private void show()
@@ -321,13 +407,6 @@ public class QLBannerActivity extends Activity{
 			@Override
 			public void onAnimationEnd(Animation animation) {
 				view.setVisibility(View.GONE);
-				if(isClick)
-				{
-					Uri uri = Uri.parse(target);
-		            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-		            startActivity(intent);
-		            GTools.uploadStatistics(GCommon.CLICK,GCommon.BANNER,adSource);
-				}
 				context.finish();						
 			}
 			@Override
@@ -366,16 +445,21 @@ public class QLBannerActivity extends Activity{
 	}
 	@Override
 	protected void onDestroy() {
-		recycle();
 		super.onDestroy();
 	}
-	public void recycle()
+	
+	public void openBrowser(String url)
 	{
-		if(bitmapPic != null && !bitmapPic.isRecycled()){   
-			bitmapPic.recycle();   
-			bitmapPic = null;   
-		}   
-		
-		System.gc(); 
+		PackageManager packageMgr = getPackageManager();
+		Intent intent = packageMgr.getLaunchIntentForPackage("com.android.chrome");
+		if(intent == null)
+		{
+			intent = new Intent();
+		}
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
 	}
+	
 }

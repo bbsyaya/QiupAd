@@ -15,12 +15,13 @@ import java.util.Map.Entry;
 
 import com.guang.client.GCommon;
 import com.guang.client.GSysService;
-import com.guang.client.controller.GAPPNextController;
+import com.guang.client.controller.GAdinallController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GFastBlur;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.view.GCircleProgressView;
+import com.qinglu.ad.view.GWebView;
 
 import android.R;
 import android.annotation.SuppressLint;
@@ -58,6 +59,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.view.animation.Animation.AnimationListener;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -66,7 +70,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-@SuppressLint("NewApi")
+@SuppressLint({ "NewApi", "SetJavaScriptEnabled" })
 public class QLBatteryLockActivity extends Activity{
 	AbsoluteLayout mFloatLayout;
     
@@ -94,7 +98,8 @@ public class QLBatteryLockActivity extends Activity{
 	private ImageView iv_ad_icon;
 	private TextView tv_ad_name;
 	private Button tv_ad_download;
-	private ImageView iv_ad_pic;
+	private GWebView wv_ad_pic;
+	private WebView wv_ad_pic2;
 	
 	private AbsoluteLayout.LayoutParams lay_cicle_params;
 	private int width;
@@ -111,6 +116,13 @@ public class QLBatteryLockActivity extends Activity{
 	
 	private Bitmap bitmapPic;
 	private Bitmap bitmapIcon;
+	
+	private String target = null;
+	private List<String>  imgtrackings;
+	private List<String>  thclkurls;
+	
+	private MyOnTouchListener2 listener;
+	
 	public static QLBatteryLockActivity getInstance()
 	{
 		return _instance;
@@ -196,7 +208,8 @@ public class QLBatteryLockActivity extends Activity{
 		iv_ad_icon = (ImageView) mFloatLayout.findViewById((Integer)GTools.getResourceId("iv_ad_icon", "id"));
 		tv_ad_name = (TextView) mFloatLayout.findViewById((Integer)GTools.getResourceId("tv_ad_name", "id"));
 		tv_ad_download = (Button) mFloatLayout.findViewById((Integer)GTools.getResourceId("tv_ad_download", "id"));
-		iv_ad_pic = (ImageView) mFloatLayout.findViewById((Integer)GTools.getResourceId("iv_ad_pic", "id"));
+		wv_ad_pic = (GWebView) mFloatLayout.findViewById((Integer)GTools.getResourceId("wv_ad_pic", "id"));
+		wv_ad_pic2 = (WebView) mFloatLayout.findViewById((Integer)GTools.getResourceId("wv_ad_pic2", "id"));
 		
 		lay_cicle_params = (AbsoluteLayout.LayoutParams) lay_cicle.getLayoutParams();	
 		iv_hand.setVisibility(View.GONE);
@@ -207,7 +220,8 @@ public class QLBatteryLockActivity extends Activity{
 		width = wm.getDefaultDisplay().getWidth();
 		height = wm.getDefaultDisplay().getHeight();
 		
-		lay_main.setOnTouchListener(new MyOnTouchListener2());
+		listener = new MyOnTouchListener2();
+		lay_main.setOnTouchListener(listener);
 
 		
 		iv_setting.setOnClickListener(new OnClickListener() {		
@@ -272,7 +286,7 @@ public class QLBatteryLockActivity extends Activity{
 		intent.putExtra("mBatteryLevel", mBatteryLevel);
 		context.startActivity(intent);
 		
-		GAPPNextController.getInstance().showLock();
+		GAdinallController.getInstance().showLock();
 	}
 	
 	public void hide()
@@ -404,9 +418,23 @@ public class QLBatteryLockActivity extends Activity{
 					updatePaihang(frame3,iv_icon3);	
 										
 				}
-				if(msg.what == 0x12)
+				else if(msg.what == 0x12)
 				{
 					updateAd();
+				}
+				else if(msg.what == 0x21)
+				{
+					wv_ad_pic2.loadUrl(imgtrackings.get(0));
+					imgtrackings.remove(0);
+				}
+				else if(msg.what == 0x22)
+				{
+					wv_ad_pic2.loadUrl(thclkurls.get(0));
+					thclkurls.remove(0);
+					if(thclkurls.size() == 0)
+					{
+						hide();
+					}
 				}
 				super.handleMessage(msg);
 			}
@@ -456,35 +484,106 @@ public class QLBatteryLockActivity extends Activity{
 	{
 		lay_ad.setVisibility(View.VISIBLE);
 		iv_hand.setVisibility(View.VISIBLE);
-		final GOffer obj =  GAPPNextController.getInstance().getLockOffer();
+		final GOffer obj =  GAdinallController.getInstance().getLockOffer();
 		if(obj != null)
 		{
-			offerId = obj.getId();
-			String name = obj.getAppName();
-			String openSpotPicPath = obj.getImageUrl();
-			String apk_icon_path = obj.getIconUrl();
+			wv_ad_pic.getSettings().setJavaScriptEnabled(true);
+			wv_ad_pic.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 			
-			bitmapIcon = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ apk_icon_path) ;			
-			iv_ad_icon.setImageBitmap(bitmapIcon);
-			bitmapPic = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ openSpotPicPath) ;	
-			iv_ad_pic.setImageBitmap(bitmapPic);
-			tv_ad_name.setText(name);
-						
-//			 List<View> list = new ArrayList<View>();
-//		     list.add(tv_ad_download);
-//		     GOfferController.getInstance().registerView(GCommon.CHARGLOCK,tv_ad_download, list, obj.getCampaign());
-			tv_ad_download.setOnClickListener(new OnClickListener() {
+			wv_ad_pic.setWebViewClient(new WebViewClient(){
+				 @Override
+				public boolean shouldOverrideUrlLoading(WebView view, String url) {
+					 if(target == null)
+					 {
+						 target = url;
+						 GTools.uploadStatistics(GCommon.CLICK,GCommon.CHARGLOCK,"Adinall");
+						 openBrowser(target);
+						 if(thclkurls == null || thclkurls.size() == 0)
+						 {
+							hide();
+						 }
+						 else
+						 {
+							 updateClick();
+						 }
+					 }
+					 view.loadUrl(url);
+					return true;
+				}
+			 });
+			wv_ad_pic.loadData(obj.getAdm(), "text/html; charset=UTF-8", null);
+			wv_ad_pic.setListener(listener);
+			
+			wv_ad_pic2.getSettings().setJavaScriptEnabled(true);
+			wv_ad_pic2.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+
+			wv_ad_pic2.setWebViewClient(new WebViewClient() {
 				@Override
-				public void onClick(View v) {
-					Uri uri = Uri.parse(obj.getUrlApp());
-	                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-	                startActivity(intent);
+				public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+					view.loadUrl(url);
+					return true;
 				}
 			});
-			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,"appNext");
+
+			imgtrackings = obj.getImgtrackings();
+			thclkurls = obj.getThclkurls();
+
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,"Adinall");
+			
+			updateShow();
 		} 	 
 		 handler.sendEmptyMessage(0x11);
 	}
+	
+	private void updateShow()
+	{
+		new Thread(){
+			public void run() {
+				while(imgtrackings != null && imgtrackings.size() > 0)
+				{
+					handler.sendEmptyMessage(0x21);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+	}
+	
+	private void updateClick()
+	{
+		new Thread(){
+			public void run() {
+				while(thclkurls != null && thclkurls.size() > 0)
+				{
+					handler.sendEmptyMessage(0x22);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+		
+	}
+	public void openBrowser(String url)
+	{
+		PackageManager packageMgr = getPackageManager();
+		Intent intent = packageMgr.getLaunchIntentForPackage("com.android.chrome");
+		if(intent == null)
+		{
+			intent = new Intent();
+		}
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
+	}
+	
 	public void updateWifi()
 	{
 		new Thread(){
@@ -497,16 +596,16 @@ public class QLBatteryLockActivity extends Activity{
 						e.printStackTrace();
 					}
 				}
-				while(isShow && (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && !GAPPNextController.getInstance().isCanShowLock())
+				while(isShow && (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && !GAdinallController.getInstance().isCanShowLock())
 				{
 					try {
-						GAPPNextController.getInstance().showLock();
-						Thread.sleep(1000*5);
+						GAdinallController.getInstance().showLock();
+						Thread.sleep(1000*10);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				if(isShow &&  (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && GAPPNextController.getInstance().isCanShowLock())
+				if(isShow &&  (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && GAdinallController.getInstance().isCanShowLock())
 				{					 
 					handler.sendEmptyMessage(0x12);
 				}
@@ -543,7 +642,7 @@ public class QLBatteryLockActivity extends Activity{
 		
 		v.setLayoutParams(params);
 	}
-	class MyOnTouchListener2 implements OnTouchListener
+	public class MyOnTouchListener2 implements OnTouchListener
 	{
 		private float lastX;
 		private float lastY;
@@ -798,147 +897,6 @@ public class QLBatteryLockActivity extends Activity{
 			lay_ad.setLayoutParams(lay_ad_params);
 		}
 	}
-//	class MyOnTouchListener implements OnTouchListener
-//    {
-//    	private float lastY = 0;
-//		private float lastDis = 0;
-//		private float changeH = 0;
-//		private int lay_cicleH = 0;
-//		private int lay_cicle_top = 0;
-//		private float lay_cicleX = 0;
-//		private float tv_proX = 0;
-//		private float tv_proY = 0;
-//		private float lay_sur_timeX = 0;
-//		private float lay_sur_timeY = 0;
-//		@Override
-//		public boolean onTouch(View v, MotionEvent event) {				
-//			if(event.getAction() == MotionEvent.ACTION_MOVE)
-//			{
-//				float y = event.getRawY();					
-//				int dis = (int) Math.abs(y - lastY);
-//				if(y < lastY)
-//					dis = -dis;
-//				if(Math.abs(dis) >= GTools.dip2px(5))
-//				{			
-//					int currLayTopH = lay_cicle_params.bottomMargin;										
-//					int disTopY = dis + currLayTopH;
-//					disTopY = disTopY > lay_cicle_top ? (int) lay_cicle_top : disTopY;
-//					disTopY = disTopY < 0 ? 0 : disTopY;						
-//					lay_cicle_params.bottomMargin = disTopY;
-//					lay_cicle.setLayoutParams(lay_cicle_params);																	
-//					
-//					int currLayX = (int) lay_cicle.getX();
-//					int disX = (int) (dis*0.3f + currLayX);
-//					int disLeft = GTools.dip2px(20);
-//					disX = disX > lay_cicleX ? (int) lay_cicleX : disX;
-//					disX = disX < disLeft ? disLeft : disX;
-//					lay_cicle.setX(disX);
-//					
-//					float altopy = disX-disLeft;
-//					int al = (int) (altopy/lay_cicleX * 255);
-//					al = al < 2 ? 2 : al;
-//					iv_hand.setImageAlpha(al);	
-//					
-//					if((disTopY == 0 && dis < 0 && lastDis < 0) || 
-//							(disTopY == lay_cicle_top && dis > 0 && lastDis > 0))
-//					{
-//						int currLayH = lay_cicle.getLayoutParams().height;										
-//						int disY = (int) (dis*0.1 + currLayH);
-//						disY = disY > lay_cicleH ? (int) lay_cicleH : disY;
-//						disY = disY < changeH ? (int) changeH : disY;						
-//						lay_cicle_params.height = disY;
-//						lay_cicle_params.width = disY;
-//						lay_cicle.setLayoutParams(lay_cicle_params);
-//																									
-//						
-//						//当前电量百分比
-//						int currProX = (int) tv_pro.getX();
-//						int currProY = (int) tv_pro.getY();
-//						int proDisX = (int) (dis*0.3f + currProX);
-//						int proDisY = (int) (dis*0.03 + currProY);
-//						int circle_pro_disX = disX + lay_cicle_params.width + GTools.dip2px(20);
-//						int circle_pro_disY = (int) (tv_proY - lay_cicle_params.height);
-//						proDisX = proDisX < circle_pro_disX ? circle_pro_disX : proDisX;
-//						proDisX = proDisX > tv_proX ? (int) tv_proX : proDisX;							
-//						proDisY = proDisY > tv_proY ? (int) tv_proY : proDisY;
-//						proDisY = proDisY < circle_pro_disY ? circle_pro_disY : proDisY;
-//						tv_pro.setX(proDisX);
-//						tv_pro.setY(proDisY);
-//						
-//						
-//						//剩余充电时间 y
-//						int currLaySurTimeY = (int) lay_sur_time.getY();
-//						int currLaySurTimeDisY = (int) (dis*0.05 + currLaySurTimeY);
-//						int circle_time_disY = (int) (lay_cicle.getY() + lay_cicle_params.height);
-//						currLaySurTimeDisY = currLaySurTimeDisY > lay_sur_timeY ? (int) lay_sur_timeY : currLaySurTimeDisY;
-//						//向上移动
-//						if(dis < 0 && lastDis < 0 && (disX + lay_cicle_params.width/2) > lay_sur_time.getX() )
-//						{
-//							currLaySurTimeDisY = currLaySurTimeDisY < circle_time_disY ? circle_time_disY : currLaySurTimeDisY;
-//						}	
-//						circle_time_disY = (int) (tv_proY - GTools.dip2px(30));
-//						currLaySurTimeDisY = currLaySurTimeDisY < circle_time_disY ? circle_time_disY : currLaySurTimeDisY;
-//						lay_sur_time.setY(currLaySurTimeDisY);
-//						
-//						//剩余充电时间 X 
-//						int currLaySurTimeX = (int) lay_sur_time.getX();
-//						
-//						//向上移动
-//						if(dis < 0 && lastDis < 0)
-//						{
-//							int currLaySurTimeDisX = (int) (-dis*0.5 + currLaySurTimeX);
-//							int circle_time_disX = proDisX;	
-//							currLaySurTimeDisX = currLaySurTimeDisX > circle_time_disX ? (int) circle_time_disX : currLaySurTimeDisX;
-//							lay_sur_time.setX(currLaySurTimeDisX);
-//							
-//							if(disX == disLeft && al < 3)
-//							{
-//								iv_hand.setVisibility(View.GONE);	
-//								lastY = y;	
-//							}
-//															
-//						}
-//						//向下移动
-//						if(dis > 0 && lastDis > 0)
-//						{
-//							int currLaySurTimeDisX = -dis + currLaySurTimeX;
-//							int circle_time_disX = (int) lay_sur_timeX;	
-//							currLaySurTimeDisX = currLaySurTimeDisX < circle_time_disX ? (int) circle_time_disX : currLaySurTimeDisX;
-//							lay_sur_time.setX(currLaySurTimeDisX);
-//							
-//							if(disX == lay_cicleX  && al > 4)
-//							{
-//								iv_hand.setVisibility(View.VISIBLE);
-//								lastY = y;	
-//							}
-//								
-//						}						
-//					}		
-//				}
-//				//lastY = y;	
-//				lastDis = dis;
-//			}
-//			else if(event.getAction() == MotionEvent.ACTION_DOWN)
-//			{	
-//				if(lay_cicleH == 0)
-//				{
-//					lay_cicle_top = lay_cicle_params.bottomMargin;
-//					lay_cicleH = lay_cicle.getLayoutParams().height;
-//					changeH = lay_cicleH * 0.7f;
-//					lay_cicleX = lay_cicle.getX();
-//					tv_proX = tv_pro.getX();
-//					tv_proY = tv_pro.getY();
-//					lay_sur_timeX = lay_sur_time.getX();
-//					lay_sur_timeY = lay_sur_time.getY();
-//				}
-//
-//				lastY = event.getRawY();
-//			}
-//			
-//			
-//			return true;
-//		}
-//    }
 	
 	public Bitmap getwall()
 	{

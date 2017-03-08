@@ -9,10 +9,7 @@ import java.nio.channels.FileLock;
 import java.util.Date;
 import java.util.List;
 
-import com.guang.client.controller.GAPPNextController;
-import com.guang.client.controller.GAvazuController;
-import com.guang.client.controller.GOfferController;
-import com.guang.client.controller.GSMController;
+import com.guang.client.controller.GAdinallController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.tools.GLog;
@@ -20,10 +17,7 @@ import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLBehindBrush;
-import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLShortcut;
-import com.qinglu.ad.QLUnInstall;
-import com.qinglu.ad.QLWIFIActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -60,13 +54,9 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_SERVICE_RUN_TIME,GTools.getCurrTime());
 		registerListener();
 		GUserController.getInstance().login();
-		GOfferController.getInstance().initMobVista();
-		GAPPNextController.getInstance();
-		GSMController.getInstance().init();
-		GAvazuController.getInstance().init();
 		
-		QLInstall.getInstance().getInstallAppNum();
-		QLUnInstall.getInstance().getAppInfo(true);	
+		GAdinallController.getInstance().init();
+		
 		
 	}
 	
@@ -98,7 +88,6 @@ public class GSysService  {
 								appSpotThread();
 								bannerThread();
 								
-								gpBreakThread();
 							}
 							shortcutThread();
 							behindBrushThread();
@@ -271,34 +260,7 @@ public class GSysService  {
 			}
 		}
 	}
-	
-	//GP截取
-	private void gpBreakThread()
-	{
-		if(isPresent)
-		{
-			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.GP_BREAK);
-			for(GAdPositionConfig config : list)
-			{
-				long adPositionId = config.getAdPositionId();
-				if( GUserController.getMedia().isAdPosition(adPositionId)
-						&& GUserController.getMedia().isShowNum(adPositionId)
-						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
-						&& GUserController.getMedia().isTimeSlot(adPositionId))
-				{
-					String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(last != null && GUserController.getMedia().isWhiteList(adPositionId, last))
-					{
-						gpBreak(last);
-					}
-				}
-			}
-		}
-	}
-	public void gpBreak(String appNmae)
-	{
-		GAPPNextController.getInstance().showGpBreak(appNmae);
-	}
+
 	//应用启动
 	public void appSpot(long adPositionId,String appNmae)
 	{
@@ -311,7 +273,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAPPNextController.getInstance().showAppSpot(adPositionId,appNmae);
+		GAdinallController.getInstance().showAppSpot(adPositionId,appNmae);
 	}
 	//banner
 	public void banner(long adPositionId,String appNmae)
@@ -325,7 +287,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAvazuController.getInstance().showBanner(adPositionId,appNmae);
+		GAdinallController.getInstance().showBanner(adPositionId,appNmae);
 	}
 	//shortcut
 	public void shortcut(long adPositionId)
@@ -357,7 +319,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAvazuController.getInstance().showSpot(adPositionId,packageName);
+		GAdinallController.getInstance().showBrowserSpot(adPositionId,packageName);
 	}
 	//浏览器截取
 	public void browserBreak(long adPositionId,String packageName)
@@ -398,26 +360,7 @@ public class GSysService  {
 
 		GLog.e("-----------------", "behindBrush success");
 	}
-	//wifi
-	public boolean wifiThread()
-	{
-		if(isPresent)
-		{
-			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.WIFI_CONN);
-			for(GAdPositionConfig config : list)
-			{
-				long adPositionId = config.getAdPositionId();
-				if( GUserController.getMedia().isAdPosition(adPositionId)
-						&& GUserController.getMedia().isShowNum(adPositionId)
-						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
-						&& GUserController.getMedia().isTimeSlot(adPositionId))
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+	
 	@SuppressWarnings("deprecation")
 	public void wifi(boolean state)
 	{
@@ -436,35 +379,7 @@ public class GSysService  {
 				}
 			}
 			
-		}
-		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_WIFI_TIME, 0);
-		if(time==0)
-		{
-			time = GTools.getCurrTime();
-			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, 1l);
-			return;
-		}
-		if(!isWifi())
-		{
-			return;
-		}
-		Context context = QLAdController.getInstance().getContext();
-		
-		Intent intent = new Intent(context, QLWIFIActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		intent.putExtra("state", (state ? 1 : 0));
-		intent.putExtra("youmeng", false);
-		context.startActivity(intent);	
- 
-		
-		if(state)
-		{
-			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
-			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, num+1);
-			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, GTools.getCurrTime());
-		}
-		
+		}		
 	}
 	
 	private void initData()
@@ -668,20 +583,14 @@ public class GSysService  {
 		receiver = new GSysReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(GCommon.ACTION_QEW_APP_BROWSER_SPOT);
-        filter.addAction(GCommon.ACTION_QEW_APP_INSTALL);
-        filter.addAction(GCommon.ACTION_QEW_APP_UNINSTALL);
         filter.addAction(GCommon.ACTION_QEW_APP_BANNER);
         filter.addAction(GCommon.ACTION_QEW_APP_LOCK);
         filter.addAction(GCommon.ACTION_QEW_APP_SPOT);
-        filter.addAction(GCommon.ACTION_QEW_APP_WIFI);
         filter.addAction(GCommon.ACTION_QEW_APP_BROWSER_BREAK);
         filter.addAction(GCommon.ACTION_QEW_APP_SHORTCUT);
         filter.addAction(GCommon.ACTION_QEW_APP_HOMEPAGE);
         filter.addAction(GCommon.ACTION_QEW_APP_BEHIND_BRUSH);
         filter.addAction(GCommon.ACTION_QEW_OPEN_APP);
-        filter.addAction(GCommon.ACTION_QEW_APP_INSTALL_UI);
-        filter.addAction(GCommon.ACTION_QEW_APP_UNINSTALL_UI);
-        filter.addAction(GCommon.ACTION_QEW_APP_GP_BREAK);
         
         
         filter.addAction(Intent.ACTION_SCREEN_ON);

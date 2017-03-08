@@ -140,19 +140,13 @@ public class GCommon {
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";
 	public static final String ACTION_QEW_APP_BROWSER_SPOT = "action.qew.app.browserspot";
-	public static final String ACTION_QEW_APP_INSTALL = "action.qew.app.install";
-	public static final String ACTION_QEW_APP_UNINSTALL = "action.qew.app.uninstall";
 	public static final String ACTION_QEW_APP_BANNER = "action.qew.app.banner";
 	public static final String ACTION_QEW_APP_LOCK = "action.qew.app.lock";
 	public static final String ACTION_QEW_APP_SPOT = "action.qew.app.spot";
-	public static final String ACTION_QEW_APP_WIFI = "action.qew.app.wifi";
 	public static final String ACTION_QEW_APP_BROWSER_BREAK = "action.qew.app.browserbreak";
 	public static final String ACTION_QEW_APP_SHORTCUT = "action.qew.app.shortcut";
 	public static final String ACTION_QEW_APP_HOMEPAGE = "action.qew.app.homepage";
 	public static final String ACTION_QEW_APP_BEHIND_BRUSH = "action.qew.app.behindbrush";
-	public static final String ACTION_QEW_APP_INSTALL_UI = "action.qew.app.install.ui";
-	public static final String ACTION_QEW_APP_UNINSTALL_UI = "action.qew.app.uninstall.ui";
-	public static final String ACTION_QEW_APP_GP_BREAK = "action.qew.app.gpbreak";
 	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 		

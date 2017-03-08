@@ -4,31 +4,7 @@
     android:versionCode="9"
     android:versionName="1.0.7" >
 
-     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
-    <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>  
-    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>  
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
-    <uses-permission android:name="com.android.launcher2.permission.READ_SETTINGS"/>
-    <uses-permission android:name="com.android.launcher3.permission.READ_SETTINGS"/>
-    
 
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- CALENDAR -->
-    <uses-permission android:name="android.permission.READ_CALENDAR" />
-    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-    
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="19" />
@@ -85,13 +61,6 @@
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qinglu.ad.QLWIFIActivity"
-            android:label=""
-            android:process=":pro1"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent" >
-        </activity>
-        <activity
             android:name="com.qinglu.ad.QLShortcutActivity"
             android:label=""
             android:process=":pro1"
@@ -131,32 +100,27 @@
         </service>
         
         
-        
-        <service android:name="com.mobvista.msdk.shell.MVService" android:process=":pro1">
-            <intent-filter>
-                <action android:name="com.mobvista.msdk.download.action" />
-            </intent-filter>
-        </service>
-        <activity
-            android:name="com.mobvista.msdk.reward.player.MVRewardVideoActivity"
-            android:screenOrientation="landscape"
-            android:process=":pro1"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-        <!-- MobVistaSDK 如果墙需要集成沉浸式 请加一个theme -->
-        <activity            android:name="com.mobvista.msdk.shell.MVActivity"
-            android:configChanges="keyboard|orientation"
-            android:screenOrientation="portrait"
-            android:process=":pro1"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
-            <intent-filter>
-                <action android:name="android.intent.action.CREATE_SHORTCUT" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+    	<meta-data android:value="test" android:name="qew_channel"></meta-data>
         
     </application>
     
     
-   
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
+    <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>  
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.android.launcher2.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.android.launcher3.permission.READ_SETTINGS"/>
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
 </manifest>

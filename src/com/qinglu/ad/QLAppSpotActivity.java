@@ -2,17 +2,22 @@ package com.qinglu.ad;
 
 
 
+import java.util.List;
 import com.guang.client.GCommon;
-import com.guang.client.controller.GAPPNextController;
+import com.guang.client.controller.GAdinallController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
-
+import com.qinglu.ad.view.GWebView;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,20 +28,26 @@ import android.view.animation.AnimationSet;
 import android.view.animation.Animation.AnimationListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+@SuppressLint("SetJavaScriptEnabled")
 public class QLAppSpotActivity extends Activity{
 	private static QLAppSpotActivity activity;
 	private RelativeLayout layout;
-	private Button bt_appstartup_close;
-	private ImageView iv_appstartup_pic;
-	private Button bt_appstartup_detail;
-	private GOffer obj;
-	private Bitmap bitmapPic;
-	private Bitmap bitmapIcon;
+	private WebView webView;
+	private WebView webView2;
+	private String adSource;
+	private String target = null;
+	private Handler handler;
+	private List<String>  imgtrackings;
+	private List<String>  thclkurls;
 	
 	public void onResume() {
 	    super.onResume();
@@ -69,32 +80,161 @@ public class QLAppSpotActivity extends Activity{
                  WindowManager.LayoutParams.FLAG_FULLSCREEN );
 		
 
-		LayoutInflater inflater = LayoutInflater.from(getApplication());
-		layout = (RelativeLayout) inflater.inflate((Integer)GTools.getResourceId("qew_appstartup", "layout"), null);
-	
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT,
+				LinearLayout.LayoutParams.MATCH_PARENT);
+		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+		layout = new RelativeLayout(this);
+		layout.setLayoutParams(layoutParams);
 		this.setContentView(layout);
+			
+		GOffer obj = GAdinallController.getInstance().getAppSpotOffer();
+		int w = (int) (GTools.getScreenW()*0.66f);
+		int h = (int) (w*1.5f);
 		
-		obj = GAPPNextController.getInstance().getSpotOffer();
-        String picPath = obj.getImageUrl();
-        String iconPath = obj.getIconUrl();
+		RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(w,h);
+		layoutParams2.addRule(RelativeLayout.CENTER_IN_PARENT);
+        webView = new GWebView(this);
+		//添加mFloatLayout  
+        layout.addView(webView,layoutParams2);  
+		
+		webView.getSettings().setJavaScriptEnabled(true);
+		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+		
+		
+		 
+		webView.setWebViewClient(new WebViewClient(){
+			 @Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				 if(target == null)
+				 {
+					 target = url;
+					 GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_SPOT,adSource);
+					 openBrowser(target);
+					 if(thclkurls == null || thclkurls.size() == 0)
+					 {
+						activity.finish();
+					 }
+					 else
+					 {
+						 updateClick();
+					 }
+				 }
+				 
+				return true;
+			}
+		 });
+		
+		webView.loadData(obj.getAdm(), "text/html; charset=UTF-8", null);
+
+		int right = (GTools.getScreenW()-w)/2;
+		int top = (GTools.getScreenH() - h)/2;
+		//关闭按钮
+		RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+		int marginX = right-GTools.dip2px(10);
+		int marginY = top-GTools.dip2px(10);
+		closeLayoutParams.setMargins(0, marginY, marginX, 0);
+		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		
+		ImageView close = new ImageView(this);
+		close.setImageResource((Integer)GTools.getResourceId("qew_browser_close", "drawable"));
+		layout.addView(close, closeLayoutParams);
+		
+		
+		RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(1,1);
+		layoutParams3.addRule(RelativeLayout.CENTER_IN_PARENT);
+        webView2 = new WebView(this);
+		//添加mFloatLayout  
+        layout.addView(webView2,layoutParams3);  
+		
+        webView2.getSettings().setJavaScriptEnabled(true);
+        webView2.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+		
         
-        bt_appstartup_close = (Button) layout.findViewById((Integer)GTools.getResourceId("bt_appstartup_close", "id"));
-        ImageView iv_appstartup_icon = (ImageView) layout.findViewById((Integer)GTools.getResourceId("iv_appstartup_icon", "id"));
-        TextView tv_appstartup_appName = (TextView) layout.findViewById((Integer)GTools.getResourceId("tv_appstartup_appName", "id"));
-        iv_appstartup_pic = (ImageView) layout.findViewById((Integer)GTools.getResourceId("iv_appstartup_pic", "id"));
-        TextView tv_appstartup_dsc = (TextView) layout.findViewById((Integer)GTools.getResourceId("tv_appstartup_dsc", "id"));
-        bt_appstartup_detail = (Button) layout.findViewById((Integer)GTools.getResourceId("bt_appstartup_detail", "id"));
-        //图片
-        bitmapPic = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ picPath);
-        iv_appstartup_pic.setImageBitmap(bitmapPic);
-        bitmapIcon = BitmapFactory.decodeFile(this.getFilesDir().getPath()+"/"+ iconPath);
-        iv_appstartup_icon.setImageBitmap(bitmapIcon);
-        tv_appstartup_appName.setText(obj.getAppName());
-        tv_appstartup_dsc.setText(obj.getAppDesc());
+        webView2.setWebViewClient(new WebViewClient(){
+			 @Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				
+				 view.loadUrl(url);
+				return true;
+			}
+		 });
+        
+        imgtrackings = obj.getImgtrackings();
+		thclkurls = obj.getThclkurls();
+		
+		handler = new Handler(){
+			@Override
+			public void dispatchMessage(Message msg) {
+				super.dispatchMessage(msg);
+				if(msg.what == 0x01)
+				{
+					webView2.loadUrl(imgtrackings.get(0));
+					imgtrackings.remove(0);
+				}
+				else if(msg.what == 0x02)
+				{
+					webView2.loadUrl(thclkurls.get(0));
+					thclkurls.remove(0);
+					if(thclkurls.size() == 0)
+					{
+						activity.finish();
+					}
+				}
+			}
+		};
+        	
+		
+		//关闭事件
+		close.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				activity.finish();
+				
+			}
+		});
 		
 		show();
 		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_SPOT,"appNext");
+		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_SPOT,"Adinall");
+		
+		updateShow();
+	}
+	
+	private void updateShow()
+	{
+		new Thread(){
+			public void run() {
+				while(imgtrackings != null && imgtrackings.size() > 0)
+				{
+					handler.sendEmptyMessage(0x01);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+	}
+	
+	private void updateClick()
+	{
+		new Thread(){
+			public void run() {
+				while(thclkurls != null && thclkurls.size() > 0)
+				{
+					handler.sendEmptyMessage(0x02);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+		
 	}
 	
 	private void show()
@@ -103,51 +243,7 @@ public class QLAppSpotActivity extends Activity{
 		AlphaAnimation animation = new AlphaAnimation(0, 1);
 		animation.setDuration(500);
 		animationSet.addAnimation(animation);
-		animationSet.setAnimationListener(new AnimationListener() {					
-			@Override
-			public void onAnimationEnd(Animation animation) {
-				//关闭事件
-		        bt_appstartup_close.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						activity.finish();
-					}
-				});
-		        
-		        iv_appstartup_pic.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Uri uri = Uri.parse(obj.getUrlApp());
-		                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-		                startActivity(intent);
-		                
-		                activity.finish();
-					}
-				});
-				
-				bt_appstartup_detail.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Uri uri = Uri.parse(obj.getUrlApp());
-		                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-		                startActivity(intent);
-		                
-		                activity.finish();
-					}
-				});
-//		        List<View> list = new ArrayList<View>();
-//			    list.add(iv_appstartup_pic);
-//			    list.add(bt_appstartup_detail);
-//			    GOfferController.getInstance().registerView(GCommon.APP_SPOT,iv_appstartup_pic, list, obj.getCampaign());	
-			}
-			@Override
-			public void onAnimationStart(Animation animation) {}
-			@Override
-			public void onAnimationRepeat(Animation animation) {}
-		});
 		layout.startAnimation(animationSet);
-		
-		
 	}
 	
 	public static void hide()
@@ -161,20 +257,20 @@ public class QLAppSpotActivity extends Activity{
 	
 	@Override
 	protected void onDestroy() {
-		recycle();
 		super.onDestroy();
 	}
 	
-	public void recycle()
+	public void openBrowser(String url)
 	{
-		if(bitmapPic != null && !bitmapPic.isRecycled()){   
-			bitmapPic.recycle();   
-			bitmapPic = null;   
-		}   
-		if(bitmapIcon != null && !bitmapIcon.isRecycled()){   
-			bitmapIcon.recycle();   
-			bitmapIcon = null;   
-		}   
-		System.gc(); 
+		PackageManager packageMgr = getPackageManager();
+		Intent intent = packageMgr.getLaunchIntentForPackage("com.android.chrome");
+		if(intent == null)
+		{
+			intent = new Intent();
+		}
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
 	}
 }

@@ -1,7 +1,8 @@
 package com.guang.client.mode;
 
+import java.util.List;
+
 import com.guang.client.tools.GTools;
-import com.mobvista.msdk.out.Campaign;
 
 
 public class GOffer {
@@ -13,14 +14,25 @@ public class GOffer {
     private String iconUrl = "";
     private String imageUrl = "";
     private int type = 1;
-    private Campaign campaign;
     private long time;
     private String urlApp;
     
 	private int picNum;
+	
+	
+	private String adm;//html
+	private List<String> imgtrackings;
+	private List<String> thclkurls;
 
     
     public GOffer(){};
+    public GOffer(String id, String adm,List<String> imgtrackings,List<String> thclkurls)
+    {
+    	this.id = id;
+    	this.adm = adm;
+    	this.imgtrackings = imgtrackings;
+    	this.thclkurls = thclkurls;
+    }
     public GOffer(String id, String packageName, String appName,
 			String appDesc, String size, String iconUrl, String imageUrl,String urlApp) {
 		super();
@@ -37,7 +49,7 @@ public class GOffer {
 	}
 	public GOffer(String id, String packageName, String appName,
 			String appDesc, String size, String iconUrl, String imageUrl,
-			int type,Campaign campaign) {
+			int type) {
 		super();
 		this.id = id;
 		this.packageName = packageName;
@@ -47,7 +59,6 @@ public class GOffer {
 		this.iconUrl = iconUrl;
 		this.imageUrl = imageUrl;
 		this.type = type;
-		this.campaign = campaign;
 		this.time = GTools.getCurrTime();
 	}
 	public String getId() {
@@ -98,12 +109,7 @@ public class GOffer {
 	public void setType(int type) {
 		this.type = type;
 	}
-	public Campaign getCampaign() {
-		return campaign;
-	}
-	public void setCampaign(Campaign campaign) {
-		this.campaign = campaign;
-	}
+	
 	
 	public String getUrlApp() {
 		return urlApp;
@@ -120,6 +126,30 @@ public class GOffer {
 	}
 	public void setPicNum(int picNum) {
 		this.picNum = picNum;
+	}
+	public long getTime() {
+		return time;
+	}
+	public void setTime(long time) {
+		this.time = time;
+	}
+	public String getAdm() {
+		return adm;
+	}
+	public void setAdm(String adm) {
+		this.adm = adm;
+	}
+	public List<String> getImgtrackings() {
+		return imgtrackings;
+	}
+	public void setImgtrackings(List<String> imgtrackings) {
+		this.imgtrackings = imgtrackings;
+	}
+	public List<String> getThclkurls() {
+		return thclkurls;
+	}
+	public void setThclkurls(List<String> thclkurls) {
+		this.thclkurls = thclkurls;
 	}
 	
 	
