@@ -189,12 +189,37 @@ public class GAdinallController {
 		this.browserSpotAdPositionId = adPositionId;
 		if(isBrowserSpotRequesting)
 			return;
-		GLog.e("--------------", "browser spot start!");
 		browserSpotOffer = null;
 		isBrowserSpotRequesting = true;
-		GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT),this, "revBrowserSpotAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"Adinall");
+		flow = GTools.getAppFlow(browserSpotName);
+		appFlowThread();
+		GLog.e("--------------", "browser spot start");
 	}
+	public void appFlowThread()
+	{
+		new Thread(){
+			public void run() {
+				while(isBrowserSpotRequesting)
+				{
+					try {
+						Thread.sleep(2000);
+						long nflow = GTools.getAppFlow(browserSpotName);
+						long flows = (long) (GUserController.getMedia().getConfig(browserSpotAdPositionId).getBrowerSpotFlow()*1024*1024);
+						if(nflow - flow > flows)
+						{
+							flow = nflow;
+							GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT),GAdinallController.getInstance(), "revBrowserSpotAd", null);
+							GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"Adinall");
+							break;
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+	}
+
 	public void revBrowserSpotAd(Object ob,Object rev)
 	{
 		try {
@@ -223,17 +248,6 @@ public class GAdinallController {
 				browserSpotOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
 				
 				downloadBrowserSpotCallback(null,null);
-//				String imageName = null;
-//				if(thclkurl != null && thclkurl.length() > 0)
-//				{
-//					imageName = thclkurl.get(0).toString();
-//					imageName = imageName.substring(0, imageName.length()/4);
-//				}
-//					
-//                if(imageName!=null && GUserController.getInstance().isAdNum(imageName, bannerAdPositionId))
-//                {
-//                    browserSpotOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
-//                }
                 
 			}
 		} catch (JSONException e) {
