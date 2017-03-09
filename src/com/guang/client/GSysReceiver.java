@@ -6,8 +6,8 @@ package com.guang.client;
 import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
-import com.qinglu.ad.QLAdController;
-import com.qinglu.ad.QLBatteryLockActivity;
+import com.qq.up.a.QLAdController;
+import com.qq.up.a.QLBatteryLockActivity;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;

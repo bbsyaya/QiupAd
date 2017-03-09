@@ -1,9 +1,9 @@
-package com.xugu.qewadlib;
+package com.qq.up.l;
 
 
 
 
-import com.qinglu.ad.QLAdController;
+import com.qq.up.a.QLAdController;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;

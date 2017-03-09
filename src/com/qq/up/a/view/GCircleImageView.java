@@ -1,4 +1,4 @@
-package com.qinglu.ad.view;
+package com.qq.up.a.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;

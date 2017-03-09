@@ -54,7 +54,7 @@
          android:layout_centerHorizontal="true"
          android:src="@drawable/qew_lock_cicle" />
 
-     <com.qinglu.ad.view.GCircleProgressView
+     <com.qq.up.a.view.GCircleProgressView
          android:id="@+id/iv_lightning"
          android:layout_width="80dp"
          android:layout_height="80dp"
@@ -357,7 +357,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <com.qinglu.ad.view.GWebView 
+            <com.qq.up.a.view.GWebView 
                 android:id="@+id/wv_ad_pic"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"

@@ -1,4 +1,4 @@
-package com.qinglu.ad;
+package com.qq.up.a;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import com.guang.client.GCommon;
 import com.guang.client.controller.GAdinallController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
-import com.qinglu.ad.view.GWebView;
+import com.qq.up.a.view.GWebView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

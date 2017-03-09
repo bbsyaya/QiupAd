@@ -31,8 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.guang.client.GCommon;
-import com.qinglu.ad.QLAdController;
-import com.qinglu.ad.QLSize;
+import com.qq.up.a.QLAdController;
+import com.qq.up.a.QLSize;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

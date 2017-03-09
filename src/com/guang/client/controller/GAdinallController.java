@@ -24,10 +24,10 @@ import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
-import com.qinglu.ad.QLAdController;
-import com.qinglu.ad.QLAppSpotActivity;
-import com.qinglu.ad.QLBannerActivity;
-import com.qinglu.ad.QLBrowserSpotActivity;
+import com.qq.up.a.QLAdController;
+import com.qq.up.a.QLAppSpotActivity;
+import com.qq.up.a.QLBannerActivity;
+import com.qq.up.a.QLBrowserSpotActivity;
 
 import android.app.Service;
 import android.content.Context;

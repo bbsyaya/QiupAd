@@ -1,4 +1,4 @@
-package com.qinglu.ad;
+package com.qq.up.a;
 
 import java.util.ArrayList;
 import java.util.List;

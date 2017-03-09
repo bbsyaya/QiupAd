@@ -1,12 +1,12 @@
-package com.qianqi.qiupad;
+package com.qq.up;
 
 import com.guang.client.GCommon;
-import com.xugu.qewadlib.GService;
+import com.qq.up.R;
+import com.qq.up.l.GService;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;

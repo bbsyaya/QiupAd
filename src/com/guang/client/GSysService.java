@@ -14,10 +14,10 @@ import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
-import com.qinglu.ad.QLAdController;
-import com.qinglu.ad.QLBatteryLockActivity;
-import com.qinglu.ad.QLBehindBrush;
-import com.qinglu.ad.QLShortcut;
+import com.qq.up.a.QLAdController;
+import com.qq.up.a.QLBatteryLockActivity;
+import com.qq.up.a.QLBehindBrush;
+import com.qq.up.a.QLShortcut;
 
 import android.content.Context;
 import android.content.Intent;

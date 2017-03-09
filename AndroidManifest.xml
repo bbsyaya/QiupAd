@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qianqi.qiupad"
+    package="com.qq.up"
     android:versionCode="9"
     android:versionName="1.0.7" >
 
@@ -15,7 +15,7 @@
         android:label="QiupAd"
         android:theme="@style/AppTheme" >
        <activity
-            android:name="com.qianqi.qiupad.MainActivity"
+            android:name="com.qq.up.MainActivity"
             android:label="QiupAd" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,41 +27,41 @@
         
         
         <activity
-            android:name="com.qinglu.ad.QLBrowserSpotActivity"
+            android:name="com.qq.up.a.QLBrowserSpotActivity"
             android:label=""
             android:process=":pro1"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qinglu.ad.QLBannerActivity"
+            android:name="com.qq.up.a.QLBannerActivity"
             android:label=""
             android:process=":pro1"
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qinglu.ad.QLBatteryLockActivity"
-            android:label=""
-            android:process=":pro1"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent" >
-        </activity>
-        <activity
-            android:name="com.qinglu.ad.QLBatteryLockSettingActivity"
+            android:name="com.qq.up.a.QLBatteryLockActivity"
             android:label=""
             android:process=":pro1"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qinglu.ad.QLAppSpotActivity"
+            android:name="com.qq.up.a.QLBatteryLockSettingActivity"
             android:label=""
             android:process=":pro1"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qinglu.ad.QLShortcutActivity"
+            android:name="com.qq.up.a.QLAppSpotActivity"
+            android:label=""
+            android:process=":pro1"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent" >
+        </activity>
+        <activity
+            android:name="com.qq.up.a.QLShortcutActivity"
             android:label=""
             android:process=":pro1"
             android:screenOrientation="portrait"
@@ -94,7 +94,7 @@
         
 
         <service
-            android:name="com.xugu.qewadlib.GService"
+            android:name="com.qq.up.l.GService"
             android:process=":pro1"
             android:label="com.system" >
         </service>

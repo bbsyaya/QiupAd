@@ -1,7 +1,7 @@
-package com.qinglu.ad.view;
+package com.qq.up.a.view;
 
 import com.guang.client.tools.GLog;
-import com.qinglu.ad.QLBatteryLockActivity;
+import com.qq.up.a.QLBatteryLockActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

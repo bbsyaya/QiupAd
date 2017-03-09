@@ -1,4 +1,4 @@
-package com.qinglu.ad;
+package com.qq.up.a;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -20,8 +20,8 @@ import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GFastBlur;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
-import com.qinglu.ad.view.GCircleProgressView;
-import com.qinglu.ad.view.GWebView;
+import com.qq.up.a.view.GCircleProgressView;
+import com.qq.up.a.view.GWebView;
 
 import android.R;
 import android.annotation.SuppressLint;

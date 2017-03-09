@@ -1,4 +1,4 @@
-package com.qinglu.ad;
+package com.qq.up.a;
 
 import com.guang.client.GCommon;
 import com.guang.client.tools.GTools;
