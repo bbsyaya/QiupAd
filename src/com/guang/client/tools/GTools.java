@@ -857,6 +857,8 @@ public class GTools {
     		//读取当前应用信息
 			String uidf = "/proc/uid_stat/"+uid+"/tcp_rcv";
 			String uids = readPidFile(uidf);
+			if(uids == null || "".equals(uids))
+				uids = "0";
 			flow = Long.parseLong(uids);
     	}
     	else
