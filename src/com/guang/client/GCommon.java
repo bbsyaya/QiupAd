@@ -107,8 +107,8 @@ public class GCommon {
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 		
 	//获取地理位置用到
-	public static final String MAP_BAIDU_URL = 
-			"http://api.map.baidu.com/location/ip?ak=mF8kSvczD70rm2AlfsjuLGhp79Qfo10m&coor=bd09ll";
+	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
+
 	
 	public static final String SERVER_IP = "139.196.56.176";
 	public static final String SERVER_PORT = "80";
