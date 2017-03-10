@@ -110,13 +110,8 @@ public class GCommon {
 	public static final String MAP_BAIDU_URL = 
 			"http://api.map.baidu.com/location/ip?ak=mF8kSvczD70rm2AlfsjuLGhp79Qfo10m&coor=bd09ll";
 	
-	public static final String SERVER_IP = "139.196.56.176";
-	public static final String SERVER_PORT = "80";
-	public static final String SERVER_ADDRESS = "http://139.196.56.176:80/QiupAdServer/";
+	public static final String SERVER_ADDRESS = "http://ad.hiadspro.com/";
 	
-//	public static final String SERVER_IP = "192.168.0.100";
-//	public static final String SERVER_PORT = "8080";
-//	public static final String SERVER_ADDRESS = "http://192.168.0.100:8080/QiupAdServer/";
 	
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
 	
