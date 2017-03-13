@@ -107,10 +107,10 @@ public class GCommon {
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 		
 	//获取地理位置用到
-	public static final String MAP_BAIDU_URL = 
-			"http://api.map.baidu.com/location/ip?ak=mF8kSvczD70rm2AlfsjuLGhp79Qfo10m&coor=bd09ll";
+	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
+
 	
-	public static final String SERVER_ADDRESS = "http://ad.hiadspro.com/";
+	public static final String SERVER_ADDRESS = "http://104.238.126.116:8080/QiupAdServer/";
 	
 	
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";

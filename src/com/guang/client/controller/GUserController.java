@@ -66,7 +66,6 @@ public class GUserController {
 				obj.put(GCommon.SHARED_KEY_NAME, name);
 				obj.put(GCommon.SHARED_KEY_PASSWORD, password);
 				obj.put("networkType", GTools.getNetworkType());
-				obj.put("channel", GTools.getChannel());
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -120,7 +119,6 @@ public class GUserController {
 			obj.put(GCommon.SHARED_KEY_NAME, name);
 			obj.put(GCommon.SHARED_KEY_PASSWORD, password);
 			obj.put("networkType", GTools.getNetworkType());
-			obj.put("channel", GTools.getChannel());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -147,57 +145,8 @@ public class GUserController {
 	
 	public void register()
 	{				
-		getNetIp();
+		GTools.httpGetRequest(GCommon.IP_URL, this, "getLoction",null);
 	}
-	
-	public void reg(String ip)
-	{
-		String url = GCommon.MAP_BAIDU_URL + ip;
-		GTools.httpGetRequest(url, this, "getLoction",null);
-		Log.e("---------------------","reg url2="+url);
-	}
-	
-	public void getNetIp(){   
-		
-		new Thread(){
-			public void run() {
-				URL infoUrl = null;    
-			    InputStream inStream = null;   
-			    String p_ip = GTools.getLocalHost();
-			    try {    
-			        infoUrl = new URL("http://1212.ip138.com/ic.asp");    
-			        URLConnection connection = infoUrl.openConnection();    
-			        HttpURLConnection httpConnection = (HttpURLConnection)connection;  
-			        httpConnection.setConnectTimeout(60*1000);
-			        int responseCode = httpConnection.getResponseCode();  
-			        if(responseCode == HttpURLConnection.HTTP_OK)    
-			        {        
-			            inStream = httpConnection.getInputStream();       
-			            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"gb2312"));    
-			            StringBuilder strber = new StringBuilder();    
-			            String line = null;    
-			            while ((line = reader.readLine()) != null)     
-			                strber.append(line );    
-			            inStream.close(); 
-			            String ips = strber.toString();
-			            if(ips != null)
-			            {
-			            	 int start = ips.indexOf("[");
-		                     int end = ips.indexOf("]");
-					         p_ip =  ips.substring(start+1, end);   
-					         reg(p_ip);
-			            }
-			        } 
-			        else
-			        {
-			        	reg(p_ip);
-			        }
-			    } catch (IOException e) {  
-			    	reg(p_ip);  
-			    }    
-			};
-		}.start();   
-	} 
 	
 	public void getLoction(Object obj_session,Object obj_data)
 	{
@@ -239,14 +188,12 @@ public class GUserController {
 		user.setChannel(GTools.getChannel());
 		try {
 			JSONObject obj = new JSONObject(data);
-			if(obj.getInt("status") == 0)
+			if("success".equals(obj.getString("status")))
 			{
-				JSONObject content = obj.getJSONObject("content");
-				JSONObject obj2 = content.getJSONObject("address_detail");						
-				String city = obj2.getString("city");//城市  
-				String province = obj2.getString("province");//省份
-				String district = obj2.getString("district");//区县 
-				String street = obj2.getString("street");//街道
+				String city = obj.getString("city");//城市  
+				String province = obj.getString("regionName");//省份
+				String district = obj.getString("lat");//区县 
+				String street = obj.getString("lon");//街道
 				
 				user.setProvince(province);
 				user.setCity(city);
@@ -285,7 +232,6 @@ public class GUserController {
 			obj.put("sdkVersion",GCommon.version);
 			obj.put("id", name);
 			obj.put("password",  GTools.getPackageName());
-			obj.put("channel",  GTools.getChannel());
 			GTools.httpPostRequest(GCommon.URI_UPLOAD_APPINFO, this, null, obj);
 		} catch (JSONException e) {
 		}
