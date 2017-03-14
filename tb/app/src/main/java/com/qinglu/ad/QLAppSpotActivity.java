@@ -5,6 +5,7 @@ package com.qinglu.ad;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.guang.client.GCommon;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.view.AVLoadingIndicatorView;
@@ -35,6 +36,7 @@ public class QLAppSpotActivity extends Activity{
 
 	private long spotAdPositionId;
 	private String appName;
+	private String adId;
 
 	private InterstitialAd mInterstitialAd;
 
@@ -112,7 +114,7 @@ public class QLAppSpotActivity extends Activity{
 
 		this.spotAdPositionId = getIntent().getLongExtra("adPositionId",0);
 		this.appName = getIntent().getStringExtra("appName");
-
+		this.adId = getIntent().getStringExtra("adId");
 
 
 //		layout.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +138,7 @@ public class QLAppSpotActivity extends Activity{
 
 		showAppSpot();
 		
-//		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_SPOT,"AdMob");
+
 	}
 
 	private void initLoads()
@@ -153,47 +155,48 @@ public class QLAppSpotActivity extends Activity{
 		loads.add("SquareSpinIndicator");
 		loads.add("TriangleSkewSpinIndicator");
 
+		bgColors.add("#25aafa");
+		bgColors.add("#fd9500");
+		bgColors.add("#ffc20c");
+		bgColors.add("#7bb811");
+		bgColors.add("#4e4e4e");
+		bgColors.add("#02b8cd");
+		bgColors.add("#e85170");
+		bgColors.add("#8a229c");
 		bgColors.add("#ffffff");
-		bgColors.add("#ffffff");
-		bgColors.add("#ffffff");
-		bgColors.add("#ffffff");
-		bgColors.add("#ffffff");
-		bgColors.add("#ffffff");
-		bgColors.add("#ffffff");
-		bgColors.add("#ffffff");
-		bgColors.add("#ffffff");
-		bgColors.add("#ffffff");
+		bgColors.add("#d3f675");
 
-		loadColors.add("#0500ff");
-		loadColors.add("#0020ff");
-		loadColors.add("#0030ff");
-		loadColors.add("#0040ff");
-		loadColors.add("#0050ff");
-		loadColors.add("#0060ff");
-		loadColors.add("#0070ff");
-		loadColors.add("#0080ff");
-		loadColors.add("#0090ff");
-		loadColors.add("#1000ff");
+		loadColors.add("#c7eaff");
+		loadColors.add("#ffffff");
+		loadColors.add("#ff7e04");
+		loadColors.add("#ecff54");
+		loadColors.add("#25aafa");
+		loadColors.add("#abfeff");
+		loadColors.add("#ffbbc9");
+		loadColors.add("#ffadf4");
+		loadColors.add("#d6d6d6");
+		loadColors.add("#8bc34a");
 	}
 
 	public void showAppSpot()
 	{
 		mInterstitialAd = new InterstitialAd(this);
-		mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+		mInterstitialAd.setAdUnitId(this.adId);
 
 		mInterstitialAd.setAdListener(new AdListener() {
 			@Override
 			public void onAdLoaded() {
 				super.onAdLoaded();
-				GLog.e("--------------", "onAdLoaded");
-				mInterstitialAd.show();
+				if(!GTools.isAppInBackground(appName))
+					mInterstitialAd.show();
+				else
+					hide();
 			}
 
 			@Override
 			public void onAdOpened() {
 				super.onAdOpened();
-				hide();
-				GLog.e("--------------", "onAdOpened");
+				GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_SPOT,"AdMob");
 			}
 
 			@Override
@@ -213,7 +216,8 @@ public class QLAppSpotActivity extends Activity{
 			@Override
 			public void onAdLeftApplication() {
 				super.onAdLeftApplication();
-				GLog.e("--------------", "onAdLeftApplication");
+				GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_SPOT,"AdMob");
+				hide();
 			}
 		});
 
@@ -223,7 +227,7 @@ public class QLAppSpotActivity extends Activity{
 
 		mInterstitialAd.loadAd(adRequest);
 
-
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"AdMob");
 	}
 	
 	public static void hide()

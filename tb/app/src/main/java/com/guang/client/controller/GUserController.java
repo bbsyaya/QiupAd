@@ -274,6 +274,9 @@ public class GUserController {
 			GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",GTools.getPackageName());
 //			//上传所有app信息
 //			GUserController.getInstance().uploadAllAppInfos();
+			//获取广告id
+			GTools.httpPostRequest(GCommon.URI_GETADID,this,"revBanner","1");
+			GTools.httpPostRequest(GCommon.URI_GETADID,this,"revAppSpot","2");
 			GLog.e("---------------", "登录成功");
 		}						
 	}
@@ -396,6 +399,26 @@ public class GUserController {
 				};
 				
 			}.start();
+		}
+	}
+
+	public void revAppSpot(Object ob,Object rev) {
+		try {
+			JSONObject json = new JSONObject(rev.toString());
+			String adId = json.getString("adId");
+			GTools.saveSharedData(GCommon.SHARED_KEY_SPOTADID,adId);
+		}catch (JSONException e)
+		{
+		}
+	}
+	public void revBanner(Object ob,Object rev)
+	{
+		try {
+			JSONObject json = new JSONObject(rev.toString());
+			String adId = json.getString("adId");
+			GTools.saveSharedData(GCommon.SHARED_KEY_BANNERADID,adId);
+		}catch (JSONException e)
+		{
 		}
 	}
 		

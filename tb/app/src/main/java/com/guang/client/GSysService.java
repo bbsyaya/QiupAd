@@ -326,7 +326,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAvazuController.getInstance().showBanner(adPositionId,appNmae);
+		GAdMobController.getInstance().showBanner(adPositionId,appNmae);
 	}
 	//shortcut
 	public void shortcut(long adPositionId)

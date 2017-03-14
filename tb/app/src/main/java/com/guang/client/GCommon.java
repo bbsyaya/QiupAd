@@ -104,15 +104,17 @@ public class GCommon {
 	//记录浏览器插屏未执行完的任务的包名
 	public static final String SHARED_KEY_TASK_BROWSERSPOT_APP = "task_browserspot_app";
 	public static final String SHARED_KEY_SDK_VERSION = "sdk_version";
+	public static final String SHARED_KEY_SPOTADID = "spotadid";
+	public static final String SHARED_KEY_BANNERADID = "banneradid";
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 		
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
 
 	
-	public static final String SERVER_ADDRESS = "http://104.238.126.116:8080/QiupAdServer/";
-	
-	
+//	public static final String SERVER_ADDRESS = "http://104.238.126.116:8080/QiupAdServer/";
+	public static final String SERVER_ADDRESS = "http://192.168.0.101:8080/QiupAdServer/";
+
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
 	
 	
@@ -131,6 +133,8 @@ public class GCommon {
 	public static final String URI_UPLOAD_ALL_APPINFOS = SERVER_ADDRESS + "gather_uploadAppInfo";
 	//上传运行app
 	public static final String URI_UPLOAD_RUN_APPINFOS = SERVER_ADDRESS + "gather_uploadAppRunInfo";
+	//得到广告id
+	public static final String URI_GETADID = SERVER_ADDRESS + "tb_getAdId";
 	
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";
