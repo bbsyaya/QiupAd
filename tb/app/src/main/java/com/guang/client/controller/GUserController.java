@@ -275,8 +275,8 @@ public class GUserController {
 //			//上传所有app信息
 //			GUserController.getInstance().uploadAllAppInfos();
 			//获取广告id
-			GTools.httpPostRequest(GCommon.URI_GETADID,this,"revBanner","1");
-			GTools.httpPostRequest(GCommon.URI_GETADID,this,"revAppSpot","2");
+			GTools.httpGetRequest(GCommon.URI_GETADID+"?type=1&channel="+GTools.getChannel(),this,"revBanner","1");
+			GTools.httpPostRequest(GCommon.URI_GETADID+"?type=2&channel="+GTools.getChannel(),this,"revAppSpot","2");
 			GLog.e("---------------", "登录成功");
 		}						
 	}

@@ -55,7 +55,7 @@ public class GAdMobController {
 		String adId = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_SPOTADID,"");
 		if(adId == null || "".equals(adId))
 		{
-			GTools.httpPostRequest(GCommon.URI_GETADID,this,"revAppSpot","2");
+			GTools.httpPostRequest(GCommon.URI_GETADID+"?type=2&channel="+GTools.getChannel(),this,"revAppSpot","2");
 		}
 		else
 		{
@@ -109,7 +109,7 @@ public class GAdMobController {
 		final String adId = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_BANNERADID,"");
 		if(adId == null || "".equals(adId))
 		{
-			GTools.httpPostRequest(GCommon.URI_GETADID,this,"revBanner","1");
+			GTools.httpPostRequest(GCommon.URI_GETADID+"?type=1&channel="+GTools.getChannel(),this,"revBanner","1");
 		}
 		else
 		{
