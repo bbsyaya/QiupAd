@@ -26,6 +26,7 @@ import com.qinglu.ad.QLShortcut;
 import com.qinglu.ad.QLUnInstall;
 import com.qinglu.ad.QLWIFIActivity;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -692,8 +693,16 @@ public class GSysService  {
         filter.addAction(Intent.ACTION_POWER_CONNECTED);
         filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+		filter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         contexts.registerReceiver(receiver, filter);
-        
+
+
+		IntentFilter filter2 = new IntentFilter();
+		filter2.addDataScheme("package");
+		filter2.addAction(Intent.ACTION_PACKAGE_ADDED);
+		filter2.addAction(Intent.ACTION_PACKAGE_REMOVED);
+
+		contexts.registerReceiver(receiver, filter2);
     }
 
 	

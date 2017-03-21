@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
@@ -32,6 +33,8 @@ import org.json.JSONObject;
 
 import com.guang.client.GCommon;
 import com.qinglu.ad.QLAdController;
+import com.qinglu.ad.QLAppSpotActivity;
+import com.qinglu.ad.QLBannerActivity;
 import com.qinglu.ad.QLSize;
 
 import android.annotation.SuppressLint;
@@ -727,17 +730,64 @@ public class GTools {
    
     /**
      * 判断程序是否在前台运行
-     * @param context
+     * @param
      * @return
      */
     public static boolean isAppInBackground(String packageName) {
+		if(QLBannerActivity.isShow() || QLAppSpotActivity.getInstance() != null)
+		{
+			return false;
+		}
     	String p = getForegroundApp(packageName);
-        return (p == null);
+		return (p == null);
     }
     //得到前台运行程序
     public static String getForegroundApp(String apps) {
-    	
-    	if(GCommon.SDK_VERSION < 14)
+
+		Context context = QLAdController.getInstance().getContext();
+		if(context != null)
+		{
+			File dir = context.getFilesDir();
+			File logFile = new File(dir,"shared_tools");
+			if(logFile.exists())
+			{
+				String packageName = readPidFile(logFile.getAbsolutePath());
+				if(packageName != null && apps.contains(packageName.trim()))
+				{
+					return packageName;
+				}
+				else
+					return null;
+			}
+		}
+
+//		try {
+//			Class.forName("com.qianqi.mylook.model.PackageModel");
+//			Context context = QLAdController.getInstance().getContext();
+//			ClassLoader cl = context.getClassLoader();
+//			Class<?> myClasz = cl.loadClass("com.qianqi.mylook.model.PackageModel");
+//			Method m = myClasz.getMethod("getInstance", new Class[]{Context.class});
+//			Object obj = m.invoke(myClasz,context);
+//			m = myClasz.getMethod("getTopPackageName", new Class[]{});
+//			Object p = m.invoke(obj);
+//			String packageName = null;
+//			if(p != null)
+//			{
+//				packageName = (String)p;
+//			}
+//			if(packageName != null && apps.contains(packageName))
+//			{
+//				return packageName;
+//			}
+//			else
+//				return null;
+//		} catch (ClassNotFoundException e) {
+//		}catch (InvocationTargetException e) {
+//		} catch (NoSuchMethodException e) {
+//		} catch (IllegalAccessException e) {
+//		}
+		GLog.e("------------","获取前台应用失败！");
+		if(GCommon.SDK_VERSION < 14)
     	{
     		String p = getForegroundApp2();
     		if(p != null && apps.contains(p))
@@ -809,6 +859,16 @@ public class GTools {
 		    						GLog.e("--------------------", "name="+arr[col2] +"  score="+score);
 		    					break;
 		    				}
+							if(QLBannerActivity.isShow() || QLAppSpotActivity.getInstance() != null)
+							{
+								if(score < hscore*4+20)
+								{
+									packageName = arr[col2];
+									if(!launcherApps.contains(arr[col2]))
+										GLog.e("--------------------", "name="+arr[col2] +"  score="+score);
+									break;
+								}
+							}
 		    			}
 		    			if(num>10)
 		    			{
@@ -900,13 +960,13 @@ public class GTools {
 		try {
 			appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
 			if(appInfo.metaData != null)
-				qew_channel = appInfo.metaData.getString("qew_channel");
+				qew_channel = appInfo.metaData.getString("UMENG_CHANNEL");
 			else
 				qew_channel = "nochannel";
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
-		Log.e("----------------------------", "qew_channel lib ="+qew_channel);
+		Log.e("-----------------", "qew_channel lib ="+qew_channel);
 		return qew_channel;
     }
     public static String getRelease(int sdk)

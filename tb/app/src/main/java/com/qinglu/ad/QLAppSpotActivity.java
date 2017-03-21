@@ -85,9 +85,14 @@ public class QLAppSpotActivity extends Activity{
 		layout.setLayoutParams(layoutParams);
 		this.setContentView(layout);
 
+		this.spotAdPositionId = getIntent().getLongExtra("adPositionId",0);
+		this.appName = getIntent().getStringExtra("appName");
+		this.adId = getIntent().getStringExtra("adId");
+
+
 		initLoads();
 
-		int loadNum = GTools.getSharedPreferences().getInt(GTools.getPackageName()+"load",-1);
+		int loadNum = GTools.getSharedPreferences().getInt(appName+"load",-1);
 		if(loadNum == -1)
 		{
 			loadNum = GTools.getSharedPreferences().getInt("loadNum",-1);
@@ -96,7 +101,7 @@ public class QLAppSpotActivity extends Activity{
 				loadNum = 0;
 
 			GTools.saveSharedData("loadNum",loadNum);
-			GTools.saveSharedData(GTools.getPackageName()+"load",loadNum);
+			GTools.saveSharedData(appName+"load",loadNum);
 		}
 
 		layout.setBackgroundColor(Color.parseColor(bgColors.get(loadNum)));
@@ -109,13 +114,6 @@ public class QLAppSpotActivity extends Activity{
 		vl.setIndicatorColor(Color.parseColor(loadColors.get(loadNum)));
 		layout.addView(vl,layoutParams2);
 		vl.setIndicator(loads.get(loadNum));
-
-
-
-		this.spotAdPositionId = getIntent().getLongExtra("adPositionId",0);
-		this.appName = getIntent().getStringExtra("appName");
-		this.adId = getIntent().getStringExtra("adId");
-
 
 //		layout.setOnClickListener(new View.OnClickListener() {
 //			@Override
@@ -188,9 +186,20 @@ public class QLAppSpotActivity extends Activity{
 			public void onAdLoaded() {
 				super.onAdLoaded();
 				if(!GTools.isAppInBackground(appName))
+				{
 					mInterstitialAd.show();
+
+					int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+spotAdPositionId, 0);
+					GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM+spotAdPositionId, num+1);
+					GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME+spotAdPositionId,GTools.getCurrTime());
+					GLog.e("--------------", "app spot success!");
+				}
 				else
+				{
 					hide();
+					GLog.e("--------------", "isAppInBackground="+appName);
+				}
+
 			}
 
 			@Override
@@ -203,7 +212,7 @@ public class QLAppSpotActivity extends Activity{
 			public void onAdFailedToLoad(int i) {
 				super.onAdFailedToLoad(i);
 				hide();
-				GLog.e("--------------", "onAdFailedToLoad");
+				GLog.e("-------------","onAdFailedToLoad code="+i + "  adid="+adId);
 			}
 
 			@Override
@@ -222,7 +231,7 @@ public class QLAppSpotActivity extends Activity{
 		});
 
 		AdRequest adRequest = new AdRequest.Builder()
-				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
 				.build();
 
 		mInterstitialAd.loadAd(adRequest);

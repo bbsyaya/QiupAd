@@ -118,7 +118,7 @@ public class GAdMobController {
 			new Thread(){
 				public void run() {
 					try {
-						long t = (long) (GUserController.getMedia().getConfig(bannerAdPositionId).getBannerDelyTime()*60*100);
+						long t = (long) (GUserController.getMedia().getConfig(bannerAdPositionId).getBannerDelyTime()*60*1000);
 						GLog.e("---------------------------", "banner sleep="+t);
 						Thread.sleep(t);
 						if(GTools.isAppInBackground(bannerName))
@@ -153,7 +153,7 @@ public class GAdMobController {
 			new Thread(){
 				public void run() {
 					try {
-						long t = (long) (GUserController.getMedia().getConfig(bannerAdPositionId).getBannerDelyTime()*60*100);
+						long t = (long) (GUserController.getMedia().getConfig(bannerAdPositionId).getBannerDelyTime()*60*1000);
 						GLog.e("---------------------------", "banner sleep="+t);
 						Thread.sleep(t);
 						if(GTools.isAppInBackground(bannerName))

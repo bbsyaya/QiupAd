@@ -130,7 +130,7 @@ public class QLBannerActivity extends Activity{
 			public void onAdFailedToLoad(int i) {
 				super.onAdFailedToLoad(i);
 				hide(false);
-				GLog.e("-------------","onAdFailedToLoad");
+				GLog.e("-------------","onAdFailedToLoad code="+i + "  adid="+adId);
 			}
 
 			@Override
@@ -152,6 +152,12 @@ public class QLBannerActivity extends Activity{
 				{
 					show();
 					GTools.uploadStatistics(GCommon.SHOW,GCommon.BANNER,"AdMob");
+
+					int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, 0);
+					GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, num+1);
+					GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME+bannerAdPositionId,GTools.getCurrTime());
+
+					GLog.e("--------------", "banner success");
 				}
 				else
 					hide(false);
@@ -258,29 +264,6 @@ public class QLBannerActivity extends Activity{
 				return true;
 			}
 		});
-		
-		final Handler handler = new Handler(){
-			@Override
-			public void handleMessage(Message msg) {
-				super.handleMessage(msg);
-				if(msg.what == 0x01)
-				{
-					hide(false);
-				}
-			}
-		};
-		
-		new Thread(){
-			public void run() {
-				try {
-					Thread.sleep(1000*10);
-					handler.sendEmptyMessage(0x01);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			};
-		}.start();
-		
 
 	}
 	
@@ -310,6 +293,30 @@ public class QLBannerActivity extends Activity{
 				public void onAnimationRepeat(Animation animation) {}
 			});
         view.startAnimation(animationSet);
+
+
+		final Handler handler = new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				if(msg.what == 0x01)
+				{
+					hide(false);
+				}
+			}
+		};
+
+		new Thread(){
+			public void run() {
+				try {
+					Thread.sleep(1000*13);
+					handler.sendEmptyMessage(0x01);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
+
 	}
 	
 	private void hide(final boolean isClick)
