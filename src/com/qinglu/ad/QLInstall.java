@@ -403,8 +403,7 @@ public class QLInstall {
 	}
 	
 	public void getInstallAppNum() {
-		if(context == null)
-			context = (Service) QLAdController.getInstance().getContext();
+		final	Context	context =  QLAdController.getInstance().getContext();
 		new Thread(){
 			public void run() {
 				 Intent intent = new Intent();

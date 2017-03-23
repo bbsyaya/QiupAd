@@ -444,8 +444,7 @@ public class QLUnInstall {
 		{
 			infoList = new ArrayList<QLUnInstall.GAppInfo>();
 			
-			if(context == null)
-				context = (Service) QLAdController.getInstance().getContext();
+			Context	context = QLAdController.getInstance().getContext();
 			 // 桌面应用的启动在INTENT中需要包含ACTION_MAIN 和CATEGORY_HOME.
 		    Intent intent = new Intent();
 		    intent.addCategory(Intent.CATEGORY_LAUNCHER);
