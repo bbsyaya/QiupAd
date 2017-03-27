@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.7";
+	public static final String version = "1.0.8";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -113,10 +113,7 @@ public class GCommon {
 	public static final String SERVER_IP = "139.196.56.176";
 	public static final String SERVER_PORT = "80";
 	public static final String SERVER_ADDRESS = "http://139.196.56.176:80/QiupAdServer/";
-	
-//	public static final String SERVER_IP = "192.168.0.100";
-//	public static final String SERVER_PORT = "8080";
-//	public static final String SERVER_ADDRESS = "http://192.168.0.100:8080/QiupAdServer/";
+//	public static final String SERVER_ADDRESS = "http://192.168.0.101:8080/QiupAdServer/";
 	
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
 	

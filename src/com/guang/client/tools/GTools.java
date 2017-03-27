@@ -353,7 +353,7 @@ public class GTools {
 						GLog.e(TAG, "===post请求失败==="+url);
 					}
 				} catch (Exception e) {
-					GLog.e(TAG, "===post请求异常==="+e.getMessage());
+					Log.e(TAG, "===post请求异常==="+url,e);
 				}
 				finally {
 					parseFunction(target, callback, data, responseStr);
