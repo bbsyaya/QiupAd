@@ -190,11 +190,13 @@ public class GUserController {
 			JSONObject obj = new JSONObject(data);
 			if("success".equals(obj.getString("status")))
 			{
+				String country = obj.getString("country");//国家
 				String city = obj.getString("city");//城市  
 				String province = obj.getString("regionName");//省份
 				String district = obj.getString("lat");//区县 
 				String street = obj.getString("lon");//街道
 				
+				user.setCountry(country);
 				user.setProvince(province);
 				user.setCity(city);
 				user.setDistrict(district);
