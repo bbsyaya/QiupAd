@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.8";
+	public static final String version = "1.0.9";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -105,14 +105,14 @@ public class GCommon {
 	public static final String SHARED_KEY_TASK_BROWSERSPOT_APP = "task_browserspot_app";
 	public static final String SHARED_KEY_SDK_VERSION = "sdk_version";
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
+	public static final String SHARED_KEY_PROVINCE = "province";
+	public static final String SHARED_KEY_REQ_PROVINCE_TIME = "req_province_time";
 		
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
 
 	
-	public static final String SERVER_IP = "139.196.56.176";
-	public static final String SERVER_PORT = "80";
-	public static final String SERVER_ADDRESS = "http://139.196.56.176:80/QiupAdServer/";
+	public static final String SERVER_ADDRESS = "http://media.qiqiup.com/QiupAdServer/";
 //	public static final String SERVER_ADDRESS = "http://192.168.0.101:8080/QiupAdServer/";
 	
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";

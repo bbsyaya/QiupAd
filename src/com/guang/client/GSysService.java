@@ -77,7 +77,7 @@ public class GSysService  {
 							Thread.sleep(10000);
 						else
 							Thread.sleep(2200);
-						if(isPresent && GUserController.getMedia().getOpen())
+						if(isPresent && GUserController.getMedia().getOpen() && GUserController.getMedia().isProvince())
 						{
 							open = GUserController.getMedia().isOpenApp();
 							if(open)
@@ -248,6 +248,7 @@ public class GSysService  {
 			{
 				long adPositionId = config.getAdPositionId();
 				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isProvince()
 						&& isOpenLock()
 						&& !QLBatteryLockActivity.isShow())
 				{

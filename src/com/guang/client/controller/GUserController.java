@@ -1,12 +1,5 @@
 package com.guang.client.controller;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +63,8 @@ public class GUserController {
 				e.printStackTrace();
 			}
 			GTools.httpPostRequest(GCommon.URI_LOGIN, this, "loginResult", obj.toString());
+			
+			getProvince();
 		}
 		else
 		{					
@@ -148,6 +143,35 @@ public class GUserController {
 		GTools.httpGetRequest(GCommon.IP_URL, this, "getLoction",null);
 	}
 	
+	public void getProvince()
+	{
+		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_REQ_PROVINCE_TIME, 0);
+		long now = GTools.getCurrTime();
+		if(now - time > 20*60*1000)
+		{
+			GTools.saveSharedData(GCommon.SHARED_KEY_REQ_PROVINCE_TIME, now);
+			GTools.httpGetRequest(GCommon.IP_URL, this, "getProvinceResult",null);
+		}
+	}
+	
+	public void getProvinceResult(Object obj_session,Object obj_data)
+	{
+		try {
+			JSONObject obj = new JSONObject(obj_data.toString());
+			if("success".equals(obj.getString("status")))
+			{
+//				String city = obj.getString("city");//城市  
+				String province = obj.getString("regionName");//省份
+				
+				if(province != null && !"".equals(province))
+					GTools.saveSharedData(GCommon.SHARED_KEY_PROVINCE, province);
+				GLog.e("------------------","province="+province);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void getLoction(Object obj_session,Object obj_data)
 	{
 		String data = (String) obj_data;
@@ -203,6 +227,9 @@ public class GUserController {
 				
 				//用户可能拒绝获取位置 需要捕获异常
 				user.setLocation(tm.getCellLocation().toString());
+				
+				if(province != null && !"".equals(province))
+					GTools.saveSharedData(GCommon.SHARED_KEY_PROVINCE, province);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -302,6 +329,7 @@ public class GUserController {
 				String adPosition = obj.getString("adPosition");
 				float loopTime = (float) obj.getDouble("loopTime");
 				boolean uploadPackage = obj.getBoolean("uploadPackage");
+				String province = obj.getString("province");
 				
 				List<GAdPositionConfig> list_configs = new ArrayList<GAdPositionConfig>();
 				
@@ -331,7 +359,7 @@ public class GUserController {
 //					adConfig.initPackageName(launcherApps);
 					list_configs.add(adConfig);
 				}
-				media = new GMedia(name, packageName, open, adPosition, list_configs,loopTime,uploadPackage);
+				media = new GMedia(name, packageName, open, adPosition, list_configs,loopTime,uploadPackage,province);
 				media.initWhiteList();
 				GLog.e("---------------", "Config读取成功!!");
 				//开始走流程

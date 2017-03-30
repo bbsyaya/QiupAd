@@ -93,6 +93,8 @@ public final class GSysReceiver extends BroadcastReceiver {
 		else if(Intent.ACTION_USER_PRESENT.equals(action))
 		{
 			GSysService.getInstance().setPresent(true);	
+			if(GSysService.getInstance().isRuning() && GSysService.getInstance().isWifi())
+				GSysService.getInstance().wifi(true);
 		}
 		//亮屏
 		else if(Intent.ACTION_SCREEN_ON.equals(action))

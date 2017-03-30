@@ -49,12 +49,12 @@ public class GAdinallController {
 	private static String ua = null;
 	
 	
-	private final String url = "http://app-test.adinall.com/api.m";
+	private final String url = "http://app.adinall.com/api.m";
 	
-	private final String browserSpotAdid = "b392109eca1563b3";
-	private final String appSpotAdid = "bf647e063cea9efa";
-	private final String bannerAdid = "1dfc8b82ccde162e";
-	private final String lockAdid = "8830e74ad3cc4450";
+	private final String browserSpotAdid = "699d21b5e9b791b4";
+	private final String appSpotAdid = "699d21b5e9b791b4";
+	private final String bannerAdid = "10bad521d0fb1d33";
+	private final String lockAdid = "699d21b5e9b791b4";
 	
 	private GOffer appSpotOffer;
 	private GOffer browserSpotOffer;
@@ -496,15 +496,15 @@ public class GAdinallController {
 		{
 			urlBuf.append("?adid="+appSpotAdid);
 			urlBuf.append("&adtype="+2);
-			urlBuf.append("&width="+320);
-			urlBuf.append("&height="+480);
+			urlBuf.append("&width="+300);
+			urlBuf.append("&height="+250);
 		}
 		else if(adType == GCommon.BROWSER_SPOT)
 		{
 			urlBuf.append("?adid="+browserSpotAdid);
 			urlBuf.append("&adtype="+4);
-			urlBuf.append("&width="+320);
-			urlBuf.append("&height="+480);
+			urlBuf.append("&width="+300);
+			urlBuf.append("&height="+250);
 		}
 		else if(adType == GCommon.CHARGLOCK)
 		{
@@ -518,7 +518,7 @@ public class GAdinallController {
 		urlBuf.append("&appname="+toURLEncoded(GTools.getApplicationName()));
 		urlBuf.append("&ua="+toURLEncoded(ua));
 		urlBuf.append("&os=0");
-		urlBuf.append("&osv="+android.os.Build.VERSION.SDK_INT);
+		urlBuf.append("&osv="+android.os.Build.VERSION.RELEASE);
 		urlBuf.append("&carrier="+getCarrier());
 		urlBuf.append("&conn="+getNetworkType());
 		urlBuf.append("&ip="+p_ip);

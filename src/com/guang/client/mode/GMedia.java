@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.guang.client.GCommon;
+import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
@@ -25,10 +26,13 @@ public class GMedia {
 	
 	private String whiteList;
 	private String launcherApps;
+	
+	private String province;//省份
 		
 	public GMedia(){}
 	public GMedia(String name, String packageName, Boolean open,
-			String adPosition, List<GAdPositionConfig> configs,float loopTime,Boolean uploadPackage) {
+			String adPosition, List<GAdPositionConfig> configs,float loopTime,Boolean uploadPackage,
+			String province) {
 		super();
 		this.name = name;
 		this.packageName = packageName;
@@ -37,6 +41,7 @@ public class GMedia {
 		this.configs = configs;
 		this.loopTime = loopTime;
 		this.uploadPackage = uploadPackage;
+		this.province = province;
 	}
 	public String getName() {
 		return name;
@@ -81,6 +86,12 @@ public class GMedia {
 	}
 	public void setUploadPackage(Boolean uploadPackage) {
 		this.uploadPackage = uploadPackage;
+	}
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
 	}
 	//初始化白名单
 	public void initWhiteList()
@@ -138,6 +149,21 @@ public class GMedia {
 				return config;
 		}
 		return null;
+	}
+	//是否包含县
+	public boolean isProvince()
+	{
+		String p = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_PROVINCE, "");
+		if(p == null || "".equals(p))
+		{
+			GUserController.getInstance().getProvince();
+			return false;
+		}
+		if(province == null || "".equals(province))
+		{
+			return false;
+		}
+		return province.contains(p);
 	}
 	//是否包含在白名单中
 	public boolean isWhiteList(long adPositionId,String packageName)

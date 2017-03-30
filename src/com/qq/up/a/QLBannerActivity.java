@@ -118,8 +118,8 @@ public class QLBannerActivity extends Activity{
  		GOffer offer = GAdinallController.getInstance().getBannerOffer();
 		adSource = "Adinall";
 		
-		int w = (int) (GTools.getScreenW()*0.66f);
-		int h = (int) (w*0.156f);
+		int w = GTools.dip2px(320);
+		int h =  GTools.dip2px(50);
 		
 		RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(w,h);
 		layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
