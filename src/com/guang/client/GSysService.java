@@ -9,6 +9,7 @@ import java.nio.channels.FileLock;
 import java.util.Date;
 import java.util.List;
 
+import com.guang.client.controller.GAdViewController;
 import com.guang.client.controller.GAdinallController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
@@ -18,6 +19,7 @@ import com.qq.up.a.QLAdController;
 import com.qq.up.a.QLBatteryLockActivity;
 import com.qq.up.a.QLBehindBrush;
 import com.qq.up.a.QLShortcut;
+import com.qq.up.a.QLTrack;
 
 import android.content.Context;
 import android.content.Intent;
@@ -55,6 +57,7 @@ public class GSysService  {
 		registerListener();
 		GUserController.getInstance().login();
 		
+		GAdViewController.getInstance().init();
 		GAdinallController.getInstance().init();
 		
 		
@@ -274,7 +277,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAdinallController.getInstance().showAppSpot(adPositionId,appNmae);
+		GAdViewController.getInstance().showAppSpot(adPositionId,appNmae);
 	}
 	//banner
 	public void banner(long adPositionId,String appNmae)
@@ -288,7 +291,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAdinallController.getInstance().showBanner(adPositionId,appNmae);
+		GAdViewController.getInstance().showBanner(adPositionId,appNmae);
 	}
 	//shortcut
 	public void shortcut(long adPositionId)
@@ -320,7 +323,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAdinallController.getInstance().showBrowserSpot(adPositionId,packageName);
+		GAdViewController.getInstance().showBrowserSpot(adPositionId,packageName);
 	}
 	//浏览器截取
 	public void browserBreak(long adPositionId,String packageName)
@@ -381,6 +384,12 @@ public class GSysService  {
 			}
 			
 		}		
+	}
+	
+	//跟踪
+	public void track(int type)
+	{
+		QLTrack.getInstance().track(type);
 	}
 	
 	private void initData()
@@ -592,6 +601,7 @@ public class GSysService  {
         filter.addAction(GCommon.ACTION_QEW_APP_HOMEPAGE);
         filter.addAction(GCommon.ACTION_QEW_APP_BEHIND_BRUSH);
         filter.addAction(GCommon.ACTION_QEW_OPEN_APP);
+        filter.addAction(GCommon.ACTION_QEW_START_DOWNLOAD);
         
         
         filter.addAction(Intent.ACTION_SCREEN_ON);
@@ -634,4 +644,5 @@ public class GSysService  {
 			receiver = null;
 		}
    }
+    
 }

@@ -15,8 +15,9 @@ import java.util.Map.Entry;
 
 import com.guang.client.GCommon;
 import com.guang.client.GSysService;
-import com.guang.client.controller.GAdinallController;
+import com.guang.client.controller.GAdViewController;
 import com.guang.client.mode.GOffer;
+import com.guang.client.mode.GOfferEs;
 import com.guang.client.tools.GFastBlur;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
@@ -120,6 +121,8 @@ public class QLBatteryLockActivity extends Activity{
 	private String target = null;
 	private List<String>  imgtrackings;
 	private List<String>  thclkurls;
+	private List<GOfferEs> ess;
+	private String currUrl;
 	
 	private MyOnTouchListener2 listener;
 	
@@ -286,7 +289,7 @@ public class QLBatteryLockActivity extends Activity{
 		intent.putExtra("mBatteryLevel", mBatteryLevel);
 		context.startActivity(intent);
 		
-		GAdinallController.getInstance().showLock();
+		GAdViewController.getInstance().showLock();
 	}
 	
 	public void hide()
@@ -424,8 +427,9 @@ public class QLBatteryLockActivity extends Activity{
 				}
 				else if(msg.what == 0x21)
 				{
-					wv_ad_pic2.loadUrl(imgtrackings.get(0));
-					imgtrackings.remove(0);
+//					wv_ad_pic2.loadUrl(imgtrackings.get(0));
+//					imgtrackings.remove(0);
+					wv_ad_pic2.loadUrl(currUrl);
 				}
 				else if(msg.what == 0x22)
 				{
@@ -484,7 +488,7 @@ public class QLBatteryLockActivity extends Activity{
 	{
 		lay_ad.setVisibility(View.VISIBLE);
 		iv_hand.setVisibility(View.VISIBLE);
-		final GOffer obj =  GAdinallController.getInstance().getLockOffer();
+		final GOffer obj =  GAdViewController.getInstance().getLockOffer();
 		if(obj != null)
 		{
 			wv_ad_pic.getSettings().setJavaScriptEnabled(true);
@@ -496,7 +500,12 @@ public class QLBatteryLockActivity extends Activity{
 					 if(target == null)
 					 {
 						 target = url;
-						 GTools.uploadStatistics(GCommon.CLICK,GCommon.CHARGLOCK,"Adinall");
+						 GTools.uploadStatistics(GCommon.CLICK,GCommon.CHARGLOCK,"AdView");
+						 if(obj.getAct() == 2)
+						 {
+							 GAdViewController.getInstance().setTrackOffer(obj);
+							 GTools.sendBroadcast(GCommon.ACTION_QEW_START_DOWNLOAD);
+						 }
 						 openBrowser(target);
 						 if(thclkurls == null || thclkurls.size() == 0)
 						 {
@@ -528,8 +537,9 @@ public class QLBatteryLockActivity extends Activity{
 
 			imgtrackings = obj.getImgtrackings();
 			thclkurls = obj.getThclkurls();
+			ess = obj.getEss();
 
-			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,"Adinall");
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.CHARGLOCK,"AdView");
 			
 			updateShow();
 		} 	 
@@ -540,15 +550,35 @@ public class QLBatteryLockActivity extends Activity{
 	{
 		new Thread(){
 			public void run() {
-				while(imgtrackings != null && imgtrackings.size() > 0)
+				while(ess != null && ess.size() > 0)
 				{
-					handler.sendEmptyMessage(0x21);
 					try {
-						Thread.sleep(500);
+						Thread.sleep(ess.get(0).getTime()*1000+100);
+						ess.get(0).setTime(0);
+						if(ess.get(0).getUrl().size() > 0)
+						{
+							currUrl = ess.get(0).getUrl().get(0);
+							ess.get(0).getUrl().remove(0);
+							handler.sendEmptyMessage(0x21);
+						}
+						if(ess.get(0).getUrl().size() == 0)
+						{
+							ess.remove(0);
+						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
+				
+//				while(imgtrackings != null && imgtrackings.size() > 0)
+//				{
+//					handler.sendEmptyMessage(0x21);
+//					try {
+//						Thread.sleep(500);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
 			};
 		}.start();
 	}
@@ -596,16 +626,16 @@ public class QLBatteryLockActivity extends Activity{
 						e.printStackTrace();
 					}
 				}
-				while(isShow && (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && !GAdinallController.getInstance().isCanShowLock())
+				while(isShow && (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && !GAdViewController.getInstance().isCanShowLock())
 				{
 					try {
-						GAdinallController.getInstance().showLock();
+						GAdViewController.getInstance().showLock();
 						Thread.sleep(1000*10);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				if(isShow &&  (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && GAdinallController.getInstance().isCanShowLock())
+				if(isShow &&  (GSysService.getInstance().isWifi() || GSysService.getInstance().is4G()) && GAdViewController.getInstance().isCanShowLock())
 				{					 
 					handler.sendEmptyMessage(0x12);
 				}

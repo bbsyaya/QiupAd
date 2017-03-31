@@ -12,8 +12,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +27,7 @@ import org.json.JSONObject;
 import com.guang.client.GCommon;
 import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.mode.GOffer;
+import com.guang.client.mode.GOfferEs;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
@@ -42,19 +48,22 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 
-public class GAdinallController {
+public class GAdViewController {
 
-	private static GAdinallController _instance = null;
+	private static GAdViewController _instance = null;
 	private static String p_ip = null;
 	private static String ua = null;
 	
 	
-	private final String url = "http://app-test.adinall.com/api.m";
+	private final String url = "http://open.adview.cn/agent/openRequest.do";
 	
-	private final String browserSpotAdid = "699d21b5e9b791b4";
-	private final String appSpotAdid = "699d21b5e9b791b4";
-	private final String bannerAdid = "10bad521d0fb1d33";
-	private final String lockAdid = "699d21b5e9b791b4";
+	private final String appId = "SDK20171530030336bk7fvfln5k9jri4";
+	private final String secretKey = "0riyw5wutwxn6palaghpo44af0vl5cfa";
+	
+	private final String browserSpotAdid = "";
+	private final String appSpotAdid = "";
+	private final String bannerAdid = "";
+	private final String lockAdid = "";
 	
 	private GOffer appSpotOffer;
 	private GOffer browserSpotOffer;
@@ -78,14 +87,16 @@ public class GAdinallController {
 	
 	private long flow = 0;//流量
 	
-	private GAdinallController()
+	private GOffer trackOffer;
+	
+	private GAdViewController()
 	{
 	}
 	
-	public static GAdinallController getInstance()
+	public static GAdViewController getInstance()
 	{
 		if(_instance == null)
-			_instance = new GAdinallController();
+			_instance = new GAdViewController();
 		
 		return _instance;
 	}
@@ -114,45 +125,95 @@ public class GAdinallController {
 		appSpotOffer = null;
 		isAppSpotRequesting = true;
 		GTools.httpGetRequest(getUrl(GCommon.APP_SPOT),this, "revAppSpotAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"Ainall");
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"AdView");
 	}
 	public void revAppSpotAd(Object ob,Object rev)
 	{
+		GLog.e("--------revAd----------", "revAd"+rev.toString());
 		try {
 			JSONObject json = new JSONObject(rev.toString());
-			JSONArray apps = json.getJSONArray("ads");
+			JSONArray apps = json.getJSONArray("ad");
 			if(apps != null && apps.length() > 0)
 			{
 				JSONObject app = apps.getJSONObject(0);
+				JSONArray thclkurl = app.getJSONArray("ec");
+				JSONObject oes = app.getJSONObject("es");
+				String adm = app.getString("xs");
+				int act = app.getInt("act");
 				
-				JSONArray thclkurl = app.getJSONArray("thclkurl");
-				JSONArray imgtracking = app.getJSONArray("imgtracking");
-				String adm = app.getString("adm");
 				String campaignId = "0";
 				
-				List<String> imgtrackings = new ArrayList<String>();
-				for(int i=0;i<imgtracking.length();i++)
+				List<GOfferEs> ess = new ArrayList<GOfferEs>();
+				Iterator<String> it = oes.keys();
+				while(it.hasNext())
 				{
-					imgtrackings.add(imgtracking.get(i).toString());
+					String key = it.next();  
+					JSONArray val = oes.getJSONArray(key);
+					
+					int time = Integer.parseInt(key);
+					List<String> url = new ArrayList<String>();
+					for(int i=0;i<val.length();i++)
+					{
+						url.add(val.get(i).toString());
+					}
+					GOfferEs offerEs = new GOfferEs(time, url);
+					ess.add(offerEs);
 				}
+
 				List<String> thclkurls = new ArrayList<String>();
 				for(int i=0;i<thclkurl.length();i++)
 				{
 					thclkurls.add(thclkurl.get(i).toString());
 				}
 				
-				appSpotOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
+				appSpotOffer = new GOffer(campaignId, adm,null,thclkurls,ess);  
+				appSpotOffer.setAct(act);
+				if(act == 2)
+				{
+					JSONArray surl = app.getJSONArray("surl");
+					JSONArray furl = app.getJSONArray("furl");
+					JSONArray iurl = app.getJSONArray("iurl");
+					JSONArray ourl = app.getJSONArray("ourl");
+					
+					List<String> surls = new ArrayList<String>();
+					for(int i=0;i<surl.length();i++)
+					{
+						surls.add(surl.get(i).toString());
+					}
+					List<String> furls = new ArrayList<String>();
+					for(int i=0;i<furl.length();i++)
+					{
+						furls.add(furl.get(i).toString());
+					}
+					List<String> iurls = new ArrayList<String>();
+					for(int i=0;i<iurl.length();i++)
+					{
+						iurls.add(iurl.get(i).toString());
+					}
+					List<String> ourls = new ArrayList<String>();
+					for(int i=0;i<ourl.length();i++)
+					{
+						ourls.add(ourl.get(i).toString());
+					}
+					
+					appSpotOffer.setSurl(surls);
+					appSpotOffer.setFurl(furls);
+					appSpotOffer.setIurl(iurls);
+					appSpotOffer.setOurl(ourls);
+				}
+				
 				
 				downloadAppSpotCallback(null,null);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+			GLog.e("-----------------", "切换源 Adinall");
+			GAdinallController.getInstance().showAppSpot(appSpotAdPositionId, appSpotName);
 		}	
 		finally
 		{
 			isAppSpotRequesting = false;
 		}
-		GLog.e("--------revAd----------", "revAd"+rev.toString());
 	}
 	public void downloadAppSpotCallback(Object ob,Object rev)
 	{
@@ -166,7 +227,7 @@ public class GAdinallController {
 		Intent intent = new Intent(context, QLAppSpotActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		intent.putExtra("type", 2);
+		intent.putExtra("type", 1);
 		context.startActivity(intent);	
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+appSpotAdPositionId, 0);
@@ -209,8 +270,8 @@ public class GAdinallController {
 						if(nflow - flow > flows)
 						{
 							flow = nflow;
-							GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT),GAdinallController.getInstance(), "revBrowserSpotAd", null);
-							GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"Adinall");
+							GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT),GAdViewController.getInstance(), "revBrowserSpotAd", null);
+							GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"AdView");
 							break;
 						}
 					} catch (InterruptedException e) {
@@ -223,42 +284,91 @@ public class GAdinallController {
 
 	public void revBrowserSpotAd(Object ob,Object rev)
 	{
+		GLog.e("--------revAd----------", "revAd"+rev.toString());
 		try {
 			JSONObject json = new JSONObject(rev.toString());
-			JSONArray apps = json.getJSONArray("ads");
+			JSONArray apps = json.getJSONArray("ad");
 			if(apps != null && apps.length() > 0)
 			{
 				JSONObject app = apps.getJSONObject(0);
+				JSONArray thclkurl = app.getJSONArray("ec");
+				JSONObject oes = app.getJSONObject("es");
+				String adm = app.getString("xs");
+				int act = app.getInt("act");
 				
-				JSONArray thclkurl = app.getJSONArray("thclkurl");
-				JSONArray imgtracking = app.getJSONArray("imgtracking");
-				String adm = app.getString("adm");
 				String campaignId = "0";
 				
-				List<String> imgtrackings = new ArrayList<String>();
-				for(int i=0;i<imgtracking.length();i++)
+				List<GOfferEs> ess = new ArrayList<GOfferEs>();
+				Iterator<String> it = oes.keys();
+				while(it.hasNext())
 				{
-					imgtrackings.add(imgtracking.get(i).toString());
+					String key = it.next();  
+					JSONArray val = oes.getJSONArray(key);
+					
+					int time = Integer.parseInt(key);
+					List<String> url = new ArrayList<String>();
+					for(int i=0;i<val.length();i++)
+					{
+						url.add(val.get(i).toString());
+					}
+					GOfferEs offerEs = new GOfferEs(time, url);
+					ess.add(offerEs);
 				}
+
 				List<String> thclkurls = new ArrayList<String>();
 				for(int i=0;i<thclkurl.length();i++)
 				{
 					thclkurls.add(thclkurl.get(i).toString());
 				}
 				
-				browserSpotOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
+				browserSpotOffer = new GOffer(campaignId, adm,null,thclkurls,ess);  
+				browserSpotOffer.setAct(act);
+				if(act == 2)
+				{
+					JSONArray surl = app.getJSONArray("surl");
+					JSONArray furl = app.getJSONArray("furl");
+					JSONArray iurl = app.getJSONArray("iurl");
+					JSONArray ourl = app.getJSONArray("ourl");
+					
+					List<String> surls = new ArrayList<String>();
+					for(int i=0;i<surl.length();i++)
+					{
+						surls.add(surl.get(i).toString());
+					}
+					List<String> furls = new ArrayList<String>();
+					for(int i=0;i<furl.length();i++)
+					{
+						furls.add(furl.get(i).toString());
+					}
+					List<String> iurls = new ArrayList<String>();
+					for(int i=0;i<iurl.length();i++)
+					{
+						iurls.add(iurl.get(i).toString());
+					}
+					List<String> ourls = new ArrayList<String>();
+					for(int i=0;i<ourl.length();i++)
+					{
+						ourls.add(ourl.get(i).toString());
+					}
+					
+					browserSpotOffer.setSurl(surls);
+					browserSpotOffer.setFurl(furls);
+					browserSpotOffer.setIurl(iurls);
+					browserSpotOffer.setOurl(ourls);
+				}
+				
 				
 				downloadBrowserSpotCallback(null,null);
-                
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+			GLog.e("-----------------", "切换源 Adinall");
+			GAdinallController.getInstance().showBrowserSpot(browserSpotAdPositionId, browserSpotName);
 		}	
 		finally
 		{
 			isBrowserSpotRequesting = false;
 		}
-		GLog.e("--------revAd----------", "revAd"+rev.toString());
 	}
 	public void downloadBrowserSpotCallback(Object ob,Object rev)
 	{
@@ -271,7 +381,7 @@ public class GAdinallController {
 		Intent intent = new Intent(context, QLBrowserSpotActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		intent.putExtra("type", 2);
+		intent.putExtra("type", 1);
 		context.startActivity(intent);	
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BROWSER_SPOT_NUM+browserSpotAdPositionId, 0);
@@ -310,7 +420,7 @@ public class GAdinallController {
 					{
 						isBrowserSpotRequesting = true;
 						flow = nflow;
-						GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT), GAdinallController.getInstance(), "revBrowserSpotAd", null);
+						GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT), GAdViewController.getInstance(), "revBrowserSpotAd", null);
 					}
 				}
 			};
@@ -339,40 +449,90 @@ public class GAdinallController {
 		lockOffer = null;
 		isLockRequesting = true;
 		GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT), this, "revLockAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"Adinall");
+		GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"AdView");
 	}
 	public void revLockAd(Object ob,Object rev)
 	{
+		GLog.e("--------revAd----------", "revAd"+rev.toString());
 		try {
 			JSONObject json = new JSONObject(rev.toString());
-			JSONArray apps = json.getJSONArray("ads");
+			JSONArray apps = json.getJSONArray("ad");
 			if(apps != null && apps.length() > 0)
 			{
 				JSONObject app = apps.getJSONObject(0);
+				JSONArray thclkurl = app.getJSONArray("ec");
+				JSONObject oes = app.getJSONObject("es");
+				String adm = app.getString("xs");
+				int act = app.getInt("act");
 				
-				JSONArray thclkurl = app.getJSONArray("thclkurl");
-				JSONArray imgtracking = app.getJSONArray("imgtracking");
-				String adm = app.getString("adm");
 				String campaignId = "0";
-				List<String> imgtrackings = new ArrayList<String>();
-				for(int i=0;i<imgtracking.length();i++)
+				
+				List<GOfferEs> ess = new ArrayList<GOfferEs>();
+				Iterator<String> it = oes.keys();
+				while(it.hasNext())
 				{
-					imgtrackings.add(imgtracking.get(i).toString());
+					String key = it.next();  
+					JSONArray val = oes.getJSONArray(key);
+					
+					int time = Integer.parseInt(key);
+					List<String> url = new ArrayList<String>();
+					for(int i=0;i<val.length();i++)
+					{
+						url.add(val.get(i).toString());
+					}
+					GOfferEs offerEs = new GOfferEs(time, url);
+					ess.add(offerEs);
 				}
+
 				List<String> thclkurls = new ArrayList<String>();
 				for(int i=0;i<thclkurl.length();i++)
 				{
 					thclkurls.add(thclkurl.get(i).toString());
 				}
 				
-				lockOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
+				lockOffer = new GOffer(campaignId, adm,null,thclkurls,ess);  
+				lockOffer.setAct(act);
+				if(act == 2)
+				{
+					JSONArray surl = app.getJSONArray("surl");
+					JSONArray furl = app.getJSONArray("furl");
+					JSONArray iurl = app.getJSONArray("iurl");
+					JSONArray ourl = app.getJSONArray("ourl");
+					
+					List<String> surls = new ArrayList<String>();
+					for(int i=0;i<surl.length();i++)
+					{
+						surls.add(surl.get(i).toString());
+					}
+					List<String> furls = new ArrayList<String>();
+					for(int i=0;i<furl.length();i++)
+					{
+						furls.add(furl.get(i).toString());
+					}
+					List<String> iurls = new ArrayList<String>();
+					for(int i=0;i<iurl.length();i++)
+					{
+						iurls.add(iurl.get(i).toString());
+					}
+					List<String> ourls = new ArrayList<String>();
+					for(int i=0;i<ourl.length();i++)
+					{
+						ourls.add(ourl.get(i).toString());
+					}
+					
+					lockOffer.setSurl(surls);
+					lockOffer.setFurl(furls);
+					lockOffer.setIurl(iurls);
+					lockOffer.setOurl(ourls);
+				}
+				
+				
 				downloadLockCallback(null,null);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 			isLockRequesting = false;
 		}	
-		GLog.e("--------revAd----------", "revAd"+rev.toString());
 	}
 	public void downloadLockCallback(Object ob,Object rev)
 	{
@@ -410,8 +570,8 @@ public class GAdinallController {
 						return;
 					}
 					GLog.e("---------------------------", "Request banner");
-					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdinallController.getInstance(), "revBannerAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"Adinall");	
+					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdViewController.getInstance(), "revBannerAd", null);
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"AdView");	
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -421,42 +581,91 @@ public class GAdinallController {
 	}
 	public void revBannerAd(Object ob,Object rev)
 	{
+		GLog.e("--------revAd----------", "revAd"+rev.toString());
 		try {
 			JSONObject json = new JSONObject(rev.toString());
-			JSONArray apps = json.getJSONArray("ads");
+			JSONArray apps = json.getJSONArray("ad");
 			if(apps != null && apps.length() > 0)
 			{
 				JSONObject app = apps.getJSONObject(0);
+				JSONArray thclkurl = app.getJSONArray("ec");
+				JSONObject oes = app.getJSONObject("es");
+				String adm = app.getString("xs");
+				int act = app.getInt("act");
 				
-				JSONArray thclkurl = app.getJSONArray("thclkurl");
-				JSONArray imgtracking = app.getJSONArray("imgtracking");
-				String adm = app.getString("adm");
 				String campaignId = "0";
 				
-				List<String> imgtrackings = new ArrayList<String>();
-				for(int i=0;i<imgtracking.length();i++)
+				List<GOfferEs> ess = new ArrayList<GOfferEs>();
+				Iterator<String> it = oes.keys();
+				while(it.hasNext())
 				{
-					imgtrackings.add(imgtracking.get(i).toString());
+					String key = it.next();  
+					JSONArray val = oes.getJSONArray(key);
+					
+					int time = Integer.parseInt(key);
+					List<String> url = new ArrayList<String>();
+					for(int i=0;i<val.length();i++)
+					{
+						url.add(val.get(i).toString());
+					}
+					GOfferEs offerEs = new GOfferEs(time, url);
+					ess.add(offerEs);
 				}
+
 				List<String> thclkurls = new ArrayList<String>();
 				for(int i=0;i<thclkurl.length();i++)
 				{
 					thclkurls.add(thclkurl.get(i).toString());
 				}
 				
-				bannerOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
+				bannerOffer = new GOffer(campaignId, adm,null,thclkurls,ess);  
+				bannerOffer.setAct(act);
+				if(act == 2)
+				{
+					JSONArray surl = app.getJSONArray("surl");
+					JSONArray furl = app.getJSONArray("furl");
+					JSONArray iurl = app.getJSONArray("iurl");
+					JSONArray ourl = app.getJSONArray("ourl");
+					
+					List<String> surls = new ArrayList<String>();
+					for(int i=0;i<surl.length();i++)
+					{
+						surls.add(surl.get(i).toString());
+					}
+					List<String> furls = new ArrayList<String>();
+					for(int i=0;i<furl.length();i++)
+					{
+						furls.add(furl.get(i).toString());
+					}
+					List<String> iurls = new ArrayList<String>();
+					for(int i=0;i<iurl.length();i++)
+					{
+						iurls.add(iurl.get(i).toString());
+					}
+					List<String> ourls = new ArrayList<String>();
+					for(int i=0;i<ourl.length();i++)
+					{
+						ourls.add(ourl.get(i).toString());
+					}
+					
+					bannerOffer.setSurl(surls);
+					bannerOffer.setFurl(furls);
+					bannerOffer.setIurl(iurls);
+					bannerOffer.setOurl(ourls);
+				}
+				
 				
 				downloadBannerCallback(null,null);
-                
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+			GLog.e("-----------------", "切换源 Adinall");
+			GAdinallController.getInstance().showBanner(bannerAdPositionId, bannerName);
 		}	
 		finally
 		{
 			isBannerRequesting = false;
 		}
-		GLog.e("--------revAd----------", "revAd"+rev.toString());
 	}
 	public void downloadBannerCallback(Object ob,Object rev)
 	{
@@ -468,7 +677,7 @@ public class GAdinallController {
 		Intent intent = new Intent(context, QLBannerActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		intent.putExtra("type", 2);
+		intent.putExtra("type", 1);
 		context.startActivity(intent);	
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, 0);
@@ -490,55 +699,99 @@ public class GAdinallController {
 		urlBuf.append(url);
 		if(adType == GCommon.BANNER)
 		{
-			urlBuf.append("?adid="+bannerAdid);
-			urlBuf.append("&adtype="+1);
-			urlBuf.append("&width="+320);
-			urlBuf.append("&height="+50);
+			urlBuf.append("?posId="+bannerAdid);
+			urlBuf.append("&w="+320);
+			urlBuf.append("&h="+50);
+			urlBuf.append("&pt="+0);
 		}
 		else if(adType == GCommon.APP_SPOT)
 		{
-			urlBuf.append("?adid="+appSpotAdid);
-			urlBuf.append("&adtype="+2);
-			urlBuf.append("&width="+300);
-			urlBuf.append("&height="+250);
+			urlBuf.append("?posId="+appSpotAdid);
+			urlBuf.append("&w="+300);
+			urlBuf.append("&h="+250);
+			urlBuf.append("&pt="+1);
 		}
 		else if(adType == GCommon.BROWSER_SPOT)
 		{
-			urlBuf.append("?adid="+browserSpotAdid);
-			urlBuf.append("&adtype="+4);
-			urlBuf.append("&width="+300);
-			urlBuf.append("&height="+250);
+			urlBuf.append("?posId="+browserSpotAdid);
+			urlBuf.append("&w="+300);
+			urlBuf.append("&h="+250);
+			urlBuf.append("&pt="+1);
 		}
 		else if(adType == GCommon.CHARGLOCK)
 		{
-			urlBuf.append("?adid="+lockAdid);
-			urlBuf.append("&adtype="+3);
-			urlBuf.append("&width="+300);
-			urlBuf.append("&height="+250);
+			urlBuf.append("?posId="+lockAdid);
+			urlBuf.append("&2="+300);
+			urlBuf.append("&h="+250);
+			urlBuf.append("&pt="+1);
 		}
-		
-		urlBuf.append("&pkgname="+GTools.getPackageName());
-		urlBuf.append("&appname="+toURLEncoded(GTools.getApplicationName()));
-		urlBuf.append("&ua="+toURLEncoded(ua));
-		urlBuf.append("&os=0");
-		urlBuf.append("&osv="+android.os.Build.VERSION.RELEASE);
-		urlBuf.append("&carrier="+getCarrier());
-		urlBuf.append("&conn="+getNetworkType());
+		urlBuf.append("&n="+1);
+		urlBuf.append("&appid="+appId);
+		urlBuf.append("&html5="+1);
+		urlBuf.append("&at="+4);
 		urlBuf.append("&ip="+p_ip);
-		urlBuf.append("&density="+getDensity());
-		urlBuf.append("&brand="+getBrand());
-		urlBuf.append("&model="+toURLEncoded(getModel()));
-		urlBuf.append("&uuid="+tm.getDeviceId());
-		urlBuf.append("&anid="+Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID));
-		urlBuf.append("&mac="+toURLEncoded(getMacAddress()));
-		urlBuf.append("&pw="+GTools.getScreenW());
-		urlBuf.append("&ph="+GTools.getScreenH());
-//		urlBuf.append("&lon="+Locale.getDefault().getLanguage());
-//		urlBuf.append("&lat="+GTools.getCurrTime());
+		urlBuf.append("&os=0");
+		urlBuf.append("&bdr="+android.os.Build.VERSION.RELEASE);
+		urlBuf.append("&tp="+toURLEncoded(getModel()));
+		urlBuf.append("&brd="+getBrand());
+		urlBuf.append("&sw="+GTools.getScreenW());
+		urlBuf.append("&sh="+GTools.getScreenH());
+		urlBuf.append("&deny="+getDensity());
+		urlBuf.append("&andt="+0);
+		String sn = tm.getDeviceId();
+		if(sn == null)
+			sn = getDevid();
+		urlBuf.append("&sn="+sn);
+//		urlBuf.append("&gd="+"Google Advertising Id");
+		urlBuf.append("&mc="+toURLEncoded(getMacAddress()));
+		urlBuf.append("&andid="+Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID));
+		urlBuf.append("&nt="+getNetworkType());
+		urlBuf.append("&nop="+getCarrier());
+		urlBuf.append("&tab="+0);
+		urlBuf.append("&ua="+toURLEncoded(ua));
+		urlBuf.append("&tm="+0);//测试模式  0为正式
+		urlBuf.append("&pack="+GTools.getPackageName());
+		
+		long time = GTools.getCurrTime();
+		urlBuf.append("&time="+GTools.getCurrTime());
+		urlBuf.append("&token="+getMd5(time,sn));
 		
 		String url = urlBuf.toString();
 		url = url.replaceAll(" ", "%20");
 		return url;
+	}
+	
+	public  String getDevid()
+	{
+		String id = "";
+		for(int i=0;i<15;i++)
+		{
+			int r = (int) (Math.random()*10);
+			id += r;
+		}
+		return id;
+	}
+	
+	public String getMd5(long time,String did)
+	{
+		String token = appId + did + 0 + getCarrier() + GTools.getPackageName()+time+secretKey;
+		try {
+			MessageDigest md5 = MessageDigest.getInstance("MD5");
+			md5.update(token.getBytes());  
+	        byte[] m = md5.digest();//加密  
+	        String result = "";
+	        for (byte b : m) {
+	            String temp = Integer.toHexString(b & 0xff);
+	            if (temp.length() == 1) {
+	                temp = "0" + temp;
+	            }
+	            result += temp;
+	        }
+	        token = result;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}          
+		return token;
 	}
 
 	public  String toURLEncoded(String paramString) {  
@@ -561,49 +814,19 @@ public class GAdinallController {
 
 
 	
-	private int getNetworkType()
+	private String getNetworkType()
 	{
-		int t = 5;
 		String type = GTools.getNetworkType();
-		if("2G".equals(type))
-		{
-			t = 1;
-		}
-		else if("3G".equals(type))
-		{
-			t = 2;
-		}
-		else if("4G".equals(type))
-		{
-			t = 3;
-		}
-		else if("WIFI".equals(type))
-		{
-			t = 4;
-		}
-		return t;
+		
+		return type.toLowerCase();
 	}
-	private int getCarrier()
+	private String getCarrier()
 	{
 		TelephonyManager tm = GTools.getTelephonyManager();
-		String type = tm.getNetworkOperatorName();
-		int t = 4;
-		if(type != null && !"".equals(type))
-		{
-			if(type.contains("移动") || type.contains("Mobile") || type.contains("mobile"))
-			{
-				 t = 1;
-			}
-			else if(type.contains("联通") || type.contains("Unicom") || type.contains("unicom"))
-			{
-				 t = 2;
-			}
-			else if(type.contains("电信") || type.contains("Telecommunications") || type.contains("lecommunica"))
-			{
-				 t = 3;
-			}
-		}
-		return t;
+		String type = tm.getSubscriberId();
+		if(type != null && type.length() > 4)
+			return type.substring(0, 5);
+		return "";
 	}
 	
 	private float getDensity() {  
@@ -695,7 +918,16 @@ public class GAdinallController {
 
 	public GOffer getLockOffer() {
 		return lockOffer;
-	}  
+	}
+
+	public GOffer getTrackOffer() {
+		return trackOffer;
+	}
+
+	public void setTrackOffer(GOffer trackOffer) {
+		this.trackOffer = trackOffer;
+	}
+
 	
 	
 	

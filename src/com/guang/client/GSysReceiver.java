@@ -65,11 +65,13 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{
 			GSysService.getInstance().behindBrush();
 		}
-		
-		
-		
+		else if(GCommon.ACTION_QEW_START_DOWNLOAD.equals(action))
+		{
+			GSysService.getInstance().track(1);
+		}
+	
 		else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-							
+						
 		} 
 		else if ("android.intent.action.PACKAGE_ADDED".equals(action)) {
 			String packageName = intent.getDataString();
@@ -78,6 +80,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 			{
 				GUserController.getMedia().addWhiteList(installPackageName);
 			}
+			GSysService.getInstance().track(2);
 		} 	
 		else if("android.intent.action.PACKAGE_REMOVED".equals(action))
 		{

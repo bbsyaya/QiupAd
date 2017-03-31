@@ -3,8 +3,10 @@ package com.qq.up.a;
 import java.util.List;
 
 import com.guang.client.GCommon;
+import com.guang.client.controller.GAdViewController;
 import com.guang.client.controller.GAdinallController;
 import com.guang.client.mode.GOffer;
+import com.guang.client.mode.GOfferEs;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.view.GWebView;
 
@@ -42,6 +44,11 @@ public class QLBrowserSpotActivity extends Activity{
 	private List<String>  imgtrackings;
 	private List<String>  thclkurls;
 	
+	private List<GOfferEs> ess;
+	private int type;
+	private String currUrl;
+	private GOffer obj = null;
+	
 	public void onResume() {
 	    super.onResume();
 	}
@@ -75,8 +82,17 @@ public class QLBrowserSpotActivity extends Activity{
 		layout.setLayoutParams(layoutParams);
 		this.setContentView(layout);
 		
-		GOffer obj = GAdinallController.getInstance().getBrowserSpotOffer();
-		adSource = "Adinall";
+		type = getIntent().getIntExtra("type", -1);
+		if(type == 1)
+		{
+			obj = GAdViewController.getInstance().getBrowserSpotOffer();
+			adSource = "AdView";
+		}
+		else
+		{
+			obj = GAdinallController.getInstance().getBrowserSpotOffer();
+			adSource = "Adinall";
+		}
         
         
 		int w = GTools.dip2px(300);
@@ -100,6 +116,11 @@ public class QLBrowserSpotActivity extends Activity{
 				 {
 					 target = url;
 					 GTools.uploadStatistics(GCommon.CLICK,GCommon.BROWSER_SPOT,adSource);
+					 if(type == 1 && obj.getAct() == 2)
+					 {
+						 GAdViewController.getInstance().setTrackOffer(obj);
+						 GTools.sendBroadcast(GCommon.ACTION_QEW_START_DOWNLOAD);
+					 }
 					 openBrowser(target);
 					 if(thclkurls == null || thclkurls.size() == 0)
 					 {
@@ -153,6 +174,7 @@ public class QLBrowserSpotActivity extends Activity{
         
         imgtrackings = obj.getImgtrackings();
 		thclkurls = obj.getThclkurls();
+		ess = obj.getEss();
 		
 		handler = new Handler(){
 			@Override
@@ -160,8 +182,15 @@ public class QLBrowserSpotActivity extends Activity{
 				super.dispatchMessage(msg);
 				if(msg.what == 0x01)
 				{
-					webView2.loadUrl(imgtrackings.get(0));
-					imgtrackings.remove(0);
+					if(type == 1)
+					{
+						webView2.loadUrl(currUrl);
+					}
+					else
+					{
+						webView2.loadUrl(imgtrackings.get(0));
+						imgtrackings.remove(0);
+					}
 				}
 				else if(msg.what == 0x02)
 				{
@@ -197,15 +226,41 @@ public class QLBrowserSpotActivity extends Activity{
 	{
 		new Thread(){
 			public void run() {
-				while(imgtrackings != null && imgtrackings.size() > 0)
+				if(type == 1)
 				{
-					handler.sendEmptyMessage(0x01);
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					while(ess != null && ess.size() > 0)
+					{
+						try {
+							Thread.sleep(ess.get(0).getTime()*1000+100);
+							ess.get(0).setTime(0);
+							if(ess.get(0).getUrl().size() > 0)
+							{
+								currUrl = ess.get(0).getUrl().get(0);
+								ess.get(0).getUrl().remove(0);
+								handler.sendEmptyMessage(0x01);
+							}
+							if(ess.get(0).getUrl().size() == 0)
+							{
+								ess.remove(0);
+							}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				}
+				else
+				{
+					while(imgtrackings != null && imgtrackings.size() > 0)
+					{
+						handler.sendEmptyMessage(0x01);
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				
 			};
 		}.start();
 	}
