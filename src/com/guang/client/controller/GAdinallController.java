@@ -49,7 +49,7 @@ public class GAdinallController {
 	private static String ua = null;
 	
 	
-	private final String url = "http://app-test.adinall.com/api.m";
+	private final String url = "http://app.adinall.com/api.m";
 	
 	private final String browserSpotAdid = "699d21b5e9b791b4";
 	private final String appSpotAdid = "699d21b5e9b791b4";

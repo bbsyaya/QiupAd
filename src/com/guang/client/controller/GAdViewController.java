@@ -124,6 +124,7 @@ public class GAdViewController {
 		GLog.e("--------------", "app spot start!");
 		appSpotOffer = null;
 		isAppSpotRequesting = true;
+		GLog.e("--------------", getUrl(GCommon.APP_SPOT));
 		GTools.httpGetRequest(getUrl(GCommon.APP_SPOT),this, "revAppSpotAd", null);
 		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"AdView");
 	}
@@ -732,7 +733,7 @@ public class GAdViewController {
 		urlBuf.append("&ip="+p_ip);
 		urlBuf.append("&os=0");
 		urlBuf.append("&bdr="+android.os.Build.VERSION.RELEASE);
-		urlBuf.append("&tp="+toURLEncoded(getModel()));
+		urlBuf.append("&tp="+getModel());
 		urlBuf.append("&brd="+getBrand());
 		urlBuf.append("&sw="+GTools.getScreenW());
 		urlBuf.append("&sh="+GTools.getScreenH());
@@ -743,12 +744,12 @@ public class GAdViewController {
 			sn = getDevid();
 		urlBuf.append("&sn="+sn);
 //		urlBuf.append("&gd="+"Google Advertising Id");
-		urlBuf.append("&mc="+toURLEncoded(getMacAddress()));
+		urlBuf.append("&mc="+getMacAddress());
 		urlBuf.append("&andid="+Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID));
 		urlBuf.append("&nt="+getNetworkType());
 		urlBuf.append("&nop="+getCarrier());
 		urlBuf.append("&tab="+0);
-		urlBuf.append("&ua="+toURLEncoded(ua));
+		urlBuf.append("&ua="+ua);
 		urlBuf.append("&tm="+0);//测试模式  0为正式
 		urlBuf.append("&pack="+GTools.getPackageName());
 		
