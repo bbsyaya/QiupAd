@@ -125,7 +125,7 @@ public class GSysService  {
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
 					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s) && !GTools.isSelfForeground())
 					{
 						browserSpot(adPositionId,s);
 					}		
@@ -148,7 +148,7 @@ public class GSysService  {
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
 					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s)&& !GTools.isSelfForeground())
 					{
 						banner(adPositionId,s);
 					}		
@@ -171,7 +171,7 @@ public class GSysService  {
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
 					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s)&& !GTools.isSelfForeground())
 					{
 						appSpot(adPositionId,s);
 					}		

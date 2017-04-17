@@ -837,6 +837,14 @@ public class GTools {
          }
     	return packageName;
     }
+    //自己是否在前台运行
+    public static boolean isSelfForeground()
+    {
+    	String app = getForegroundApp2();
+    	if(app == null)
+    		return false;
+    	return app.equals(GTools.getPackageName());
+    }
     //获取应用流量
     public static long getAppFlow(String packageName) {
     	Context context = QLAdController.getInstance().getContext();
