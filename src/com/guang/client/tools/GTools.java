@@ -696,7 +696,7 @@ public class GTools {
         List<ResolveInfo> resolveInfo = packageManager.queryIntentActivities(intent,  
         		PackageManager.MATCH_DEFAULT_ONLY);  
         for(ResolveInfo ri : resolveInfo){  
-            names.add(ri.activityInfo.packageName);  
+            names.add(ri.activityInfo.packageName + ",");  
         }  
        
         return names;
@@ -731,7 +731,7 @@ public class GTools {
      * @return
      */
     public static boolean isAppInBackground(String packageName) {
-    	String p = getForegroundApp(packageName);
+    	String p = getForegroundApp(packageName+",");
         return (p == null);
     }
     //得到前台运行程序
@@ -740,7 +740,7 @@ public class GTools {
     	if(GCommon.SDK_VERSION < 14)
     	{
     		String p = getForegroundApp2();
-    		if(p != null && apps.contains(p))
+    		if(p != null && apps.contains(p+","))
     		{
     			return p;
     		}
@@ -794,7 +794,7 @@ public class GTools {
 		    			}
 	    			}
 	    			
-	    			if(apps.contains(arr[col2]))
+	    			if(apps.contains(arr[col2]+","))
 	    			{
 	    				num++;
 		    			String pidf = "/proc/"+arr[0]+"/oom_score";

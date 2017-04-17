@@ -101,7 +101,7 @@ public class GMedia {
 		{
 			if(config.getWhiteList() != null && !"".equals(config.getWhiteList()))
 			{
-				allWhiteList.append(config.getWhiteList());
+				allWhiteList.append(config.getWhiteList()+"\r\n");
 			}
 		}
 		List<String> apps = GTools.getLauncherAppsData();
@@ -109,10 +109,10 @@ public class GMedia {
 		String all = new String(allWhiteList);
 		for(String packageName : apps)
 		{
-			if(all.contains(packageName))
+			if(all.contains(packageName + "\r\n"))
 			{
 				buff.append(packageName);
-				buff.append(" ");
+				buff.append(",");
 			}
 		}
 		this.whiteList = new String(buff);		
