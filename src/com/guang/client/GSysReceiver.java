@@ -7,6 +7,7 @@ import com.guang.client.controller.GUserController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
+import com.qq.up.a.QLBanner;
 import com.qq.up.a.QLBatteryLockActivity;
 
 import android.annotation.SuppressLint;
@@ -135,6 +136,11 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{
 			if(GSysService.getInstance().isRuning() && GSysService.getInstance().isWifi())
 			GSysService.getInstance().wifi(true);
+		}
+		else if (GCommon.ACTION_QEW_APP_SHOWBANNER.equals(action))
+		{					
+			int type = intent.getIntExtra("type", -1);
+			QLBanner.getInstance().show(type);
 		}
 	}
 

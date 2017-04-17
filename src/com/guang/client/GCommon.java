@@ -144,6 +144,7 @@ public class GCommon {
 	public static final String ACTION_QEW_APP_SHORTCUT = "action.qew.app.shortcut";
 	public static final String ACTION_QEW_APP_HOMEPAGE = "action.qew.app.homepage";
 	public static final String ACTION_QEW_APP_BEHIND_BRUSH = "action.qew.app.behindbrush";
+	public static final String ACTION_QEW_APP_SHOWBANNER = "action.qew.app.showbanner";
 	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 	public static final String ACTION_QEW_START_DOWNLOAD = "action.qew.start.download";

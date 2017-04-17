@@ -603,6 +603,7 @@ public class GSysService  {
         filter.addAction(GCommon.ACTION_QEW_APP_BEHIND_BRUSH);
         filter.addAction(GCommon.ACTION_QEW_OPEN_APP);
         filter.addAction(GCommon.ACTION_QEW_START_DOWNLOAD);
+        filter.addAction(GCommon.ACTION_QEW_APP_SHOWBANNER);
         
         
         filter.addAction(Intent.ACTION_SCREEN_ON);

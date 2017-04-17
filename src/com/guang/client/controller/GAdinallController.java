@@ -26,6 +26,7 @@ import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
 import com.qq.up.a.QLAppSpotActivity;
+import com.qq.up.a.QLBanner;
 import com.qq.up.a.QLBannerActivity;
 import com.qq.up.a.QLBrowserSpotActivity;
 
@@ -460,16 +461,22 @@ public class GAdinallController {
 	}
 	public void downloadBannerCallback(Object ob,Object rev)
 	{
-		if(GTools.isAppInBackground(bannerName) || bannerOffer == null)
+		if(GTools.isAppInBackground(bannerName) || bannerOffer == null || QLBanner.getInstance().isShowing())
 		{
 			return;
 		}
+//		Context context = QLAdController.getInstance().getContext();
+//		Intent intent = new Intent(context, QLBannerActivity.class);
+//		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+//		intent.putExtra("type", 2);
+//		context.startActivity(intent);	
+		
 		Context context = QLAdController.getInstance().getContext();
-		Intent intent = new Intent(context, QLBannerActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		Intent intent = new Intent();  
+		intent.setAction(GCommon.ACTION_QEW_APP_SHOWBANNER);  
 		intent.putExtra("type", 2);
-		context.startActivity(intent);	
+		context.sendBroadcast(intent); 
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, num+1);
