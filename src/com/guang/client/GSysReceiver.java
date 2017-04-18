@@ -140,7 +140,8 @@ public final class GSysReceiver extends BroadcastReceiver {
 		else if (GCommon.ACTION_QEW_APP_SHOWBANNER.equals(action))
 		{					
 			int type = intent.getIntExtra("type", -1);
-			QLBanner.getInstance().show(type);
+			long adPositionId = intent.getLongExtra("adPositionId", -1);
+			QLBanner.getInstance().show(type,adPositionId);
 		}
 	}
 

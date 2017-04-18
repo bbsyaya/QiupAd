@@ -409,7 +409,7 @@ public class GSysService  {
 			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0l);
 			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
 			
-			GTools.saveSharedData(GCommon.SHARED_KEY_AD_NUM, "");
+//			GTools.saveSharedData(GCommon.SHARED_KEY_AD_NUM, "");
 			
 			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT);
 			for(GAdPositionConfig config : list)

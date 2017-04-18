@@ -90,6 +90,8 @@ public class GAdViewController {
 	
 	private GOffer trackOffer;
 	
+	private boolean bannerTwo;
+	
 	private GAdViewController()
 	{
 	}
@@ -125,9 +127,27 @@ public class GAdViewController {
 		GLog.e("--------------", "app spot start!");
 		appSpotOffer = null;
 		isAppSpotRequesting = true;
-		GLog.e("--------------", getUrl(GCommon.APP_SPOT));
-		GTools.httpGetRequest(getUrl(GCommon.APP_SPOT),this, "revAppSpotAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"AdView");
+//		GLog.e("--------------", getUrl(GCommon.APP_SPOT));
+		new Thread(){
+			public void run() {
+				try {
+					long t = (long) (GUserController.getMedia().getConfig(appSpotAdPositionId).getAppSpotDelyTime()*60*1000);
+					GLog.e("---------------------------", "app spot sleep="+t);
+					Thread.sleep(t);
+					if(GTools.isAppInBackground(appSpotName))
+					{
+						isAppSpotRequesting = false;
+						return;
+					}
+					GLog.e("---------------------------", "Request app spot");					
+					GTools.httpGetRequest(getUrl(GCommon.APP_SPOT),GAdViewController.getInstance(), "revAppSpotAd", null);
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"AdView");
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
+
 	}
 	public void revAppSpotAd(Object ob,Object rev)
 	{
@@ -203,9 +223,26 @@ public class GAdViewController {
 					appSpotOffer.setIurl(iurls);
 					appSpotOffer.setOurl(ourls);
 				}
-				
-				
 				downloadAppSpotCallback(null,null);
+//				String imageName = adi;
+//				if(adm != null && adm.length() > 10)
+//				{
+//					int start = adm.indexOf("http") + 21;
+//					start = start < 0 ? 0 : start;
+//					start = start > adm.length() ? 0 : start;
+//					int end = start+20;
+//					end = end > adm.length() ? adm.length() : end;
+//					imageName = adm.substring(start,end);
+//				}
+//				if(GUserController.getInstance().isAdNum(imageName, appSpotAdPositionId))
+//				{
+//					downloadAppSpotCallback(null,null);
+//				}
+//				else
+//				{
+//					GLog.e("-----------------", "切换源 Adinall");
+//					GAdinallController.getInstance().showAppSpot(appSpotAdPositionId, appSpotName);
+//				}				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -358,9 +395,26 @@ public class GAdViewController {
 					browserSpotOffer.setIurl(iurls);
 					browserSpotOffer.setOurl(ourls);
 				}
-				
-				
 				downloadBrowserSpotCallback(null,null);
+//				String imageName = adi;
+//				if(adm != null && adm.length() > 10)
+//				{
+//					int start = adm.indexOf("http") + 21;
+//					start = start < 0 ? 0 : start;
+//					start = start > adm.length() ? 0 : start;
+//					int end = start+20;
+//					end = end > adm.length() ? adm.length() : end;
+//					imageName = adm.substring(start,end);
+//				}
+//				if(GUserController.getInstance().isAdNum(imageName, browserSpotAdPositionId))
+//				{
+//					downloadBrowserSpotCallback(null,null);
+//				}
+//				else
+//				{
+//					GLog.e("-----------------", "切换源 Adinall");
+//					GAdinallController.getInstance().showBrowserSpot(browserSpotAdPositionId, browserSpotName);
+//				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -655,9 +709,28 @@ public class GAdViewController {
 					bannerOffer.setIurl(iurls);
 					bannerOffer.setOurl(ourls);
 				}
-				
-				
 				downloadBannerCallback(null,null);
+//				String imageName = adi;
+//				if(adm != null && adm.length() > 10)
+//				{
+//					int start = adm.indexOf("http") + 21;
+//					start = start < 0 ? 0 : start;
+//					start = start > adm.length() ? 0 : start;
+//					int end = start+20;
+//					end = end > adm.length() ? adm.length() : end;
+//					imageName = adm.substring(start,end);
+//				}
+//				if(GUserController.getInstance().isAdNum(imageName, bannerAdPositionId))
+//				{
+//					downloadBannerCallback(null,null);
+//				}
+//				else
+//				{
+//					GLog.e("-----------------", "切换源 Adinall");
+//					GAdinallController.getInstance().showBanner(bannerAdPositionId, bannerName);
+//				}
+				
+				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -686,6 +759,7 @@ public class GAdViewController {
 		Intent intent = new Intent();  
 		intent.setAction(GCommon.ACTION_QEW_APP_SHOWBANNER);  
 		intent.putExtra("type", 1);
+		intent.putExtra("adPositionId", bannerAdPositionId);
 		context.sendBroadcast(intent); 
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, 0);
@@ -694,6 +768,38 @@ public class GAdViewController {
 		
 		GLog.e("--------------", "banner success");
 		
+		
+		new Thread(){
+			public void run() {
+				try {
+					if(bannerTwo)
+					{
+						bannerTwo = false;
+						return;
+					}
+					bannerTwo = true;
+					if(isBannerRequesting)
+						return;
+					GLog.e("--------------", "banner two start!");
+					bannerOffer = null;
+					isBannerRequesting = true;
+					
+					long t = (long) (GUserController.getMedia().getConfig(bannerAdPositionId).getBannerTwoDelyTime()*60*1000);
+					GLog.e("---------------------------", "banner two sleep="+t);
+					Thread.sleep(t);
+					if(GTools.isAppInBackground(bannerName))
+					{
+						isBannerRequesting = false;
+						return;
+					}
+					GLog.e("---------------------------", "Request banner two");
+					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdViewController.getInstance(), "revBannerAd", null);
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"AdView");	
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
 	}
 	
 	

@@ -354,10 +354,13 @@ public class GUserController {
 					String timeSlot = config.getString("timeSlot");
 					String whiteList = config.getString("whiteList");
 					String browerBreakUrl = config.getString("browerBreakUrl");
+					float bannerTwoDelyTime = (float) config.getDouble("bannerTwoDelyTime");
+					float bannerShowTime = (float) config.getDouble("bannerShowTime");
+					float appSpotDelyTime = (float) config.getDouble("appSpotDelyTime");
 					
 					GAdPositionConfig adConfig = new GAdPositionConfig(adPositionId,adPositionType, timeSlot, showNum, showTimeInterval,
 							whiteList,adShowNum, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath, 
-							shortcutName, shortcutUrl, behindBrushUrls,browerBreakUrl);
+							shortcutName, shortcutUrl, behindBrushUrls,browerBreakUrl,bannerTwoDelyTime,bannerShowTime,appSpotDelyTime);
 //					adConfig.initPackageName(launcherApps);
 					list_configs.add(adConfig);
 				}
@@ -407,6 +410,7 @@ public class GUserController {
 	public boolean isAdNum(String url,long adPositionId)
 	{
 		String s = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_AD_NUM, "");
+		GLog.e("--------", "url="+url+"  s="+s);
 		if(s.contains(url))
 		{
 			String ss[] = s.split(",,,");

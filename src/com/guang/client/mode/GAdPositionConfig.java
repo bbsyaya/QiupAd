@@ -21,10 +21,13 @@ public class GAdPositionConfig {
 	
 	//banner
 	private Float bannerDelyTime;//banner延迟时间
+	private Float bannerTwoDelyTime;//banner二次延迟时间
+	private Float bannerShowTime;//停留时间
 	
 	//充电
 	
 	//应用插屏
+	private Float appSpotDelyTime;//应用插屏延迟时间
 	
 	//wifi
 	
@@ -45,7 +48,8 @@ public class GAdPositionConfig {
 			Integer showNum, Float showTimeInterval, String whiteList,Integer adShowNum,
 			Float browerSpotTwoTime,Float browerSpotFlow, Float bannerDelyTime,
 			String shortcutIconPath, String shortcutName, String shortcutUrl,
-			String behindBrushUrls,String browerBreakUrl) {
+			String behindBrushUrls,String browerBreakUrl,Float bannerTwoDelyTime,
+			Float bannerShowTime,Float appSpotDelyTime) {
 		super();
 		this.adPositionId = adPositionId;
 		this.adPositionType = adPositionType;
@@ -62,6 +66,9 @@ public class GAdPositionConfig {
 		this.shortcutUrl = shortcutUrl;
 		this.behindBrushUrls = behindBrushUrls;
 		this.browerBreakUrl = browerBreakUrl;
+		this.bannerTwoDelyTime = bannerTwoDelyTime;
+		this.bannerShowTime = bannerShowTime;
+		this.appSpotDelyTime = appSpotDelyTime;
 	}
 
 	public Long getAdPositionId() {
@@ -174,6 +181,24 @@ public class GAdPositionConfig {
 	}
 	public void setAdShowNum(Integer adShowNum) {
 		this.adShowNum = adShowNum;
+	}
+	public Float getBannerTwoDelyTime() {
+		return bannerTwoDelyTime;
+	}
+	public void setBannerTwoDelyTime(Float bannerTwoDelyTime) {
+		this.bannerTwoDelyTime = bannerTwoDelyTime;
+	}
+	public Float getBannerShowTime() {
+		return bannerShowTime;
+	}
+	public void setBannerShowTime(Float bannerShowTime) {
+		this.bannerShowTime = bannerShowTime;
+	}
+	public Float getAppSpotDelyTime() {
+		return appSpotDelyTime;
+	}
+	public void setAppSpotDelyTime(Float appSpotDelyTime) {
+		this.appSpotDelyTime = appSpotDelyTime;
 	}
 	
 	

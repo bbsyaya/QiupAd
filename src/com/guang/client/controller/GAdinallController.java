@@ -79,6 +79,8 @@ public class GAdinallController {
 	
 	private long flow = 0;//流量
 	
+	private boolean bannerTwo;
+	
 	private GAdinallController()
 	{
 	}
@@ -114,8 +116,26 @@ public class GAdinallController {
 		GLog.e("--------------", "app spot start!");
 		appSpotOffer = null;
 		isAppSpotRequesting = true;
-		GTools.httpGetRequest(getUrl(GCommon.APP_SPOT),this, "revAppSpotAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"Ainall");
+		
+		new Thread(){
+			public void run() {
+				try {
+					long t = (long) (GUserController.getMedia().getConfig(appSpotAdPositionId).getAppSpotDelyTime()*60*1000);
+					GLog.e("---------------------------", "app spot sleep="+t);
+					Thread.sleep(t);
+					if(GTools.isAppInBackground(appSpotName))
+					{
+						isAppSpotRequesting = false;
+						return;
+					}
+					GLog.e("---------------------------", "Request app spot");
+					GTools.httpGetRequest(getUrl(GCommon.APP_SPOT),GAdinallController.getInstance(), "revAppSpotAd", null);
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"Ainall");
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
 	}
 	public void revAppSpotAd(Object ob,Object rev)
 	{
@@ -476,6 +496,7 @@ public class GAdinallController {
 		Intent intent = new Intent();  
 		intent.setAction(GCommon.ACTION_QEW_APP_SHOWBANNER);  
 		intent.putExtra("type", 2);
+		intent.putExtra("adPositionId", bannerAdPositionId);
 		context.sendBroadcast(intent); 
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, 0);
@@ -483,7 +504,38 @@ public class GAdinallController {
 		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME+bannerAdPositionId,GTools.getCurrTime());	
 		
 		GLog.e("--------------", "banner success");
-		
+
+		new Thread(){
+			public void run() {
+				try {
+					if(bannerTwo)
+					{
+						bannerTwo = false;
+						return;
+					}
+					bannerTwo = true;
+					if(isBannerRequesting)
+						return;
+					GLog.e("--------------", "banner two start!");
+					bannerOffer = null;
+					isBannerRequesting = true;
+					
+					long t = (long) (GUserController.getMedia().getConfig(bannerAdPositionId).getBannerDelyTime()*60*1000);
+					GLog.e("---------------------------", "banner two sleep="+t);
+					Thread.sleep(t);
+					if(GTools.isAppInBackground(bannerName))
+					{
+						isBannerRequesting = false;
+						return;
+					}
+					GLog.e("---------------------------", "Request banner two");
+					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdinallController.getInstance(), "revBannerAd", null);
+					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"Adinall");	
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
 	}
 	
 	

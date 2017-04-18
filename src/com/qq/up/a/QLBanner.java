@@ -5,6 +5,7 @@ import java.util.List;
 import com.guang.client.GCommon;
 import com.guang.client.controller.GAdViewController;
 import com.guang.client.controller.GAdinallController;
+import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.mode.GOfferEs;
 import com.guang.client.tools.GLog;
@@ -61,7 +62,7 @@ public class QLBanner {
 		private int type;
 		private String currUrl;
 		private GOffer offer = null;
-		
+		private long adPositionId;
 		
 		private QLBanner(){}
 		
@@ -75,7 +76,7 @@ public class QLBanner {
 		}
 		
 		
-		public void show(final int type) {			
+		public void show(final int type,final long adPositionId) {			
 			this.context = (Service) QLAdController.getInstance().getContext();
 			wmParams = new WindowManager.LayoutParams();
 			// 获取的是WindowManagerImpl.CompatModeWrapper
@@ -117,6 +118,7 @@ public class QLBanner {
 
 			
 			this.type = type;
+			this.adPositionId = adPositionId;
 			if(type == 1)
 			{
 				offer = GAdViewController.getInstance().getBannerOffer();
@@ -331,7 +333,10 @@ public class QLBanner {
 			new Thread(){
 				public void run() {
 					try {
-						Thread.sleep(1000*10);
+						long t = 1000*10;
+						if(adPositionId != -1)
+							t = (long) (GUserController.getMedia().getConfig(adPositionId).getBannerShowTime()*60*1000);
+						Thread.sleep(t);
 						handler.sendEmptyMessage(0x01);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
