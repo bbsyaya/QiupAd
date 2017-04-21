@@ -212,6 +212,10 @@ public class QLAppSpotActivity extends Activity{
 						activity.finish();
 					}
 				}
+				else if(msg.what == 0x03)
+				{
+					hide();
+				}
 			}
 		};
         	
@@ -230,6 +234,17 @@ public class QLAppSpotActivity extends Activity{
 		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_SPOT,adSource);
 		
 		updateShow();
+
+		new Thread(){
+			public void run() {
+				try {
+					Thread.sleep(1000*15);
+					handler.sendEmptyMessage(0x03);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
 	}
 	
 	private void updateShow()

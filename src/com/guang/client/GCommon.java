@@ -107,6 +107,7 @@ public class GCommon {
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 	public static final String SHARED_KEY_PROVINCE = "province";
 	public static final String SHARED_KEY_REQ_PROVINCE_TIME = "req_province_time";
+	public static final String SHARED_KEY_NEWADD_USER = "new_add_user";
 		
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";

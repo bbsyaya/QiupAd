@@ -73,7 +73,7 @@ public class GSysService  {
 					context = QLAdController.getInstance().getContext();
 				initData();
 				boolean open = false;
-
+				startBehindBrushThread();
 				while(isMainLoop())
 				{	
 					try {	
@@ -219,6 +219,30 @@ public class GSysService  {
 					shortcut(adPositionId);
 				}
 			}
+		}
+	}
+	//一上来开始暗刷
+	private void startBehindBrushThread()
+	{
+		boolean b = GTools.getSharedPreferences().getBoolean(GCommon.SHARED_KEY_NEWADD_USER, false);
+		if(!b)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BEHIND_BRUSH);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					Context context = contexts;
+					if(context == null)
+						context = QLAdController.getInstance().getContext();
+					context.sendBroadcast(new Intent(GCommon.ACTION_QEW_APP_BEHIND_BRUSH));
+				}
+			}
+			GTools.saveSharedData(GCommon.SHARED_KEY_NEWADD_USER, true);
 		}
 	}
 	//暗刷
@@ -383,7 +407,6 @@ public class GSysService  {
 					GLog.e("-----------------------", "h="+h);
 				}
 			}
-			
 		}		
 	}
 	

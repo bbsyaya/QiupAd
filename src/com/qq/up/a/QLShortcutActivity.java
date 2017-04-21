@@ -2,6 +2,8 @@ package com.qq.up.a;
 
 import java.lang.reflect.Field;
 
+import com.guang.client.GCommon;
+import com.guang.client.tools.GTools;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -103,6 +105,8 @@ public class QLShortcutActivity extends Activity{
 				}
 			}
 		 };
+		 
+		 GTools.uploadStatistics(GCommon.CLICK,GCommon.SHORTCUT,"self");
 	}
 	
 	public void browserBreak(String url)
