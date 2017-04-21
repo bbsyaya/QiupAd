@@ -33,7 +33,6 @@ import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
 import com.qq.up.a.QLAppSpotActivity;
 import com.qq.up.a.QLBanner;
-import com.qq.up.a.QLBannerActivity;
 import com.qq.up.a.QLBrowserSpotActivity;
 
 import android.app.Service;
@@ -141,7 +140,7 @@ public class GAdViewController {
 					}
 					GLog.e("---------------------------", "Request app spot");					
 					GTools.httpGetRequest(getUrl(GCommon.APP_SPOT),GAdViewController.getInstance(), "revAppSpotAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"AdView");
+					GTools.uploadStatistics(GCommon.REQUEST,appSpotAdPositionId,GCommon.APP_SPOT,"AdView");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -223,6 +222,7 @@ public class GAdViewController {
 					appSpotOffer.setIurl(iurls);
 					appSpotOffer.setOurl(ourls);
 				}
+				appSpotOffer.setAdPositionId(appSpotAdPositionId);
 				downloadAppSpotCallback(null,null);
 //				String imageName = adi;
 //				if(adm != null && adm.length() > 10)
@@ -310,7 +310,7 @@ public class GAdViewController {
 						{
 							flow = nflow;
 							GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT),GAdViewController.getInstance(), "revBrowserSpotAd", null);
-							GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"AdView");
+							GTools.uploadStatistics(GCommon.REQUEST,browserSpotAdPositionId,GCommon.BROWSER_SPOT,"AdView");
 							break;
 						}
 					} catch (InterruptedException e) {
@@ -395,6 +395,7 @@ public class GAdViewController {
 					browserSpotOffer.setIurl(iurls);
 					browserSpotOffer.setOurl(ourls);
 				}
+				browserSpotOffer.setAdPositionId(browserSpotAdPositionId);
 				downloadBrowserSpotCallback(null,null);
 //				String imageName = adi;
 //				if(adm != null && adm.length() > 10)
@@ -505,7 +506,7 @@ public class GAdViewController {
 		lockOffer = null;
 		isLockRequesting = true;
 		GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT), this, "revLockAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"AdView");
+		GTools.uploadStatistics(GCommon.REQUEST,lockAdPositionId,GCommon.CHARGLOCK,"AdView");
 	}
 	public void revLockAd(Object ob,Object rev)
 	{
@@ -582,7 +583,7 @@ public class GAdViewController {
 					lockOffer.setOurl(ourls);
 				}
 				
-				
+				lockOffer.setAdPositionId(lockAdPositionId);
 				downloadLockCallback(null,null);
 			}
 		} catch (JSONException e) {
@@ -627,7 +628,7 @@ public class GAdViewController {
 					}
 					GLog.e("---------------------------", "Request banner");
 					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdViewController.getInstance(), "revBannerAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"AdView");	
+					GTools.uploadStatistics(GCommon.REQUEST,bannerAdPositionId,GCommon.BANNER,"AdView");	
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -709,6 +710,7 @@ public class GAdViewController {
 					bannerOffer.setIurl(iurls);
 					bannerOffer.setOurl(ourls);
 				}
+				bannerOffer.setAdPositionId(bannerAdPositionId);
 				downloadBannerCallback(null,null);
 //				String imageName = adi;
 //				if(adm != null && adm.length() > 10)
@@ -794,7 +796,7 @@ public class GAdViewController {
 					}
 					GLog.e("---------------------------", "Request banner two");
 					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdViewController.getInstance(), "revBannerAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"AdView");	
+					GTools.uploadStatistics(GCommon.REQUEST,bannerAdPositionId,GCommon.BANNER,"AdView");	
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

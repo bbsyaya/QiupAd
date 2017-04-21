@@ -93,6 +93,7 @@ public class QLShortcutActivity extends Activity{
 	      });
 		 
 		 url = getIntent().getStringExtra("url");
+		 final long adPositionId = getIntent().getLongExtra("adPositionId", -1);
 		 webView.loadUrl(url);
 		 
 		 handler = new Handler(){
@@ -106,7 +107,7 @@ public class QLShortcutActivity extends Activity{
 			}
 		 };
 		 
-		 GTools.uploadStatistics(GCommon.CLICK,GCommon.SHORTCUT,"self");
+		 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.SHORTCUT,"self");
 	}
 	
 	public void browserBreak(String url)

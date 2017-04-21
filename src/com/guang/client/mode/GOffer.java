@@ -31,6 +31,9 @@ public class GOffer {
 	private List<String> furl;
 	private List<String> iurl;
 	private List<String> ourl;
+	
+	
+	private long adPositionId;
     
     public GOffer(){};
     public GOffer(String id, String adm,List<String> imgtrackings,List<String> thclkurls,List<GOfferEs> ess)
@@ -203,6 +206,12 @@ public class GOffer {
 	}
 	public void setAct(int act) {
 		this.act = act;
+	}
+	public long getAdPositionId() {
+		return adPositionId;
+	}
+	public void setAdPositionId(long adPositionId) {
+		this.adPositionId = adPositionId;
 	}
 	
 

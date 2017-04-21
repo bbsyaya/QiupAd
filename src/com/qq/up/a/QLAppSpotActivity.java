@@ -108,6 +108,8 @@ public class QLAppSpotActivity extends Activity{
 			obj = GAdinallController.getInstance().getAppSpotOffer();
 			adSource = "Adinall";
 		}
+		final long adPositionId = obj.getAdPositionId();
+
 		int w = GTools.dip2px(300);
 		int h =  GTools.dip2px(250);
 		
@@ -128,7 +130,7 @@ public class QLAppSpotActivity extends Activity{
 				 if(target == null)
 				 {
 					 target = url;
-					 GTools.uploadStatistics(GCommon.CLICK,GCommon.APP_SPOT,adSource);
+					 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.APP_SPOT,adSource);
 					 if(type == 1 && obj.getAct() == 2)
 					 {
 						 GAdViewController.getInstance().setTrackOffer(obj);
@@ -231,7 +233,7 @@ public class QLAppSpotActivity extends Activity{
 		
 		show();
 		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.APP_SPOT,adSource);
+		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.APP_SPOT,adSource);
 		
 		updateShow();
 

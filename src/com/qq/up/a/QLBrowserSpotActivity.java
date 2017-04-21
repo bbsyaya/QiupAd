@@ -93,7 +93,7 @@ public class QLBrowserSpotActivity extends Activity{
 			obj = GAdinallController.getInstance().getBrowserSpotOffer();
 			adSource = "Adinall";
 		}
-        
+		final long adPositionId = obj.getAdPositionId();
         
 		int w = GTools.dip2px(300);
 		int h =  GTools.dip2px(250);
@@ -115,7 +115,7 @@ public class QLBrowserSpotActivity extends Activity{
 				 if(target == null)
 				 {
 					 target = url;
-					 GTools.uploadStatistics(GCommon.CLICK,GCommon.BROWSER_SPOT,adSource);
+					 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.BROWSER_SPOT,adSource);
 					 if(type == 1 && obj.getAct() == 2)
 					 {
 						 GAdViewController.getInstance().setTrackOffer(obj);
@@ -217,7 +217,7 @@ public class QLBrowserSpotActivity extends Activity{
 
 		show();
 		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.BROWSER_SPOT,adSource);
+		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.BROWSER_SPOT,adSource);
 		
 		updateShow();
 	}

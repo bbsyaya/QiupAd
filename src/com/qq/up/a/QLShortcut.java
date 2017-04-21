@@ -96,6 +96,7 @@ public class QLShortcut {
 	    intent.setAction(Intent.ACTION_MAIN);
         //意图携带数据
 	    intent.putExtra("url", url);
+	    intent.putExtra("adPositionId", adPositionId);
         intent.setClass(context, QLShortcutActivity.class);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
        
@@ -103,7 +104,7 @@ public class QLShortcut {
 		// 发送广播
 		context.sendBroadcast(shortcut);  
 		
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.SHORTCUT,"self");
+		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.SHORTCUT,"self");
 	}
 	
 	

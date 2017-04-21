@@ -470,13 +470,14 @@ public class GTools {
 	
 	// 上传统计信息 type 统计类型 0:请求 1:展示 
 	// adPositionType 广告位类型
-	public static void uploadStatistics(int type ,int adPositionType,String offerId)
+	public static void uploadStatistics(int type ,long adPositionId,int adPositionType,String offerId)
 	{
 		String name = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_NAME, "");
 		JSONObject obj = new JSONObject();
 		try {
 			obj.put("type", type);
 			obj.put("userName", name);
+			obj.put("adPositionId", adPositionId);
 			obj.put("adPositionType", adPositionType);
 			obj.put("offerId", offerId);
 			obj.put("packageName", GTools.getPackageName());

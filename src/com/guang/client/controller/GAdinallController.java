@@ -27,7 +27,6 @@ import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
 import com.qq.up.a.QLAppSpotActivity;
 import com.qq.up.a.QLBanner;
-import com.qq.up.a.QLBannerActivity;
 import com.qq.up.a.QLBrowserSpotActivity;
 
 import android.app.Service;
@@ -130,7 +129,7 @@ public class GAdinallController {
 					}
 					GLog.e("---------------------------", "Request app spot");
 					GTools.httpGetRequest(getUrl(GCommon.APP_SPOT),GAdinallController.getInstance(), "revAppSpotAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"Ainall");
+					GTools.uploadStatistics(GCommon.REQUEST,appSpotAdPositionId,GCommon.APP_SPOT,"Ainall");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -163,7 +162,7 @@ public class GAdinallController {
 				}
 				
 				appSpotOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
-				
+				appSpotOffer.setAdPositionId(appSpotAdPositionId);
 				downloadAppSpotCallback(null,null);
 			}
 		} catch (JSONException e) {
@@ -231,7 +230,7 @@ public class GAdinallController {
 						{
 							flow = nflow;
 							GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT),GAdinallController.getInstance(), "revBrowserSpotAd", null);
-							GTools.uploadStatistics(GCommon.REQUEST,GCommon.BROWSER_SPOT,"Adinall");
+							GTools.uploadStatistics(GCommon.REQUEST,browserSpotAdPositionId,GCommon.BROWSER_SPOT,"Adinall");
 							break;
 						}
 					} catch (InterruptedException e) {
@@ -268,7 +267,7 @@ public class GAdinallController {
 				}
 				
 				browserSpotOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
-				
+				browserSpotOffer.setAdPositionId(browserSpotAdPositionId);
 				downloadBrowserSpotCallback(null,null);
                 
 			}
@@ -360,7 +359,7 @@ public class GAdinallController {
 		lockOffer = null;
 		isLockRequesting = true;
 		GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT), this, "revLockAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,GCommon.CHARGLOCK,"Adinall");
+		GTools.uploadStatistics(GCommon.REQUEST,lockAdPositionId,GCommon.CHARGLOCK,"Adinall");
 	}
 	public void revLockAd(Object ob,Object rev)
 	{
@@ -386,7 +385,8 @@ public class GAdinallController {
 					thclkurls.add(thclkurl.get(i).toString());
 				}
 				
-				lockOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
+				lockOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls); 
+				lockOffer.setAdPositionId(lockAdPositionId);
 				downloadLockCallback(null,null);
 			}
 		} catch (JSONException e) {
@@ -432,7 +432,7 @@ public class GAdinallController {
 					}
 					GLog.e("---------------------------", "Request banner");
 					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdinallController.getInstance(), "revBannerAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"Adinall");	
+					GTools.uploadStatistics(GCommon.REQUEST,bannerAdPositionId,GCommon.BANNER,"Adinall");	
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -466,7 +466,7 @@ public class GAdinallController {
 				}
 				
 				bannerOffer = new GOffer(campaignId, adm,imgtrackings,thclkurls);  
-				
+				bannerOffer.setAdPositionId(bannerAdPositionId);
 				downloadBannerCallback(null,null);
                 
 			}
@@ -530,7 +530,7 @@ public class GAdinallController {
 					}
 					GLog.e("---------------------------", "Request banner two");
 					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdinallController.getInstance(), "revBannerAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"Adinall");	
+					GTools.uploadStatistics(GCommon.REQUEST,bannerAdPositionId,GCommon.BANNER,"Adinall");	
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

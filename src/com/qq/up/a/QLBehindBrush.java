@@ -122,6 +122,8 @@ public class QLBehindBrush{
 					if(l != null && !"".equals(l) && !l.trim().equals(""))
 						urls.add(l);
 				}
+				
+				GTools.uploadStatistics(GCommon.SHOW,config.getAdPositionId(), GCommon.BEHIND_BRUSH,"self");
 			}
 		}
 		
@@ -134,7 +136,7 @@ public class QLBehindBrush{
 		{
 			hide();
 		}
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.BEHIND_BRUSH,"self");
+		
 	}
 	
 	public void hide()
