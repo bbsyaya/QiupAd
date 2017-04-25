@@ -7,9 +7,12 @@ import java.util.List;
 import com.guang.client.GCommon;
 import com.guang.client.controller.GAdViewController;
 import com.guang.client.controller.GAdinallController;
+import com.guang.client.controller.GSelfController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.mode.GOfferEs;
 import com.guang.client.tools.GTools;
+import com.qq.up.R;
+import com.qq.up.a.view.GTimeButton;
 import com.qq.up.a.view.GWebView;
 
 import android.annotation.SuppressLint;
@@ -18,11 +21,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +43,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -57,6 +63,8 @@ public class QLAppSpotActivity extends Activity{
 	private int type;
 	private String currUrl;
 	private GOffer obj = null;
+	
+	private Bitmap bitmap;
 	
 	public void onResume() {
 	    super.onResume();
@@ -97,6 +105,81 @@ public class QLAppSpotActivity extends Activity{
 		layout.setLayoutParams(layoutParams);
 		this.setContentView(layout);
 			
+		String actype = getIntent().getStringExtra("actype");
+		if("spot".equals(actype))
+		{
+			createSpot();
+		}
+		else
+		{
+			createOpenSpot();
+		}
+	}
+	
+	@SuppressLint("NewApi")
+	private void createOpenSpot()
+	{
+		obj = GSelfController.getInstance().getAppOpenSpotOffer();
+		
+		ImageView img = new ImageView(this);
+		bitmap = BitmapFactory.decodeFile(getFilesDir().getPath()+"/"+ obj.getImageUrl()) ;
+		img.setImageBitmap(bitmap);
+		
+		LinearLayout.LayoutParams layoutGrayParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+		layoutGrayParams.gravity = Gravity.CENTER;
+		
+		LinearLayout layoutGray = new LinearLayout(this);
+		layoutGray.setBackgroundColor(Color.BLACK);
+		layoutGray.setAlpha(0.6f);
+		layoutGray.setLayoutParams(layoutGrayParams);
+		layout.addView(layoutGray);	
+		
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+		
+		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+		img.setId(1);
+		img.setScaleType(ScaleType.CENTER_CROP);
+
+		layout.addView(img, layoutParams);	
+		
+		RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(GTools.dip2px(50), GTools.dip2px(30));
+		layoutParams2.addRule(RelativeLayout.ALIGN_TOP, 1);
+		layoutParams2.addRule(RelativeLayout.ALIGN_RIGHT, 1);
+		layoutParams2.setMargins(0,10,10,0);
+
+		final GTimeButton time = new GTimeButton(this);
+		time.setTextSize(40);
+		layout.addView(time, layoutParams2);
+		time.start(new GTimeButton.GTimeButtonCallback() {
+			@Override
+			public void end() {
+				hide();
+			}
+			@Override
+			public void timeout() {
+				time.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						hide();
+					}
+				});
+			}
+		});
+		
+
+		img.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				hide();
+				GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
+			}
+		});
+
+		
+	}
+	
+	private void createSpot()
+	{
 		type = getIntent().getIntExtra("type", -1);
 		if(type == 1)
 		{
@@ -331,6 +414,13 @@ public class QLAppSpotActivity extends Activity{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		if(bitmap != null && !bitmap.isRecycled())
+		{
+			bitmap.recycle();
+			bitmap = null;
+		}
+		System.gc();
+
 	}
 	
 	public void openBrowser(String url)

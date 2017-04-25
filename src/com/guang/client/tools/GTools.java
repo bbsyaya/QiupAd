@@ -31,6 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.guang.client.GCommon;
+import com.guang.client.controller.GSelfController;
+import com.guang.client.mode.GOffer;
 import com.qq.up.a.QLAdController;
 import com.qq.up.a.QLSize;
 
@@ -277,7 +279,7 @@ public class GTools {
 			Method m = c.getMethod(function, args);
 			m.invoke(target, data, cdata);
 		} catch (Exception e) {
-			GLog.e(TAG, "parseFunction 解析失败！ " + function + " "+e.getLocalizedMessage());
+			Log.e(TAG, "parseFunction 解析失败！ " + function ,e);
 		}
 	}
 
@@ -445,7 +447,11 @@ public class GTools {
 	
 	// 下载apk文件 adPositionType 广告类型 intentType:打开下载界面的类型，主要用来统计二次数据
 	@SuppressLint("NewApi")
-	public static void downloadApk(String fileUri,int adPositionType, long offerId,int intentType) {
+	public static void downloadApk() {
+		GOffer offer = GSelfController.getInstance().getAppOpenSpotOffer();
+		if(offer == null)
+			return;
+		String fileUri = offer.getUrlApp();
 		final Context context = QLAdController.getInstance().getContext();
 		
 		File folder = Environment.getExternalStoragePublicDirectory("Download");
@@ -464,8 +470,10 @@ public class GTools {
 		String name = getRandomUUID() + ".apk";
 
 		request.setDestinationInExternalPublicDir("/Download/", name);
-		downloadManager.enqueue(request);//long id = 
-			
+		long id = downloadManager.enqueue(request);
+		
+		offer.setDownloadId(id);
+		offer.setDownloadName(name);
 	}
 	
 	// 上传统计信息 type 统计类型 0:请求 1:展示 

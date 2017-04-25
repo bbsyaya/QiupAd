@@ -200,6 +200,8 @@ public class GMedia {
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+adPositionId, 0);
 			else if(adPositionType == GCommon.APP_SPOT)
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+adPositionId, 0);
+			else if(adPositionType == GCommon.APP_OPENSPOT)
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_OPENSPOT_NUM+adPositionId, 0);
 			else if(adPositionType == GCommon.WIFI_CONN)
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
 			else if(adPositionType == GCommon.BROWSER_BREAK)
@@ -228,6 +230,8 @@ public class GMedia {
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BANNER_TIME+adPositionId, 0);
 			else if(adPositionType == GCommon.APP_SPOT)
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_APP_SPOT_TIME+adPositionId, 0);
+			else if(adPositionType == GCommon.APP_OPENSPOT)
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_APP_OPENSPOT_TIME+adPositionId, 0);
 			else if(adPositionType == GCommon.WIFI_CONN)
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_WIFI_TIME, 0);
 			else if(adPositionType == GCommon.BROWSER_BREAK)

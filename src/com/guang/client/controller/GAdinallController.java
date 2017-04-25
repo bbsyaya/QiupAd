@@ -148,7 +148,7 @@ public class GAdinallController {
 				JSONArray thclkurl = app.getJSONArray("thclkurl");
 				JSONArray imgtracking = app.getJSONArray("imgtracking");
 				String adm = app.getString("adm");
-				String campaignId = "0";
+				long campaignId = 0;
 				
 				List<String> imgtrackings = new ArrayList<String>();
 				for(int i=0;i<imgtracking.length();i++)
@@ -187,6 +187,7 @@ public class GAdinallController {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		intent.putExtra("type", 2);
+		intent.putExtra("actype", "spot");
 		context.startActivity(intent);	
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+appSpotAdPositionId, 0);
@@ -253,7 +254,7 @@ public class GAdinallController {
 				JSONArray thclkurl = app.getJSONArray("thclkurl");
 				JSONArray imgtracking = app.getJSONArray("imgtracking");
 				String adm = app.getString("adm");
-				String campaignId = "0";
+				long campaignId = 0;
 				
 				List<String> imgtrackings = new ArrayList<String>();
 				for(int i=0;i<imgtracking.length();i++)
@@ -373,7 +374,7 @@ public class GAdinallController {
 				JSONArray thclkurl = app.getJSONArray("thclkurl");
 				JSONArray imgtracking = app.getJSONArray("imgtracking");
 				String adm = app.getString("adm");
-				String campaignId = "0";
+				long campaignId = 0;
 				List<String> imgtrackings = new ArrayList<String>();
 				for(int i=0;i<imgtracking.length();i++)
 				{
@@ -452,7 +453,7 @@ public class GAdinallController {
 				JSONArray thclkurl = app.getJSONArray("thclkurl");
 				JSONArray imgtracking = app.getJSONArray("imgtracking");
 				String adm = app.getString("adm");
-				String campaignId = "0";
+				long campaignId = 0;
 				
 				List<String> imgtrackings = new ArrayList<String>();
 				for(int i=0;i<imgtracking.length();i++)

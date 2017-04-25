@@ -8,6 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin" >
 
 
+    
      <Button
         android:id="@+id/browser_spot"
         android:layout_width="wrap_content"
@@ -61,4 +62,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="300dp"
         android:text="暗刷" />
+     
+     <Button
+        android:id="@+id/app_openspot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="350dp"
+        android:text="应用开屏" />
+     
+     
+     
 </RelativeLayout>

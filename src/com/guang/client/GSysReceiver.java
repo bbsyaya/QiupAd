@@ -9,6 +9,7 @@ import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
 import com.qq.up.a.QLBanner;
 import com.qq.up.a.QLBatteryLockActivity;
+import com.qq.up.a.QLDownload;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
@@ -49,6 +50,10 @@ public final class GSysReceiver extends BroadcastReceiver {
 		else if (GCommon.ACTION_QEW_APP_SPOT.equals(action))
 		{								
 			GSysService.getInstance().appSpot(-1,GTools.getPackageName());
+		}
+		else if (GCommon.ACTION_QEW_APP_OPENSPOT.equals(action))
+		{								
+			GSysService.getInstance().appOpenSpot(-1,GTools.getPackageName());
 		}
 		else if(GCommon.ACTION_QEW_APP_BROWSER_BREAK.equals(action))
 		{
@@ -142,6 +147,10 @@ public final class GSysReceiver extends BroadcastReceiver {
 			int type = intent.getIntExtra("type", -1);
 			long adPositionId = intent.getLongExtra("adPositionId", -1);
 			QLBanner.getInstance().show(type,adPositionId);
+		}
+		else if (GCommon.ACTION_QEW_APP_SHOWDOWNLOAD.equals(action))
+		{					
+			QLDownload.getInstance().show();
 		}
 	}
 

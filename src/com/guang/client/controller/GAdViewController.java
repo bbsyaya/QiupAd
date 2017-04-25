@@ -162,7 +162,7 @@ public class GAdViewController {
 				String adm = app.getString("xs");
 				int act = app.getInt("act");
 				
-				String campaignId = "0";
+				long campaignId = 0;
 				
 				List<GOfferEs> ess = new ArrayList<GOfferEs>();
 				Iterator<String> it = oes.keys();
@@ -267,6 +267,7 @@ public class GAdViewController {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		intent.putExtra("type", 1);
+		intent.putExtra("actype", "spot");
 		context.startActivity(intent);	
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+appSpotAdPositionId, 0);
@@ -335,7 +336,7 @@ public class GAdViewController {
 				String adm = app.getString("xs");
 				int act = app.getInt("act");
 				
-				String campaignId = "0";
+				long campaignId = 0;
 				
 				List<GOfferEs> ess = new ArrayList<GOfferEs>();
 				Iterator<String> it = oes.keys();
@@ -522,7 +523,7 @@ public class GAdViewController {
 				String adm = app.getString("xs");
 				int act = app.getInt("act");
 				
-				String campaignId = "0";
+				long campaignId = 0;
 				
 				List<GOfferEs> ess = new ArrayList<GOfferEs>();
 				Iterator<String> it = oes.keys();
@@ -650,7 +651,7 @@ public class GAdViewController {
 				String adm = app.getString("xs");
 				int act = app.getInt("act");
 				
-				String campaignId = "0";
+				long campaignId = 0;
 				
 				List<GOfferEs> ess = new ArrayList<GOfferEs>();
 				Iterator<String> it = oes.keys();

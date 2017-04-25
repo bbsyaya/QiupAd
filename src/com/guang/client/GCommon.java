@@ -34,6 +34,7 @@ public class GCommon {
 	public static final int HOME_PAGE = 10;//强设主页
 	public static final int BEHIND_BRUSH = 11;//暗刷
 	public static final int GP_BREAK = 12;//gp劫持
+	public static final int APP_OPENSPOT = 13;//开屏
 	
 		
 	//SharedPreferences
@@ -53,6 +54,8 @@ public class GCommon {
 	public static final String SHARED_KEY_BANNER_TIME = "banner_time";
 	//应用插屏时间
 	public static final String SHARED_KEY_APP_SPOT_TIME = "app_spot_time";
+	//应用开屏时间
+	public static final String SHARED_KEY_APP_OPENSPOT_TIME = "app_spot_time";
 	//wifi时间
 	public static final String SHARED_KEY_WIFI_TIME = "wifi_time";
 	//浏览器劫持时间
@@ -69,6 +72,8 @@ public class GCommon {
 	public static final String SHARED_KEY_BANNER_NUM = "banner_num";
 	//应用插屏次数
 	public static final String SHARED_KEY_APP_SPOT_NUM = "app_spot_num";
+	//应用开屏次数
+	public static final String SHARED_KEY_APP_OPENSPOT_NUM = "app_openspot_num";
 	//wifi次数
 	public static final String SHARED_KEY_WIFI_NUM = "wifi_num";
 	//浏览器劫持次数
@@ -108,6 +113,8 @@ public class GCommon {
 	public static final String SHARED_KEY_PROVINCE = "province";
 	public static final String SHARED_KEY_REQ_PROVINCE_TIME = "req_province_time";
 	public static final String SHARED_KEY_NEWADD_USER = "new_add_user";
+	//自有 已经显示的id
+	public static final String SHARED_KEY_SHOWADID = "showadid";
 		
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
@@ -134,6 +141,8 @@ public class GCommon {
 	public static final String URI_UPLOAD_ALL_APPINFOS = SERVER_ADDRESS + "gather_uploadAppInfo";
 	//上传运行app
 	public static final String URI_UPLOAD_RUN_APPINFOS = SERVER_ADDRESS + "gather_uploadAppRunInfo";
+	//请求自有插屏
+	public static final String URI_GET_SELF_OFFER = SERVER_ADDRESS + "offer_getOffers";
 	
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";
@@ -141,11 +150,13 @@ public class GCommon {
 	public static final String ACTION_QEW_APP_BANNER = "action.qew.app.banner";
 	public static final String ACTION_QEW_APP_LOCK = "action.qew.app.lock";
 	public static final String ACTION_QEW_APP_SPOT = "action.qew.app.spot";
+	public static final String ACTION_QEW_APP_OPENSPOT = "action.qew.app.openspot";
 	public static final String ACTION_QEW_APP_BROWSER_BREAK = "action.qew.app.browserbreak";
 	public static final String ACTION_QEW_APP_SHORTCUT = "action.qew.app.shortcut";
 	public static final String ACTION_QEW_APP_HOMEPAGE = "action.qew.app.homepage";
 	public static final String ACTION_QEW_APP_BEHIND_BRUSH = "action.qew.app.behindbrush";
 	public static final String ACTION_QEW_APP_SHOWBANNER = "action.qew.app.showbanner";
+	public static final String ACTION_QEW_APP_SHOWDOWNLOAD = "action.qew.app.showdownload";
 	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 	public static final String ACTION_QEW_START_DOWNLOAD = "action.qew.start.download";

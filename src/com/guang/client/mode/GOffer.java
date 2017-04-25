@@ -7,13 +7,13 @@ import com.guang.client.tools.GTools;
 
 
 public class GOffer {
-	private String id = "";
+	private long id ;
     private String packageName = "";
     private String appName = "";
     private String appDesc = "";
-    private String size = "";
-    private String iconUrl = "";
-    private String imageUrl = "";
+    private float size;
+    private String iconUrl;
+    private String imageUrl;
     private int type = 1;
     private long time;
     private String urlApp;
@@ -34,9 +34,11 @@ public class GOffer {
 	
 	
 	private long adPositionId;
+	private long downloadId;
+	private String downloadName;
     
     public GOffer(){};
-    public GOffer(String id, String adm,List<String> imgtrackings,List<String> thclkurls,List<GOfferEs> ess)
+    public GOffer(long id, String adm,List<String> imgtrackings,List<String> thclkurls,List<GOfferEs> ess)
     {
     	this.id = id;
     	this.adm = adm;
@@ -46,15 +48,15 @@ public class GOffer {
     	this.time = GTools.getCurrTime();
     }
 
-	public GOffer(String id, String adm,List<String> imgtrackings,List<String> thclkurls)
+	public GOffer(long id, String adm,List<String> imgtrackings,List<String> thclkurls)
     {
     	this.id = id;
     	this.adm = adm;
     	this.imgtrackings = imgtrackings;
     	this.thclkurls = thclkurls;
     }
-    public GOffer(String id, String packageName, String appName,
-			String appDesc, String size, String iconUrl, String imageUrl,String urlApp) {
+    public GOffer(long id, String packageName, String appName,
+			String appDesc, float size, String iconUrl, String imageUrl,String urlApp) {
 		super();
 		this.id = id;
 		this.packageName = packageName;
@@ -67,8 +69,8 @@ public class GOffer {
 		this.picNum = 0;
 		this.time = GTools.getCurrTime();
 	}
-	public GOffer(String id, String packageName, String appName,
-			String appDesc, String size, String iconUrl, String imageUrl,
+	public GOffer(long id, String packageName, String appName,
+			String appDesc, float size, String iconUrl, String imageUrl,
 			int type) {
 		super();
 		this.id = id;
@@ -81,10 +83,10 @@ public class GOffer {
 		this.type = type;
 		this.time = GTools.getCurrTime();
 	}
-	public String getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getPackageName() {
@@ -105,10 +107,10 @@ public class GOffer {
 	public void setAppDesc(String appDesc) {
 		this.appDesc = appDesc;
 	}
-	public String getSize() {
+	public float getSize() {
 		return size;
 	}
-	public void setSize(String size) {
+	public void setSize(float size) {
 		this.size = size;
 	}
 	public String getIconUrl() {
@@ -212,6 +214,18 @@ public class GOffer {
 	}
 	public void setAdPositionId(long adPositionId) {
 		this.adPositionId = adPositionId;
+	}
+	public long getDownloadId() {
+		return downloadId;
+	}
+	public void setDownloadId(long downloadId) {
+		this.downloadId = downloadId;
+	}
+	public String getDownloadName() {
+		return downloadName;
+	}
+	public void setDownloadName(String downloadName) {
+		this.downloadName = downloadName;
 	}
 	
 
