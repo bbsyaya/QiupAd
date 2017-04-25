@@ -39,7 +39,6 @@ import com.qq.up.a.QLSize;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
@@ -475,6 +474,18 @@ public class GTools {
 		offer.setDownloadId(id);
 		offer.setDownloadName(name);
 	}
+	
+	public static void install(Context context, String apkUrl) {
+		File file = new File(apkUrl);
+		if(!file.exists())
+			return;
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setDataAndType(Uri.fromFile(file),
+				"application/vnd.android.package-archive");
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(intent);
+	}
+
 	
 	// 上传统计信息 type 统计类型 0:请求 1:展示 
 	// adPositionType 广告位类型

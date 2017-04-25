@@ -92,7 +92,7 @@ public class QLDownload {
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(GTools.dip2px(344), GTools.dip2px(165));
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 		
-		GOffer obj = GSelfController.getInstance().getAppOpenSpotOffer();
+		final GOffer obj = GSelfController.getInstance().getAppOpenSpotOffer();
 		
 		view = new GDownloadView(context);
 		bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ obj.getIconUrl()) ;
@@ -103,6 +103,9 @@ public class QLDownload {
 		view.setCallback(new GDownloadView.GDownloadViewCallback() {
 			@Override
 			public void cancel() {
+				DownloadManager downloadManager = (DownloadManager) context
+						.getSystemService(Context.DOWNLOAD_SERVICE);
+				downloadManager.remove(obj.getDownloadId());
 				hide();
 			}
 			
@@ -125,9 +128,11 @@ public class QLDownload {
 				super.dispatchMessage(msg);
 				if(msg.what == 0x01)
 				{
-					pro += 0.1;
-					view.setPro(pro);
-					 Log.e("--------------","pro="+pro);  
+					view.setPro(pro*100);
+					if(pro >= 1)
+					{
+						hide();
+					}
 				}
 			}
 		};
@@ -135,10 +140,10 @@ public class QLDownload {
 		new Thread(){
 			public void run() {
 				boolean b = true;
-				while(b)
+				while(isShow && b)
 				{
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(100);
 						query();
 						if(pro >= 1)
 						{
@@ -191,7 +196,6 @@ public class QLDownload {
   
             // 截止目前已经下载的文件总大小  
             float bytesDownloadSoFar = cursor.getInt(bytesDownloadSoFarIndex) / 1024.f / 1024.f;  
-            Log.e("----------------","z="+totalSizeBytes + "  y="+bytesDownloadSoFar);
             pro = bytesDownloadSoFar/totalSizeBytes;
             cursor.close();  
         }  

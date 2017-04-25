@@ -244,6 +244,7 @@ public class GDownloadView extends View{
 	}
 	public void setPro(float pro) {
 		this.pro = pro;
+		this.invalidate();
 	}
 
 

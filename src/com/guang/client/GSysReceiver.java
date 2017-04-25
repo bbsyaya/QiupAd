@@ -3,7 +3,9 @@ package com.guang.client;
 
 
 
+import com.guang.client.controller.GSelfController;
 import com.guang.client.controller.GUserController;
+import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
@@ -18,6 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.BatteryManager;
+import android.os.Environment;
+import android.util.Log;
 public final class GSysReceiver extends BroadcastReceiver {
 	private static String installPackageName;
 	private static String unInstallPackageName;
@@ -77,7 +81,11 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 	
 		else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-						
+			GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
+			if(gOffer != null && gOffer.getDownloadName() != null)
+			{
+				GTools.install(context,Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
+			}
 		} 
 		else if ("android.intent.action.PACKAGE_ADDED".equals(action)) {
 			String packageName = intent.getDataString();

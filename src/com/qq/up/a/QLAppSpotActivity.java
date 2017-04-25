@@ -170,8 +170,15 @@ public class QLAppSpotActivity extends Activity{
 		img.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				
+				GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
+				if(gOffer != null && gOffer.getDownloadName() == null)
+				{
+					GTools.downloadApk();
+				}
 				hide();
 				GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
+				
 			}
 		});
 
