@@ -36,6 +36,7 @@ public class GOffer {
 	private long adPositionId;
 	private long downloadId;
 	private String downloadName;
+	private boolean click;
     
     public GOffer(){};
     public GOffer(long id, String adm,List<String> imgtrackings,List<String> thclkurls,List<GOfferEs> ess)
@@ -226,6 +227,12 @@ public class GOffer {
 	}
 	public void setDownloadName(String downloadName) {
 		this.downloadName = downloadName;
+	}
+	public boolean isClick() {
+		return click;
+	}
+	public void setClick(boolean click) {
+		this.click = click;
 	}
 	
 

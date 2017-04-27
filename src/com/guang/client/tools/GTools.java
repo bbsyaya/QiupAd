@@ -41,6 +41,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.DownloadManager;
+import android.app.DownloadManager.Query;
 import android.app.DownloadManager.Request;
 import android.content.ComponentName;
 import android.content.Context;
@@ -52,6 +53,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -473,12 +475,327 @@ public class GTools {
 		
 		offer.setDownloadId(id);
 		offer.setDownloadName(name);
+		
+		GTools.uploadStatistics(GCommon.DOWNLOAD,offer.getAdPositionId(),GCommon.APP_OPENSPOT,offer.getId()+"");
+	}
+	
+	public static boolean isDownloadEnd()
+	{
+		final Context context = QLAdController.getInstance().getContext();
+		float pro = 0;
+		Query downloadQuery = new Query(); 
+        DownloadManager downloadManager = (DownloadManager) context
+				.getSystemService(Context.DOWNLOAD_SERVICE);
+        GOffer offer = GSelfController.getInstance().getAppOpenSpotOffer();
+        downloadQuery.setFilterById(offer.getDownloadId());  
+        Cursor cursor = downloadManager.query(downloadQuery);  
+        if (cursor != null && cursor.moveToFirst()) {  
+            int totalSizeBytesIndex = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES);  
+            int bytesDownloadSoFarIndex = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);  
+            // 下载的文件总大小  
+            float totalSizeBytes = cursor.getInt(totalSizeBytesIndex) / 1024.f / 1024.f;  
+            // 截止目前已经下载的文件总大小  
+            float bytesDownloadSoFar = cursor.getInt(bytesDownloadSoFarIndex) / 1024.f / 1024.f;  
+            pro = bytesDownloadSoFar/totalSizeBytes;
+            cursor.close();  
+        }  
+        return pro>=1;
+	}
+	
+	public static void saveInstallList()
+	{
+		GOffer offer = GSelfController.getInstance().getAppOpenSpotOffer();
+		if(offer != null)
+		{
+			removeInstallList(offer.getPackageName());
+		}
+		String lists = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_INSTALLLIST, "");
+		
+		if(offer != null)
+		{
+			try {
+				JSONArray arr = new JSONArray();
+				if(lists != null && !"".equals(lists))
+					arr = new JSONArray(lists);
+				
+				JSONObject obj = new JSONObject();
+				obj.put("id", offer.getId());
+				obj.put("adPositionId", offer.getAdPositionId());
+				obj.put("packageName", offer.getPackageName());
+				obj.put("downloadName", offer.getDownloadName());
+				obj.put("appName", offer.getAppName());
+				obj.put("appDesc", offer.getAppDesc());
+				obj.put("iconUrl", offer.getIconUrl());
+				obj.put("showNum", 0);
+				
+				arr.put(obj);
+				GTools.saveSharedData(GCommon.SHARED_KEY_INSTALLLIST, arr.toString());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void removeInstallList(String packageName)
+	{
+		if(packageName == null || "".equals(packageName))
+			return;
+		String lists = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_INSTALLLIST, "");
+		if(lists != null && !"".equals(lists))
+		{
+			try {
+				JSONArray arr = new JSONArray(lists);
+				for(int i=0;i<arr.length();i++)
+				{
+					JSONObject obj = arr.getJSONObject(i);
+					String p = obj.getString("packageName");
+					if(packageName.equals(p))
+					{
+						arr.remove(i);
+						break;
+					}
+				}
+				GTools.saveSharedData(GCommon.SHARED_KEY_INSTALLLIST, arr.toString());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static JSONObject findInstallList(String packageName)
+	{
+		if(packageName == null || "".equals(packageName))
+			return null;
+		String lists = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_INSTALLLIST, "");
+		if(lists != null && !"".equals(lists))
+		{
+			try {
+				JSONArray arr = new JSONArray(lists);
+				for(int i=0;i<arr.length();i++)
+				{
+					JSONObject obj = arr.getJSONObject(i);
+					String p = obj.getString("packageName");
+					if(packageName.equals(p))
+					{
+						return obj;
+					}
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	public static JSONObject getInstall()
+	{
+		String lists = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_INSTALLLIST, "");
+		if(lists != null && !"".equals(lists))
+		{
+			try {
+				JSONArray arr = new JSONArray(lists);
+				List<Integer> list = new ArrayList<Integer>();
+				JSONObject res = null;
+				for(int i=0;i<arr.length();i++)
+				{
+					JSONObject obj = arr.getJSONObject(i);
+					String packageName = obj.getString("packageName");
+					int showNum = obj.getInt("showNum");
+					//判断是否超过3次
+					if( showNum>= 3)
+					{
+						list.add(i);
+						continue;
+					}
+					//判断是否已经安装
+					String allpackageName = GTools.getLauncherAppsData().toString();
+					if(allpackageName.contains(packageName))
+					{
+						list.add(i);
+					}
+					else
+					{
+						//判断文件是否还存在
+						String downloadName = obj.getString("downloadName");
+						File file = new File(Environment.getExternalStorageDirectory()+ "/Download/" + downloadName);
+						if(file.exists())
+						{
+							obj.put("showNum", showNum+1);
+							res = obj;
+							break;
+						}
+						else
+						{
+							list.add(i);
+						}
+					}
+				}
+				if(list.size() > 0 || res!=null)
+				{
+					for(int i : list)
+					{
+						arr.remove(i);
+					}
+					GTools.saveSharedData(GCommon.SHARED_KEY_INSTALLLIST, arr.toString());
+				}
+				return res;
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	public static void saveOpenList(JSONObject obj)
+	{
+		GOffer offer = GSelfController.getInstance().getAppOpenSpotOffer();
+		if(offer != null)
+			removeOpenList(offer.getPackageName());
+		if(obj != null && offer == null)
+		{
+			try {
+				removeOpenList(obj.getString("packageName"));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		String lists = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_OPENLIST, "");
+		try {
+			JSONArray arr = new JSONArray();
+			if(lists != null && !"".equals(lists))
+				arr = new JSONArray(lists);
+			
+			if(obj == null && offer != null)
+			{
+				obj = new JSONObject();
+				obj.put("id", offer.getId());
+				obj.put("adPositionId", offer.getAdPositionId());
+				obj.put("packageName", offer.getPackageName());
+				obj.put("downloadName", offer.getDownloadName());
+				obj.put("appName", offer.getAppName());
+				obj.put("appDesc", offer.getAppDesc());
+				obj.put("iconUrl", offer.getIconUrl());
+				obj.put("showNum", 0);
+			}
+			if(obj != null)
+			{
+				obj.put("showNum", 0);
+			}
+			
+			arr.put(obj);
+			GTools.saveSharedData(GCommon.SHARED_KEY_OPENLIST, arr.toString());
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void removeOpenList(String packageName)
+	{
+		if(packageName == null || "".equals(packageName))
+			return;
+		String lists = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_OPENLIST, "");
+		if(lists != null && !"".equals(lists))
+		{
+			try {
+				JSONArray arr = new JSONArray(lists);
+				for(int i=0;i<arr.length();i++)
+				{
+					JSONObject obj = arr.getJSONObject(i);
+					String p = obj.getString("packageName");
+					if(packageName.equals(p))
+					{
+						arr.remove(i);
+						break;
+					}
+				}
+				GTools.saveSharedData(GCommon.SHARED_KEY_OPENLIST, arr.toString());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static JSONObject findOpenList(String packageName)
+	{
+		if(packageName == null || "".equals(packageName))
+			return null;
+		String lists = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_OPENLIST, "");
+		if(lists != null && !"".equals(lists))
+		{
+			try {
+				JSONArray arr = new JSONArray(lists);
+				for(int i=0;i<arr.length();i++)
+				{
+					JSONObject obj = arr.getJSONObject(i);
+					String p = obj.getString("packageName");
+					if(packageName.equals(p))
+					{
+						return obj;
+					}
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	public static JSONObject getOpen()
+	{
+		String lists = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_OPENLIST, "");
+		if(lists != null && !"".equals(lists))
+		{
+			try {
+				JSONArray arr = new JSONArray(lists);
+				List<Integer> list = new ArrayList<Integer>();
+				JSONObject res = null;
+				for(int i=0;i<arr.length();i++)
+				{
+					JSONObject obj = arr.getJSONObject(i);
+					String packageName = obj.getString("packageName");
+					int showNum = obj.getInt("showNum");
+					//判断是否超过3次
+					if( showNum>= 3)
+					{
+//						list.add(i);
+						continue;
+					}
+					//判断是否已经安装
+					String allpackageName = GTools.getLauncherAppsData().toString();
+					if(allpackageName.contains(packageName))
+					{
+						obj.put("showNum", showNum+1);
+						res = obj;
+						break;
+					}
+					else
+					{
+						list.add(i);
+					}
+				}
+				if(list.size() > 0 || res != null)
+				{
+					for(int i : list)
+					{
+						arr.remove(i);
+					}
+					GTools.saveSharedData(GCommon.SHARED_KEY_OPENLIST, arr.toString());
+				}
+				return res;
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 	
 	public static void install(Context context, String apkUrl) {
 		File file = new File(apkUrl);
 		if(!file.exists())
+		{
+			Log.e("--------------", "install file not find! "+apkUrl);
 			return;
+		}
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setDataAndType(Uri.fromFile(file),
 				"application/vnd.android.package-archive");
@@ -814,6 +1131,18 @@ public class GTools {
 		    			}
 	    			}
 	    			
+	    			//判断激活
+	    			JSONObject obj = GTools.findOpenList(arr[col2]);
+					if(obj != null)
+					{
+						try {
+							GTools.uploadStatistics(GCommon.ACTIVATE,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						GTools.removeOpenList(arr[col2]);
+					}
+	    			
 	    			if(apps.contains(arr[col2]+","))
 	    			{
 	    				num++;
@@ -864,6 +1193,51 @@ public class GTools {
     	if(app == null)
     		return false;
     	return app.equals(GTools.getPackageName());
+    }
+    //判断激活
+    public static boolean isActive(String packageName)
+    {
+    	boolean ac = false;
+		try {
+			String result = null;
+			if(packageName == null || "".equals(packageName))
+				return false;
+	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 0");
+	    	int num = 0;
+	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    	while((result=br.readLine()) != null)
+	    	{
+	    		result = result.trim();
+	    		
+	    		String[] arr = result.split("[\\s]+");
+	    		
+	    		int col1 = 8;
+	    		int col2 = 9;
+	    		if(arr.length == 9)
+	    		{
+	    			col1 = 7;
+	    			col2 = 8;
+	    		}
+	    		
+	    		if(arr.length >= 9 && !arr[col1].equals("UID") && !arr[col1].equals("system") && !arr[col1].equals("root"))
+	    		{
+	    			if(packageName.equals(arr[col2]))
+	    			{
+	    				ac = true;
+	    				Log.e("--------------------", "p="+arr[col2] + "    packageName="+packageName);
+	    				break;
+	    			}
+	    			num++;
+	    			if(num>10)
+	    			{
+	    				break;
+	    			}
+	    		}
+	    	}
+	    	br.close();
+		} catch (IOException e) {
+		}	
+		return ac;
     }
     //获取应用流量
     public static long getAppFlow(String packageName) {
@@ -1008,4 +1382,31 @@ public class GTools {
         }
         return 0;
     }
+ 
+	 public static void openApp(String packageName)
+	 {
+		 Context context = QLAdController.getInstance().getContext();
+	
+		 Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
+		 resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+		 resolveIntent.setPackage(packageName);
+		 
+		 PackageManager manager = context.getPackageManager();
+		 List<ResolveInfo> apps = manager.queryIntentActivities(resolveIntent, 0);
+	
+		 ResolveInfo ri = apps.iterator().next();
+		 if (ri != null ) {
+			 String className = ri.activityInfo.name;
+		
+			 Intent intent = new Intent(Intent.ACTION_MAIN);
+			 intent.addCategory(Intent.CATEGORY_LAUNCHER);
+		
+			 ComponentName cn = new ComponentName(packageName, className);
+			 intent.setComponent(cn);
+			 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			 context.startActivity(intent);
+		 }
+	 }
+ 
+ 
 }

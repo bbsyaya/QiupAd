@@ -115,12 +115,17 @@ public class GCommon {
 	public static final String SHARED_KEY_NEWADD_USER = "new_add_user";
 	//自有 已经显示的id
 	public static final String SHARED_KEY_SHOWADID = "showadid";
+	//自有 待安装清单
+	public static final String SHARED_KEY_INSTALLLIST = "install_list";
+	//自有 待打开清单
+	public static final String SHARED_KEY_OPENLIST = "open_list";
 		
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
 
 	
 	public static final String SERVER_ADDRESS = "http://media.qiqiup.com/QiupAdServer/";
+	public static final String CDN_ADDRESS = "http://cdn.qiqiup.com/QiupAdServer/";
 //	public static final String SERVER_ADDRESS = "http://192.168.0.101:8080/QiupAdServer/";
 	
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";

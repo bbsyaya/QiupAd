@@ -24,6 +24,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -172,17 +173,36 @@ public class QLAppSpotActivity extends Activity{
 			public void onClick(View v) {
 				
 				GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
-				if(gOffer != null && gOffer.getDownloadName() == null)
+				GTools.uploadStatistics(GCommon.CLICK,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"");
+				if(gOffer != null)
 				{
-					GTools.downloadApk();
+					gOffer.setClick(true);
+					if(gOffer.getDownloadName() == null)
+					{
+						GTools.downloadApk();
+						GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
+					}
+					else
+					{
+						if(GTools.isDownloadEnd())
+						{
+							GTools.install(QLAdController.getInstance().getContext(),
+									Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
+						}
+						else
+						{
+							GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
+						}
+					}
 				}
 				hide();
-				GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
-				
 			}
 		});
 
-		
+		String idss = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_SHOWADID, "");
+		idss+= ","+obj.getId();
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHOWADID, idss);
+		GTools.uploadStatistics(GCommon.SHOW,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"");
 	}
 	
 	private void createSpot()

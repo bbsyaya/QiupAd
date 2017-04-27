@@ -162,7 +162,7 @@ public class GSysService  {
 	//应用开屏
 	private void appOpenSpotThread()
 	{
-		if(isPresent &&  (isWifi()  || is4G()))
+		if(isPresent &&  isWifi())
 		{
 			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.APP_OPENSPOT);
 			for(GAdPositionConfig config : list)

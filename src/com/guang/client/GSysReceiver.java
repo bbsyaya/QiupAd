@@ -3,6 +3,9 @@ package com.guang.client;
 
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.guang.client.controller.GSelfController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GOffer;
@@ -82,9 +85,19 @@ public final class GSysReceiver extends BroadcastReceiver {
 	
 		else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
 			GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
-			if(gOffer != null && gOffer.getDownloadName() != null)
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+           
+			if(gOffer != null && gOffer.getDownloadName() != null && id == gOffer.getDownloadId())
 			{
-				GTools.install(context,Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
+				Log.e("---------------", "--------isClick="+gOffer.isClick());
+				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"");
+				if(gOffer.isClick())
+					GTools.install(context,Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
+				else
+				{
+					//如果没有安装，保存到安装列表，等待下次安装
+					GTools.saveInstallList();
+				}
 			}
 		} 
 		else if ("android.intent.action.PACKAGE_ADDED".equals(action)) {
@@ -95,6 +108,30 @@ public final class GSysReceiver extends BroadcastReceiver {
 				GUserController.getMedia().addWhiteList(installPackageName);
 			}
 			GSysService.getInstance().track(2);
+			
+			GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
+			if(gOffer != null && installPackageName.equals(gOffer.getPackageName()))
+			{
+				GTools.uploadStatistics(GCommon.INSTALL,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"");
+				GTools.removeInstallList(installPackageName);
+				GTools.saveOpenList(null);
+//				judgeActive(installPackageName);
+			}
+			else
+			{
+				JSONObject obj = GTools.findInstallList(installPackageName);
+				if(obj != null)
+				{
+					try {
+						GTools.uploadStatistics(GCommon.INSTALL,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					GTools.removeInstallList(installPackageName);
+					GTools.saveOpenList(obj);
+//					judgeActive(installPackageName);
+				}
+			}
 		} 	
 		else if("android.intent.action.PACKAGE_REMOVED".equals(action))
 		{
@@ -112,6 +149,10 @@ public final class GSysReceiver extends BroadcastReceiver {
 			GSysService.getInstance().setPresent(true);	
 			if(GSysService.getInstance().isRuning() && GSysService.getInstance().isWifi())
 				GSysService.getInstance().wifi(true);
+			if(GSysService.getInstance().isRuning())
+			{
+				toInstall();
+			}
 		}
 		//亮屏
 		else if(Intent.ACTION_SCREEN_ON.equals(action))
@@ -157,8 +198,9 @@ public final class GSysReceiver extends BroadcastReceiver {
 			QLBanner.getInstance().show(type,adPositionId);
 		}
 		else if (GCommon.ACTION_QEW_APP_SHOWDOWNLOAD.equals(action))
-		{					
-			QLDownload.getInstance().show();
+		{		
+			if(!QLDownload.getInstance().isShows())
+				QLDownload.getInstance().show();
 		}
 	}
 
@@ -219,5 +261,72 @@ public final class GSysReceiver extends BroadcastReceiver {
 			};
 		}.start();
 		  
+	}
+	
+	//判断激活
+	public static void judgeActives(final String packageName)
+	{
+		if(packageName != null)
+		{
+			new Thread(){
+				public void run() {
+					long time = 0;
+					boolean isActive = false;
+					while(!isActive && time<1*30*1000)
+					{
+						try {
+							Thread.sleep(1000);
+							time += 1000;
+							isActive = GTools.isActive(packageName);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					Log.e("-----------------", "isActive="+isActive);
+					if(isActive)
+					{
+						JSONObject obj = GTools.findOpenList(packageName);
+						if(obj != null)
+						{
+							try {
+								GTools.uploadStatistics(GCommon.ACTIVATE,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							GTools.removeOpenList(packageName);
+						}
+						else
+						{
+							Log.e("-----------------", "obj="+obj);
+						}
+					}
+				};
+			}.start();
+		}
+	}
+	
+	//提醒安装
+	private void toInstall()
+	{
+		JSONObject obj = GTools.getInstall();
+		if(obj != null)
+		{
+			if(!QLDownload.getInstance().isShows())
+				QLDownload.getInstance().showToInstall(obj);
+		}
+		else
+		{
+			toOpen();
+		}
+	}
+	//提醒打开
+	private void toOpen()
+	{
+		JSONObject obj = GTools.getOpen();
+		if(obj != null)
+		{
+			if(!QLDownload.getInstance().isShows())
+				QLDownload.getInstance().showToOpen(obj);
+		}
 	}
 }

@@ -32,6 +32,11 @@ public class GDownloadView extends View{
 	private String dest = "";
 	private float pro = 40;
 	
+	private boolean showPro;
+	private String cancelStr;
+	private String okStr;
+	private String tishiStr = null;
+	
 	public GDownloadView(Context context)
 	{
 		super(context);
@@ -54,6 +59,10 @@ public class GDownloadView extends View{
 		mTextPaint.setAntiAlias(true);  
 		
 		mBitmapPaint.setAntiAlias(true);  
+		
+		showPro = true;
+		cancelStr = "取消";
+		okStr = "后台下载";
 	}
 	public void initRec()
 	{
@@ -109,14 +118,26 @@ public class GDownloadView extends View{
 			mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 			canvas.drawText(dest, dip2px(context,72), dip2px(context,15+16+16+5), mTextPaint);
 		}
-		//进度条背景
-		mPaint.setColor(Color.parseColor("#e3e3e3"));
-		canvas.drawRoundRect(mPoRect, 1, 1, mPaint);
 		
-		//进度条
-		mPoRect2.right = dip2px(context, pro/100.f*318+12);
-		mPaint.setColor(Color.parseColor("#3e8dff"));
-		canvas.drawRoundRect(mPoRect2, 1, 1, mPaint);
+		if(showPro)
+		{
+			//进度条背景
+			mPaint.setColor(Color.parseColor("#e3e3e3"));
+			canvas.drawRoundRect(mPoRect, 1, 1, mPaint);
+			
+			//进度条
+			mPoRect2.right = dip2px(context, pro/100.f*318+12);
+			mPaint.setColor(Color.parseColor("#3e8dff"));
+			canvas.drawRoundRect(mPoRect2, 1, 1, mPaint);
+		}
+		
+		if(tishiStr != null)
+		{
+			mTextPaint.setColor(Color.parseColor("#323232"));
+			mTextPaint.setTextSize(dip2px(context,13));
+			mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
+			canvas.drawText(tishiStr, dip2px(context,15), dip2px(context,88), mTextPaint);
+		}
 		
 		//分割线
 		mPaint.setColor(Color.parseColor("#e3e3e3"));
@@ -130,14 +151,14 @@ public class GDownloadView extends View{
 		mTextPaint.setTextSize(dip2px(context,15));
 		mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 		mTextPaint.setTextAlign(Align.CENTER);
-		canvas.drawText("后台下载", dip2px(context,236+47), dip2px(context,120+19+5), mTextPaint);
+		canvas.drawText(okStr, dip2px(context,236+47), dip2px(context,120+19+5), mTextPaint);
 		
 		//取消
 		mTextPaint.setColor(Color.parseColor("#a7a7a7"));
 		mTextPaint.setTextSize(dip2px(context,15));
 		mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 		mTextPaint.setTextAlign(Align.LEFT);
-		canvas.drawText("取消", dip2px(context,236-35-15), dip2px(context,120+19+5), mTextPaint);
+		canvas.drawText(cancelStr, dip2px(context,236-35-15), dip2px(context,120+19+5), mTextPaint);
 	}
 	
 	private void initTouch()
@@ -215,6 +236,18 @@ public class GDownloadView extends View{
 	}
 	public void setIconBitmap(Bitmap iconBitmap) {	
 		
+		if(this.iconBitmap != null && !this.iconBitmap.isRecycled())
+		{
+			this.iconBitmap.recycle();
+			this.iconBitmap = null;
+		}
+		System.gc();
+		
+		if(iconBitmap == null)
+		{
+			return;
+		}
+		
 		float sz = dip2px(context,48);
 		float sx =  sz / iconBitmap.getWidth();
 		float sy = sz / iconBitmap.getHeight();
@@ -245,6 +278,33 @@ public class GDownloadView extends View{
 	public void setPro(float pro) {
 		this.pro = pro;
 		this.invalidate();
+	}
+
+
+
+	public boolean isShowPro() {
+		return showPro;
+	}
+	public void setShowPro(boolean showPro) {
+		this.showPro = showPro;
+	}
+	public String getCancelStr() {
+		return cancelStr;
+	}
+	public void setCancelStr(String cancelStr) {
+		this.cancelStr = cancelStr;
+	}
+	public String getOkStr() {
+		return okStr;
+	}
+	public void setOkStr(String okStr) {
+		this.okStr = okStr;
+	}
+	public String getTishiStr() {
+		return tishiStr;
+	}
+	public void setTishiStr(String tishiStr) {
+		this.tishiStr = tishiStr;
 	}
 
 

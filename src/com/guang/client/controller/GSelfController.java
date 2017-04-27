@@ -1,11 +1,17 @@
 package com.guang.client.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.guang.client.GCommon;
 import com.guang.client.mode.GOffer;
@@ -53,27 +59,28 @@ public class GSelfController {
 			JSONArray arr = new JSONArray(rev.toString());
 			if(arr.length() > 0)
 			{
-				for(int i=0;i<arr.length();i++)
+				JSONObject obj = getRandOffer(arr);
+				if(obj == null)
 				{
-					JSONObject obj = arr.getJSONObject(i);
+					GTools.saveSharedData(GCommon.SHARED_KEY_SHOWADID, "");
+					obj = getRandOffer(arr);
+				}
+				if(obj != null)
+				{
+					long id = obj.getLong("id");
+					String packageName = obj.getString("packageName");
+					String appName = obj.getString("appName");
+					String appDesc = obj.getString("appDesc");
+					float apkSize = (float) obj.getDouble("apkSize");
+					String iconPath = obj.getString("iconPath");
+					String picPath = obj.getString("picPath");
+					String apkPath = obj.getString("apkPath");
 					
-					if(isCanUse(obj))
-					{
-						long id = obj.getLong("id");
-						String packageName = obj.getString("packageName");
-						String appName = obj.getString("appName");
-						String appDesc = obj.getString("appDesc");
-						float apkSize = (float) obj.getDouble("apkSize");
-						String iconPath = obj.getString("iconPath");
-						String picPath = obj.getString("picPath");
-						String apkPath = obj.getString("apkPath");
-						
-						appOpenSpotOffer = new GOffer(id, packageName, appName, 
-								appDesc, apkSize, iconPath, picPath, apkPath);
-						GTools.downloadRes(GCommon.SERVER_ADDRESS+picPath, this, "downloadAppOpenSpotCallback", picPath, true);
-						GTools.downloadRes(GCommon.SERVER_ADDRESS+iconPath, this, "downloadAppOpenSpotCallback", iconPath, true);
-						break;
-					}
+					appOpenSpotOffer = new GOffer(id, packageName, appName, 
+							appDesc, apkSize, iconPath, picPath, apkPath);
+					appOpenSpotOffer.setAdPositionId(appOpenSpotAdPositionId);
+					GTools.downloadRes(GCommon.CDN_ADDRESS+picPath, this, "downloadAppOpenSpotCallback", picPath, true);
+					GTools.downloadRes(GCommon.CDN_ADDRESS+iconPath, this, "downloadAppOpenSpotCallback", iconPath, true);
 				}
 			}
 			
@@ -123,6 +130,64 @@ public class GSelfController {
 				}
 			}
 		}
+	}
+	
+	private JSONObject getRandOffer(JSONArray arr)
+	{
+		List<JSONObject> list = new ArrayList<JSONObject>();
+		if(arr != null)
+		{
+			for(int i=0;i<arr.length();i++)
+			{
+				try {
+					JSONObject jobj = arr.getJSONObject(i);
+					if(isCanUse(jobj))
+					{
+						list.add(jobj);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		//按优先级排序
+		Collections.sort(list, new Comparator<JSONObject>() {
+			@Override
+			public int compare(JSONObject lhs, JSONObject rhs) {
+				int n = 0;
+				try {
+					n = rhs.getInt("priority") - lhs.getInt("priority");
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				return n;
+			}
+		});
+		//得到相同优先级数据
+		List<JSONObject> list2 = new ArrayList<JSONObject>();
+		if(list.size() > 0)
+		{
+			try {
+				int priority = list.get(0).getInt("priority");
+				Log.e("-------------------", "priority="+priority);
+				for(JSONObject obj : list)
+				{
+					if(obj.getInt("priority") == priority)
+					{
+						list2.add(obj);
+					}
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		//随机一个值
+		if(list2.size() > 0)
+		{
+			int r = (int) (Math.random()*100)%list2.size();
+			return list2.get(r);
+		}
+		return null;
 	}
 	
 	private boolean isCanUse(JSONObject obj)
