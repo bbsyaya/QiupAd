@@ -12,6 +12,8 @@ import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
+import com.qq.up.a.QLAppOpenSpot;
+import com.qq.up.a.QLAppSpot;
 import com.qq.up.a.QLBanner;
 import com.qq.up.a.QLBatteryLockActivity;
 import com.qq.up.a.QLDownload;
@@ -196,6 +198,17 @@ public final class GSysReceiver extends BroadcastReceiver {
 			int type = intent.getIntExtra("type", -1);
 			long adPositionId = intent.getLongExtra("adPositionId", -1);
 			QLBanner.getInstance().show(type,adPositionId);
+		}
+		else if (GCommon.ACTION_QEW_APP_SHOWAPPSPOT.equals(action))
+		{					
+			int type = intent.getIntExtra("type", -1);
+			if(!QLAppSpot.getInstance().isShowing())
+				QLAppSpot.getInstance().show(type);
+		}
+		else if (GCommon.ACTION_QEW_APP_SHOWAPPOPENSPOT.equals(action))
+		{					
+			if(!QLAppOpenSpot.getInstance().isShowing())
+				QLAppOpenSpot.getInstance().show();
 		}
 		else if (GCommon.ACTION_QEW_APP_SHOWDOWNLOAD.equals(action))
 		{		

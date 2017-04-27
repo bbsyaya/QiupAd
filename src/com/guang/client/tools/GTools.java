@@ -1151,7 +1151,7 @@ public class GTools {
 		    			if(pids != null && !"".equals(pids))
 		    			{
 		    				int score = Integer.parseInt(pids);
-		    				if(score < hscore*2+10 && score >= hscore-5)
+		    				if(score < hscore*2+10 && score >= hscore/2)
 		    				{
 		    					packageName = arr[col2];
 		    					if(!launcherApps.contains(arr[col2]))

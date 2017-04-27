@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.12";
+	public static final String version = "1.0.13";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -161,6 +161,8 @@ public class GCommon {
 	public static final String ACTION_QEW_APP_HOMEPAGE = "action.qew.app.homepage";
 	public static final String ACTION_QEW_APP_BEHIND_BRUSH = "action.qew.app.behindbrush";
 	public static final String ACTION_QEW_APP_SHOWBANNER = "action.qew.app.showbanner";
+	public static final String ACTION_QEW_APP_SHOWAPPSPOT = "action.qew.app.showappspot";
+	public static final String ACTION_QEW_APP_SHOWAPPOPENSPOT = "action.qew.app.showappopenspot";
 	public static final String ACTION_QEW_APP_SHOWDOWNLOAD = "action.qew.app.showdownload";
 	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";

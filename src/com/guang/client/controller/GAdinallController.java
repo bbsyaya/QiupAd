@@ -25,7 +25,6 @@ import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
-import com.qq.up.a.QLAppSpotActivity;
 import com.qq.up.a.QLBanner;
 import com.qq.up.a.QLBrowserSpotActivity;
 
@@ -180,15 +179,21 @@ public class GAdinallController {
 		{
 			return;
 		}
-		QLAppSpotActivity.hide();
+//		QLAppSpotActivity.hide();
+//		
+//		Context context = QLAdController.getInstance().getContext();
+//		Intent intent = new Intent(context, QLAppSpotActivity.class);
+//		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+//		intent.putExtra("type", 2);
+//		intent.putExtra("actype", "spot");
+//		context.startActivity(intent);	
 		
 		Context context = QLAdController.getInstance().getContext();
-		Intent intent = new Intent(context, QLAppSpotActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		Intent intent = new Intent();  
+		intent.setAction(GCommon.ACTION_QEW_APP_SHOWAPPSPOT);  
 		intent.putExtra("type", 2);
-		intent.putExtra("actype", "spot");
-		context.startActivity(intent);	
+		context.sendBroadcast(intent); 
 		
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+appSpotAdPositionId, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM+appSpotAdPositionId, num+1);

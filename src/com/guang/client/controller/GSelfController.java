@@ -18,7 +18,6 @@ import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
-import com.qq.up.a.QLAppSpotActivity;
 
 public class GSelfController {
 	private static GSelfController _instance;
@@ -106,14 +105,19 @@ public class GSelfController {
 		appOpenSpotOffer.setPicNum(appOpenSpotOffer.getPicNum()+1);
 		if(appOpenSpotOffer.getPicNum() >= 2)
 		{
-			QLAppSpotActivity.hide();
+//			QLAppSpotActivity.hide();
+//			
+//			Context context = QLAdController.getInstance().getContext();
+//			Intent intent = new Intent(context, QLAppSpotActivity.class);
+//			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+//			intent.putExtra("actype", "openspot");
+//			context.startActivity(intent);	
 			
 			Context context = QLAdController.getInstance().getContext();
-			Intent intent = new Intent(context, QLAppSpotActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-			intent.putExtra("actype", "openspot");
-			context.startActivity(intent);	
+			Intent intent = new Intent();  
+			intent.setAction(GCommon.ACTION_QEW_APP_SHOWAPPOPENSPOT);  
+			context.sendBroadcast(intent);
 			
 			
 			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_OPENSPOT_NUM+appOpenSpotAdPositionId, 0);

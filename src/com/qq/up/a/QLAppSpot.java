@@ -7,52 +7,43 @@ import java.util.List;
 import com.guang.client.GCommon;
 import com.guang.client.controller.GAdViewController;
 import com.guang.client.controller.GAdinallController;
-import com.guang.client.controller.GSelfController;
 import com.guang.client.mode.GOffer;
 import com.guang.client.mode.GOfferEs;
 import com.guang.client.tools.GTools;
-import com.qq.up.R;
-import com.qq.up.a.view.GTimeButton;
 import com.qq.up.a.view.GWebView;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager.LayoutParams;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
-import android.view.animation.Animation.AnimationListener;
-import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 @SuppressLint("SetJavaScriptEnabled")
-public class QLAppSpotActivity extends Activity{
-	private static QLAppSpotActivity activity;
-	private RelativeLayout layout;
+public class QLAppSpot{
+	WindowManager.LayoutParams wmParams;  
+    //创建浮动窗口设置布局参数的对象  
+    WindowManager mWindowManager;
+    private Service context;
+    private static QLAppSpot _instance;
+	private boolean isShow = false;
+	
+	private RelativeLayout root;
 	private WebView webView;
 	private WebView webView2;
 	private String adSource;
@@ -65,149 +56,50 @@ public class QLAppSpotActivity extends Activity{
 	private String currUrl;
 	private GOffer obj = null;
 	
-	private Bitmap bitmap;
-	
-	public void onResume() {
-	    super.onResume();
-	}
-	public void onPause() {
-	    super.onPause();
-	}
-	
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
-		
-	}
-	
-	public static QLAppSpotActivity getInstance()
+	private QLAppSpot(){}
+	public static QLAppSpot getInstance()
 	{
-		return activity;
+		if(_instance == null)
+		{
+			_instance = new QLAppSpot();
+		}
+		return _instance;
 	}
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		activity = this;
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                 WindowManager.LayoutParams.FLAG_FULLSCREEN );
-		
+	public void show(final int type)
+	{
+		this.context = (Service) QLAdController.getInstance().getContext();
+		wmParams = new WindowManager.LayoutParams();
+		// 获取的是WindowManagerImpl.CompatModeWrapper
+		mWindowManager = (WindowManager) context.getApplication()
+				.getSystemService(context.getApplication().WINDOW_SERVICE);
+		// 设置window type
+		wmParams.type = LayoutParams.TYPE_TOAST;
+		// 设置图片格式，效果为背景透明
+		wmParams.format = PixelFormat.RGBA_8888;
+		// 设置浮动窗口不可聚焦（实现操作除浮动窗口外的其他可见窗口的操作） LayoutParams.FLAG_NOT_FOCUSABLE |
+		wmParams.flags = LayoutParams.FLAG_NOT_FOCUSABLE | LayoutParams.FLAG_FULLSCREEN;
+		// 调整悬浮窗显示的停靠位置为左侧置顶
+		wmParams.gravity = Gravity.LEFT | Gravity.TOP;
+		// 以屏幕左上角为原点，设置x、y初始值，相对于gravity
+		wmParams.x = 0;
+		wmParams.y = 0;
 
+		// 设置悬浮窗口长宽数据
+		wmParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+		wmParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+		
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT,
 				LinearLayout.LayoutParams.MATCH_PARENT);
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-		layout = new RelativeLayout(this);
-		layout.setLayoutParams(layoutParams);
-		this.setContentView(layout);
-			
-		String actype = getIntent().getStringExtra("actype");
-		if("spot".equals(actype))
-		{
-			createSpot();
-		}
-		else
-		{
-			createOpenSpot();
-		}
-	}
-	
-	@SuppressLint("NewApi")
-	private void createOpenSpot()
-	{
-		obj = GSelfController.getInstance().getAppOpenSpotOffer();
+		root = new RelativeLayout(context);
+		root.setLayoutParams(layoutParams);
+		//添加mFloatLayout  
+        mWindowManager.addView(root, wmParams);  
+		isShow = true;
 		
-		ImageView img = new ImageView(this);
-		bitmap = BitmapFactory.decodeFile(getFilesDir().getPath()+"/"+ obj.getImageUrl()) ;
-		img.setImageBitmap(bitmap);
 		
-		LinearLayout.LayoutParams layoutGrayParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-		layoutGrayParams.gravity = Gravity.CENTER;
-		
-		LinearLayout layoutGray = new LinearLayout(this);
-		layoutGray.setBackgroundColor(Color.BLACK);
-		layoutGray.setAlpha(0.6f);
-		layoutGray.setLayoutParams(layoutGrayParams);
-		layout.addView(layoutGray);	
-		
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-		
-		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-		img.setId(1);
-		img.setScaleType(ScaleType.CENTER_CROP);
-
-		layout.addView(img, layoutParams);	
-		
-		RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(GTools.dip2px(50), GTools.dip2px(30));
-		layoutParams2.addRule(RelativeLayout.ALIGN_TOP, 1);
-		layoutParams2.addRule(RelativeLayout.ALIGN_RIGHT, 1);
-		layoutParams2.setMargins(0,10,10,0);
-
-		final GTimeButton time = new GTimeButton(this);
-		time.setTextSize(40);
-		layout.addView(time, layoutParams2);
-		time.start(new GTimeButton.GTimeButtonCallback() {
-			@Override
-			public void end() {
-				hide();
-			}
-			@Override
-			public void timeout() {
-				time.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						hide();
-					}
-				});
-			}
-		});
-		
-
-		img.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				
-				GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
-				GTools.uploadStatistics(GCommon.CLICK,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"");
-				if(gOffer != null)
-				{
-					gOffer.setClick(true);
-					if(gOffer.getDownloadName() == null)
-					{
-						GTools.downloadApk();
-						GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
-					}
-					else
-					{
-						if(GTools.isDownloadEnd())
-						{
-							GTools.install(QLAdController.getInstance().getContext(),
-									Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
-						}
-						else
-						{
-							GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
-						}
-					}
-				}
-				hide();
-			}
-		});
-
-		String idss = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_SHOWADID, "");
-		idss+= ","+obj.getId();
-		GTools.saveSharedData(GCommon.SHARED_KEY_SHOWADID, idss);
-		GTools.uploadStatistics(GCommon.SHOW,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"");
-	}
-	
-	private void createSpot()
-	{
-		type = getIntent().getIntExtra("type", -1);
 		if(type == 1)
 		{
 			obj = GAdViewController.getInstance().getAppSpotOffer();
@@ -225,9 +117,9 @@ public class QLAppSpotActivity extends Activity{
 		
 		RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(w,h);
 		layoutParams2.addRule(RelativeLayout.CENTER_IN_PARENT);
-        webView = new GWebView(this);
+        webView = new GWebView(context);
 		//添加mFloatLayout  
-        layout.addView(webView,layoutParams2);  
+        root.addView(webView,layoutParams2);  
 		
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -249,7 +141,7 @@ public class QLAppSpotActivity extends Activity{
 					 openBrowser(target);
 					 if(thclkurls == null || thclkurls.size() == 0)
 					 {
-						activity.finish();
+						hide();
 					 }
 					 else
 					 {
@@ -272,16 +164,16 @@ public class QLAppSpotActivity extends Activity{
 		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 		
-		ImageView close = new ImageView(this);
+		ImageView close = new ImageView(context);
 		close.setImageResource((Integer)GTools.getResourceId("qew_browser_close", "drawable"));
-		layout.addView(close, closeLayoutParams);
+		root.addView(close, closeLayoutParams);
 		
 		
 		RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(1,1);
 		layoutParams3.addRule(RelativeLayout.CENTER_IN_PARENT);
-        webView2 = new WebView(this);
+        webView2 = new WebView(context);
 		//添加mFloatLayout  
-        layout.addView(webView2,layoutParams3);  
+        root.addView(webView2,layoutParams3);  
 		
         webView2.getSettings().setJavaScriptEnabled(true);
         webView2.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -321,7 +213,7 @@ public class QLAppSpotActivity extends Activity{
 					thclkurls.remove(0);
 					if(thclkurls.size() == 0)
 					{
-						activity.finish();
+						hide();
 					}
 				}
 				else if(msg.what == 0x03)
@@ -336,7 +228,7 @@ public class QLAppSpotActivity extends Activity{
 		close.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				activity.finish();
+				hide();
 				
 			}
 		});
@@ -357,6 +249,22 @@ public class QLAppSpotActivity extends Activity{
 				}
 			};
 		}.start();
+
+	}
+	
+	
+	public void hide()
+	{
+		if(isShow)
+		{
+			mWindowManager.removeView(root);
+			isShow = false;
+		}		
+	}
+	
+	public boolean isShowing()
+	{
+		return this.isShow;
 	}
 	
 	private void updateShow()
@@ -426,33 +334,12 @@ public class QLAppSpotActivity extends Activity{
 		AlphaAnimation animation = new AlphaAnimation(0, 1);
 		animation.setDuration(500);
 		animationSet.addAnimation(animation);
-		layout.startAnimation(animationSet);
-	}
-	
-	public static void hide()
-	{
-		if(activity!=null)
-		{
-			activity.finish();
-			activity = null;
-		}
-	}
-	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if(bitmap != null && !bitmap.isRecycled())
-		{
-			bitmap.recycle();
-			bitmap = null;
-		}
-		System.gc();
-
+		root.startAnimation(animationSet);
 	}
 	
 	public void openBrowser(String url)
 	{
-		PackageManager packageMgr = getPackageManager();
+		PackageManager packageMgr = context.getPackageManager();
 		Intent intent = packageMgr.getLaunchIntentForPackage("com.android.chrome");
 		if(intent == null)
 		{
@@ -461,6 +348,6 @@ public class QLAppSpotActivity extends Activity{
         intent.setAction(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.setData(Uri.parse(url));
-        startActivity(intent);
+        context.startActivity(intent);
 	}
 }
