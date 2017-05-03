@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.13";
+	public static final String version = "1.0.14";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -20,6 +20,15 @@ public class GCommon {
 	public static final int DOUBLE_DOWNLOAD_SUCCESS = 10;//下载成功
 	public static final int DOUBLE_INSTALL = 11;//安装
 	public static final int DOUBLE_ACTIVATE = 12;//激活
+	
+	public static final int DOWNLOAD_CANCEL = 13;//下载取消
+	public static final int DOWNLOAD_BACKGROUND = 14;//后台下载
+	public static final int INSTALL_LATER = 15;//安装稍后
+	public static final int INSTALL_GO = 16;//去安装
+	public static final int OEPN_CANCEL = 17;//打开取消
+	public static final int OPEN_GO = 18;//打开
+	
+	
 	//广告位类型
 	public static final String AD_POSITION_TYPE = "ad_position_type";
 	public static final int BROWSER_SPOT = 1;//浏览器插屏 

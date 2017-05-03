@@ -3,6 +3,7 @@ package com.qq.up.a;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.guang.client.GCommon;
 import com.guang.client.GSysReceiver;
 import com.guang.client.controller.GSelfController;
 import com.guang.client.mode.GOffer;
@@ -111,11 +112,15 @@ public class QLDownload {
 				DownloadManager downloadManager = (DownloadManager) context
 						.getSystemService(Context.DOWNLOAD_SERVICE);
 				downloadManager.remove(obj.getDownloadId());
+				
+				GTools.uploadStatistics(GCommon.DOWNLOAD_CANCEL,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"");
+				
 				hide();
 			}
 			
 			@Override
 			public void back() {
+				GTools.uploadStatistics(GCommon.DOWNLOAD_BACKGROUND,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"");
 				hide();
 			}
 		});
@@ -222,6 +227,11 @@ public class QLDownload {
 		view.setCallback(new GDownloadView.GDownloadViewCallback() {
 			@Override
 			public void cancel() {
+				try {
+					GTools.uploadStatistics(GCommon.INSTALL_LATER,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 				hide();
 			}
 			
@@ -230,6 +240,9 @@ public class QLDownload {
 				try {
 					GTools.install(QLAdController.getInstance().getContext(),
 							Environment.getExternalStorageDirectory()+ "/Download/" + obj.getString("downloadName"));
+				
+					GTools.uploadStatistics(GCommon.INSTALL_GO,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+					
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -304,6 +317,11 @@ public class QLDownload {
 		view.setCallback(new GDownloadView.GDownloadViewCallback() {
 			@Override
 			public void cancel() {
+				try {
+					GTools.uploadStatistics(GCommon.OEPN_CANCEL,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 				hide();
 			}
 			
@@ -312,6 +330,9 @@ public class QLDownload {
 				try {
 					String packageName = obj.getString("packageName");
 					GTools.openApp(packageName);
+					
+					GTools.uploadStatistics(GCommon.OPEN_GO,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+					
 //					GSysReceiver.judgeActive(packageName);
 				} catch (JSONException e) {
 					e.printStackTrace();
