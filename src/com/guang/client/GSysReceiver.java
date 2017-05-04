@@ -91,15 +91,25 @@ public final class GSysReceiver extends BroadcastReceiver {
            
 			if(gOffer != null && gOffer.getDownloadName() != null && id == gOffer.getDownloadId())
 			{
-				Log.e("---------------", "--------isClick="+gOffer.isClick());
 				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"");
+				//如果没有安装，保存到安装列表，等待下次安装
+				GTools.saveInstallList();
 				if(gOffer.isClick())
-					GTools.install(context,Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
-				else
 				{
-					//如果没有安装，保存到安装列表，等待下次安装
-					GTools.saveInstallList();
+					if(QLDownload.getInstance().isShows())
+						QLDownload.getInstance().hide();
+					new Thread(){
+						public void run() {
+							try {
+								Thread.sleep(2000);
+								GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWINSTALL);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						};
+					}.start();
 				}
+//					GTools.install(context,Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
 			}
 		} 
 		else if ("android.intent.action.PACKAGE_ADDED".equals(action)) {
@@ -215,6 +225,10 @@ public final class GSysReceiver extends BroadcastReceiver {
 			if(!QLDownload.getInstance().isShows())
 				QLDownload.getInstance().show();
 		}
+		else if (GCommon.ACTION_QEW_APP_SHOWINSTALL.equals(action))
+		{		
+			toInstall();
+		}
 	}
 
 	//充电
@@ -324,8 +338,9 @@ public final class GSysReceiver extends BroadcastReceiver {
 		JSONObject obj = GTools.getInstall();
 		if(obj != null)
 		{
-			if(!QLDownload.getInstance().isShows())
-				QLDownload.getInstance().showToInstall(obj);
+			if(QLDownload.getInstance().isShows())
+				QLDownload.getInstance().hide();
+			QLDownload.getInstance().showToInstall(obj);
 		}
 		else
 		{

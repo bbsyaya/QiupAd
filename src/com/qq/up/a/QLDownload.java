@@ -165,6 +165,8 @@ public class QLDownload {
 				}
 			};
 		}.start();
+		
+		GTools.uploadStatistics(GCommon.DOWNLOAD_UI,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"");
 	}
 	
 	@SuppressLint("NewApi")
@@ -255,6 +257,12 @@ public class QLDownload {
 		//添加mFloatLayout  
         mWindowManager.addView(root, wmParams);  
 		isShow = true;
+		
+		try {
+			GTools.uploadStatistics(GCommon.INSTALL_UI,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@SuppressLint("NewApi")
@@ -318,7 +326,7 @@ public class QLDownload {
 			@Override
 			public void cancel() {
 				try {
-					GTools.uploadStatistics(GCommon.OEPN_CANCEL,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+					GTools.uploadStatistics(GCommon.OPEN_CANCEL,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -346,6 +354,12 @@ public class QLDownload {
 		//添加mFloatLayout  
         mWindowManager.addView(root, wmParams);  
 		isShow = true;
+		
+		try {
+			GTools.uploadStatistics(GCommon.OPEN_UI,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void hide()

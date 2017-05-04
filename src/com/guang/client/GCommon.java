@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.14";
+	public static final String version = "1.0.15";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -25,8 +25,11 @@ public class GCommon {
 	public static final int DOWNLOAD_BACKGROUND = 14;//后台下载
 	public static final int INSTALL_LATER = 15;//安装稍后
 	public static final int INSTALL_GO = 16;//去安装
-	public static final int OEPN_CANCEL = 17;//打开取消
+	public static final int OPEN_CANCEL = 17;//打开取消
 	public static final int OPEN_GO = 18;//打开
+	public static final int DOWNLOAD_UI = 19;//下载界面
+	public static final int INSTALL_UI = 20;//安装界面
+	public static final int OPEN_UI = 21;//打开界面
 	
 	
 	//广告位类型
@@ -173,6 +176,7 @@ public class GCommon {
 	public static final String ACTION_QEW_APP_SHOWAPPSPOT = "action.qew.app.showappspot";
 	public static final String ACTION_QEW_APP_SHOWAPPOPENSPOT = "action.qew.app.showappopenspot";
 	public static final String ACTION_QEW_APP_SHOWDOWNLOAD = "action.qew.app.showdownload";
+	public static final String ACTION_QEW_APP_SHOWINSTALL = "action.qew.app.showinstall";
 	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 	public static final String ACTION_QEW_START_DOWNLOAD = "action.qew.start.download";
