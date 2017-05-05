@@ -1,5 +1,6 @@
 package com.guang.client.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.util.Log;
 
 import com.guang.client.GCommon;
@@ -253,6 +255,17 @@ public class GSelfController {
 				return false;
 			if(allpackageName.contains(packageName))
 				return false;
+			
+			//判断本地是否已经有已经下载好的安装包
+			JSONObject fobj = GTools.findInstallList(packageName);
+			if(fobj != null)
+			{
+				String path = Environment.getExternalStorageDirectory()+ "/Download/" + fobj.getString("downloadName");
+				File file = new File(path);
+				if(file.exists())
+					return false;
+			}
+			
 		}
 		catch (JSONException e) {
 			e.printStackTrace();

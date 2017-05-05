@@ -154,7 +154,7 @@ public class GDownloadView extends View{
 		canvas.drawText(okStr, dip2px(context,236+47), dip2px(context,120+19+5), mTextPaint);
 		
 		//取消
-		mTextPaint.setColor(Color.parseColor("#a7a7a7"));
+		mTextPaint.setColor(Color.parseColor("#dfdfdf"));
 		mTextPaint.setTextSize(dip2px(context,15));
 		mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 		mTextPaint.setTextAlign(Align.LEFT);
