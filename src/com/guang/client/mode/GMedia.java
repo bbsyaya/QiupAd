@@ -307,7 +307,6 @@ public class GMedia {
 					String h[] = t[0].split(" ")[1].split("--"); //13:00--15:00
 					String date1 = h[0];
 					String date2 = h[1];
-					
 					String[] days = {"星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
 					int day = 0;
 					for(int i=0;i<days.length;i++)
