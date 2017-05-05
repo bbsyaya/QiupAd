@@ -89,7 +89,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 			GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
            
-			if(gOffer != null && gOffer.getDownloadName() != null && id == gOffer.getDownloadId())
+			if(gOffer != null && gOffer.getDownloadName() != null && id == gOffer.getDownloadId() && !gOffer.isTongji())
 			{
 				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"");
 				//如果没有安装，保存到安装列表，等待下次安装
@@ -109,6 +109,8 @@ public final class GSysReceiver extends BroadcastReceiver {
 						};
 					}.start();
 				}
+				//下载只统计一次
+				gOffer.setTongji(true);
 //					GTools.install(context,Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
 			}
 		} 

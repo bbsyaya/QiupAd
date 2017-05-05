@@ -37,6 +37,7 @@ public class GOffer {
 	private long downloadId;
 	private String downloadName;
 	private boolean click;
+	private boolean tongji;
     
     public GOffer(){};
     public GOffer(long id, String adm,List<String> imgtrackings,List<String> thclkurls,List<GOfferEs> ess)
@@ -233,6 +234,12 @@ public class GOffer {
 	}
 	public void setClick(boolean click) {
 		this.click = click;
+	}
+	public boolean isTongji() {
+		return tongji;
+	}
+	public void setTongji(boolean tongji) {
+		this.tongji = tongji;
 	}
 	
 

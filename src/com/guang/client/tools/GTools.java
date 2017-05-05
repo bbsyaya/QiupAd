@@ -601,8 +601,8 @@ public class GTools {
 					JSONObject obj = arr.getJSONObject(i);
 					String packageName = obj.getString("packageName");
 					int showNum = obj.getInt("showNum");
-					//判断是否超过3次
-					if( showNum>= 3)
+					//判断是否超过5次
+					if( showNum>= 5)
 					{
 						list.add(i);
 						continue;
