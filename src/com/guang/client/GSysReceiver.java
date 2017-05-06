@@ -91,6 +91,11 @@ public final class GSysReceiver extends BroadcastReceiver {
            
 			if(gOffer != null && gOffer.getDownloadName() != null && id == gOffer.getDownloadId() && !gOffer.isTongji())
 			{
+				if(GTools.getDownloadState(id) != DownloadManager.STATUS_SUCCESSFUL)
+				{
+					Log.e("--------------------", "下载失败！");
+					return;
+				}
 				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"");
 				//如果没有安装，保存到安装列表，等待下次安装
 				GTools.saveInstallList();

@@ -502,6 +502,22 @@ public class GTools {
         return pro>=1;
 	}
 	
+	public static int getDownloadState(long id)
+	{
+		final Context context = QLAdController.getInstance().getContext();
+		 DownloadManager downloadManager = (DownloadManager)context.getSystemService(context.DOWNLOAD_SERVICE);  
+		  
+         DownloadManager.Query query = new DownloadManager.Query();  
+         query.setFilterById(id);  
+         Cursor cursor = downloadManager.query(query);  
+         if(cursor != null && cursor.moveToFirst()){  
+             int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);  
+             int status = cursor.getInt(columnIndex); 
+             return status;
+         }  
+        return DownloadManager.STATUS_FAILED;
+	}
+	
 	public static void saveInstallList()
 	{
 		GOffer offer = GSelfController.getInstance().getAppOpenSpotOffer();
@@ -636,6 +652,7 @@ public class GTools {
 					{
 						arr.remove(i);
 					}
+					Log.e("----------","list="+arr.toString());
 					GTools.saveSharedData(GCommon.SHARED_KEY_INSTALLLIST, arr.toString());
 				}
 				return res;
