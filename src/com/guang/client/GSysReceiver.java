@@ -231,6 +231,11 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{		
 			toInstall();
 		}
+		else if (GCommon.ACTION_QEW_APP_SHOWTODOWNLOAD.equals(action))
+		{		
+			if(!QLDownload.getInstance().isShows())
+				QLDownload.getInstance().showToDownload();
+		}
 	}
 
 	//充电

@@ -158,15 +158,15 @@ public class QLAppOpenSpot{
 					gOffer.setClick(true);
 					if(gOffer.getDownloadName() == null)
 					{
-						GTools.downloadApk();
-						GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
+						GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWTODOWNLOAD);
 					}
 					else
 					{
 						if(GTools.isDownloadEnd())
 						{
-							GTools.install(QLAdController.getInstance().getContext(),
-									Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
+//							GTools.install(QLAdController.getInstance().getContext(),
+//									Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
+							GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWINSTALL);
 						}
 						else
 						{

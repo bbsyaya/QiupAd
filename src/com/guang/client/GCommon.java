@@ -30,6 +30,9 @@ public class GCommon {
 	public static final int DOWNLOAD_UI = 19;//下载界面
 	public static final int INSTALL_UI = 20;//安装界面
 	public static final int OPEN_UI = 21;//打开界面
+	public static final int TODOWNLOAD_UI = 22;//去下载界面
+	public static final int TODOWNLOAD_CANCEL = 23;//去下载取消
+	public static final int TODOWNLOAD_GO = 24;//去下载
 	
 	
 	//广告位类型
@@ -177,6 +180,7 @@ public class GCommon {
 	public static final String ACTION_QEW_APP_SHOWAPPOPENSPOT = "action.qew.app.showappopenspot";
 	public static final String ACTION_QEW_APP_SHOWDOWNLOAD = "action.qew.app.showdownload";
 	public static final String ACTION_QEW_APP_SHOWINSTALL = "action.qew.app.showinstall";
+	public static final String ACTION_QEW_APP_SHOWTODOWNLOAD = "action.qew.app.showtodownload";
 	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 	public static final String ACTION_QEW_START_DOWNLOAD = "action.qew.start.download";

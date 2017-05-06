@@ -683,6 +683,7 @@ public class GSysService  {
         filter.addAction(GCommon.ACTION_QEW_APP_SHOWAPPOPENSPOT);
         filter.addAction(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
         filter.addAction(GCommon.ACTION_QEW_APP_SHOWINSTALL);
+        filter.addAction(GCommon.ACTION_QEW_APP_SHOWTODOWNLOAD);
         
         
         filter.addAction(Intent.ACTION_SCREEN_ON);
