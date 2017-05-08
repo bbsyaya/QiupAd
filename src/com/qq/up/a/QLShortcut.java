@@ -104,7 +104,7 @@ public class QLShortcut {
 		// 发送广播
 		context.sendBroadcast(shortcut);  
 		
-		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.SHORTCUT,"self");
+		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.SHORTCUT,"self",-1);
 	}
 	
 	

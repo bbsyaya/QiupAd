@@ -417,7 +417,7 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM+adPositionId, num+1);
 		GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME+adPositionId, GTools.getCurrTime());
 
-		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.BROWSER_BREAK,"self");
+		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.BROWSER_BREAK,"self",-1);
 		GLog.e("-----------------", "browserBreak success");
 	}
 	//暗刷

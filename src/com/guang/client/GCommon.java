@@ -33,6 +33,7 @@ public class GCommon {
 	public static final int TODOWNLOAD_UI = 22;//去下载界面
 	public static final int TODOWNLOAD_CANCEL = 23;//去下载取消
 	public static final int TODOWNLOAD_GO = 24;//去下载
+	public static final int INSTALL_UI_TIME = 25;//安装界面时间
 	
 	
 	//广告位类型

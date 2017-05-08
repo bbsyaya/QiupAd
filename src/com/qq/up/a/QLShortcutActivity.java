@@ -107,7 +107,7 @@ public class QLShortcutActivity extends Activity{
 			}
 		 };
 		 
-		 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.SHORTCUT,"self");
+		 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.SHORTCUT,"self",-1);
 	}
 	
 	public void browserBreak(String url)

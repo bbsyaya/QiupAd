@@ -139,7 +139,7 @@ public class GAdViewController {
 					}
 					GLog.e("---------------------------", "Request app spot");					
 					GTools.httpGetRequest(getUrl(GCommon.APP_SPOT),GAdViewController.getInstance(), "revAppSpotAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,appSpotAdPositionId,GCommon.APP_SPOT,"AdView");
+					GTools.uploadStatistics(GCommon.REQUEST,appSpotAdPositionId,GCommon.APP_SPOT,"AdView",-1);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -316,7 +316,7 @@ public class GAdViewController {
 						{
 							flow = nflow;
 							GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT),GAdViewController.getInstance(), "revBrowserSpotAd", null);
-							GTools.uploadStatistics(GCommon.REQUEST,browserSpotAdPositionId,GCommon.BROWSER_SPOT,"AdView");
+							GTools.uploadStatistics(GCommon.REQUEST,browserSpotAdPositionId,GCommon.BROWSER_SPOT,"AdView",-1);
 							break;
 						}
 					} catch (InterruptedException e) {
@@ -512,7 +512,7 @@ public class GAdViewController {
 		lockOffer = null;
 		isLockRequesting = true;
 		GTools.httpGetRequest(getUrl(GCommon.BROWSER_SPOT), this, "revLockAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,lockAdPositionId,GCommon.CHARGLOCK,"AdView");
+		GTools.uploadStatistics(GCommon.REQUEST,lockAdPositionId,GCommon.CHARGLOCK,"AdView",-1);
 	}
 	public void revLockAd(Object ob,Object rev)
 	{
@@ -634,7 +634,7 @@ public class GAdViewController {
 					}
 					GLog.e("---------------------------", "Request banner");
 					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdViewController.getInstance(), "revBannerAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,bannerAdPositionId,GCommon.BANNER,"AdView");	
+					GTools.uploadStatistics(GCommon.REQUEST,bannerAdPositionId,GCommon.BANNER,"AdView",-1);	
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -802,7 +802,7 @@ public class GAdViewController {
 					}
 					GLog.e("---------------------------", "Request banner two");
 					GTools.httpGetRequest(getUrl(GCommon.BANNER),GAdViewController.getInstance(), "revBannerAd", null);
-					GTools.uploadStatistics(GCommon.REQUEST,bannerAdPositionId,GCommon.BANNER,"AdView");	
+					GTools.uploadStatistics(GCommon.REQUEST,bannerAdPositionId,GCommon.BANNER,"AdView",-1);	
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

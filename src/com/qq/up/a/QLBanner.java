@@ -149,7 +149,7 @@ public class QLBanner {
 					 if(target == null)
 					 {
 						 target = url;
-						 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.BANNER,adSource);
+						 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.BANNER,adSource,-1);
 						 if(type == 1 && offer.getAct() == 2)
 						 {
 							 GAdViewController.getInstance().setTrackOffer(offer);
@@ -344,7 +344,7 @@ public class QLBanner {
 				};
 			}.start();
 			
-			GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.BANNER,adSource);
+			GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.BANNER,adSource,-1);
 			updateShow();
 			
 		}

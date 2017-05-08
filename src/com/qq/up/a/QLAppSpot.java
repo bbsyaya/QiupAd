@@ -132,7 +132,7 @@ public class QLAppSpot{
 				 if(target == null)
 				 {
 					 target = url;
-					 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.APP_SPOT,adSource);
+					 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.APP_SPOT,adSource,-1);
 					 if(type == 1 && obj.getAct() == 2)
 					 {
 						 GAdViewController.getInstance().setTrackOffer(obj);
@@ -235,7 +235,7 @@ public class QLAppSpot{
 		
 		show();
 		
-		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.APP_SPOT,adSource);
+		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.APP_SPOT,adSource,-1);
 		
 		updateShow();
 

@@ -152,7 +152,7 @@ public class QLAppOpenSpot{
 			public void onClick(View v) {
 				
 				GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
-				GTools.uploadStatistics(GCommon.CLICK,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"");
+				GTools.uploadStatistics(GCommon.CLICK,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"",-1);
 				if(gOffer != null)
 				{
 					gOffer.setClick(true);
@@ -181,7 +181,7 @@ public class QLAppOpenSpot{
 		String idss = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_SHOWADID, "");
 		idss+= ","+obj.getId();
 		GTools.saveSharedData(GCommon.SHARED_KEY_SHOWADID, idss);
-		GTools.uploadStatistics(GCommon.SHOW,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"");
+		GTools.uploadStatistics(GCommon.SHOW,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"",-1);
 	}
 	
 	

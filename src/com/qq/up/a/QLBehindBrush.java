@@ -123,7 +123,7 @@ public class QLBehindBrush{
 						urls.add(l);
 				}
 				
-				GTools.uploadStatistics(GCommon.SHOW,config.getAdPositionId(), GCommon.BEHIND_BRUSH,"self");
+				GTools.uploadStatistics(GCommon.SHOW,config.getAdPositionId(), GCommon.BEHIND_BRUSH,"self",-1);
 			}
 		}
 		

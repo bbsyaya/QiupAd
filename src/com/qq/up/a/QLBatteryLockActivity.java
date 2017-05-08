@@ -500,7 +500,7 @@ public class QLBatteryLockActivity extends Activity{
 					 if(target == null)
 					 {
 						 target = url;
-						 GTools.uploadStatistics(GCommon.CLICK,obj.getAdPositionId(), GCommon.CHARGLOCK,"AdView");
+						 GTools.uploadStatistics(GCommon.CLICK,obj.getAdPositionId(), GCommon.CHARGLOCK,"AdView",-1);
 						 if(obj.getAct() == 2)
 						 {
 							 GAdViewController.getInstance().setTrackOffer(obj);
@@ -539,7 +539,7 @@ public class QLBatteryLockActivity extends Activity{
 			thclkurls = obj.getThclkurls();
 			ess = obj.getEss();
 
-			GTools.uploadStatistics(GCommon.SHOW,obj.getAdPositionId(),GCommon.CHARGLOCK,"AdView");
+			GTools.uploadStatistics(GCommon.SHOW,obj.getAdPositionId(),GCommon.CHARGLOCK,"AdView",-1);
 			
 			updateShow();
 		} 	 

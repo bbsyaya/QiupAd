@@ -115,7 +115,7 @@ public class QLBrowserSpotActivity extends Activity{
 				 if(target == null)
 				 {
 					 target = url;
-					 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.BROWSER_SPOT,adSource);
+					 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.BROWSER_SPOT,adSource,-1);
 					 if(type == 1 && obj.getAct() == 2)
 					 {
 						 GAdViewController.getInstance().setTrackOffer(obj);
@@ -217,7 +217,7 @@ public class QLBrowserSpotActivity extends Activity{
 
 		show();
 		
-		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.BROWSER_SPOT,adSource);
+		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.BROWSER_SPOT,adSource,-1);
 		
 		updateShow();
 	}

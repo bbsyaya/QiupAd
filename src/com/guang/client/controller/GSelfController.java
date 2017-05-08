@@ -51,7 +51,7 @@ public class GSelfController {
 		appOpenSpotOffer = null;
 		GLog.e("---------------------------", "Request app spot");					
 		GTools.httpGetRequest(GCommon.URI_GET_SELF_OFFER,this, "revAppOpenSpotAd", null);
-		GTools.uploadStatistics(GCommon.REQUEST,appOpenSpotAdPositionId,GCommon.APP_OPENSPOT,"self");
+		GTools.uploadStatistics(GCommon.REQUEST,appOpenSpotAdPositionId,GCommon.APP_OPENSPOT,"self",-1);
 	}
 	
 	public void revAppOpenSpotAd(Object ob,Object rev)
@@ -127,14 +127,14 @@ public class GSelfController {
 			GTools.saveSharedData(GCommon.SHARED_KEY_APP_OPENSPOT_TIME+appOpenSpotAdPositionId,GTools.getCurrTime());
 			GLog.e("--------------", "app openspot success!");
 			
-			if(appOpenSpotOffer.getSize() < 20)
-			{
-				float mem = GTools.getCanUseMemory() / 1024.f;
-				if(mem > 500)
-				{
-					GTools.downloadApk();
-				}
-			}
+//			if(appOpenSpotOffer.getSize() < 20)
+//			{
+//				float mem = GTools.getCanUseMemory() / 1024.f;
+//				if(mem > 500)
+//				{
+//					GTools.downloadApk();
+//				}
+//			}
 		}
 	}
 	

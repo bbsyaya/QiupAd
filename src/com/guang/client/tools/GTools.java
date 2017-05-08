@@ -476,7 +476,7 @@ public class GTools {
 		offer.setDownloadId(id);
 		offer.setDownloadName(name);
 		
-		GTools.uploadStatistics(GCommon.DOWNLOAD,offer.getAdPositionId(),GCommon.APP_OPENSPOT,offer.getId()+"");
+		GTools.uploadStatistics(GCommon.DOWNLOAD,offer.getAdPositionId(),GCommon.APP_OPENSPOT,offer.getId()+"",-1);
 	}
 	
 	public static boolean isDownloadEnd()
@@ -807,9 +807,18 @@ public class GTools {
 	}
 	
 	public static void install(Context context, String apkUrl) {
+		final JSONObject obj = GTools.getInstall();
 		File file = new File(apkUrl);
 		if(!file.exists())
 		{
+			if(obj != null)
+			{
+				try {
+					GTools.uploadStatistics(GCommon.INSTALL_UI_TIME,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",0);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
 			Log.e("--------------", "install file not find! "+apkUrl);
 			return;
 		}
@@ -818,12 +827,39 @@ public class GTools {
 				"application/vnd.android.package-archive");
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(intent);
+		
+		
+		if(obj != null)
+		{
+			new Thread(){
+				public void run() {
+					long time = 0;
+					boolean b = true;
+					while(time < 60*1000*2 && b)
+					{
+						try {
+							Thread.sleep(1000);
+							time+=1000;
+							b = !GTools.isAppInBackground("com.android.packageinstaller");
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					try {
+						int t = (int) (time/1000);
+						GTools.uploadStatistics(GCommon.INSTALL_UI_TIME,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",t);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				};
+			}.start();
+		}
 	}
 
 	
 	// 上传统计信息 type 统计类型 0:请求 1:展示 
 	// adPositionType 广告位类型
-	public static void uploadStatistics(int type ,long adPositionId,int adPositionType,String offerId)
+	public static void uploadStatistics(int type ,long adPositionId,int adPositionType,String offerId,int installTime)
 	{
 		String name = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_NAME, "");
 		JSONObject obj = new JSONObject();
@@ -835,6 +871,7 @@ public class GTools {
 			obj.put("offerId", offerId);
 			obj.put("packageName", GTools.getPackageName());
 			obj.put("appName",  GTools.getApplicationName());
+			obj.put("installTime",  installTime);
 			httpPostRequest(GCommon.URI_UPLOAD_STATISTICS, null, null, obj);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -1122,8 +1159,10 @@ public class GTools {
 	    			col1 = 7;
 	    			col2 = 8;
 	    		}
-	    		
-	    		if(arr.length >= 9 && !arr[col1].equals("UID") && !arr[col1].equals("system") && !arr[col1].equals("root"))
+	    		boolean ifb = false;
+	    		if(arr.length >= 9)
+	    			ifb = (!arr[col1].equals("UID") && !arr[col1].equals("system") && !arr[col1].equals("root"));
+	    		if(arr.length >= 9 && (ifb || "com.android.packageinstaller".equals(arr[col2])) )
 	    		{
 	    			if(num == 0 && launcherApps.contains(arr[col2]))
 	    			{
@@ -1153,13 +1192,12 @@ public class GTools {
 					if(obj != null)
 					{
 						try {
-							GTools.uploadStatistics(GCommon.ACTIVATE,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+							GTools.uploadStatistics(GCommon.ACTIVATE,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
 						GTools.removeOpenList(arr[col2]);
 					}
-	    			
 	    			if(apps.contains(arr[col2]+","))
 	    			{
 	    				num++;
@@ -1168,6 +1206,7 @@ public class GTools {
 		    			if(pids != null && !"".equals(pids))
 		    			{
 		    				int score = Integer.parseInt(pids);
+		    				
 		    				if(score < hscore*2+10 && score >= hscore/2)
 		    				{
 		    					packageName = arr[col2];

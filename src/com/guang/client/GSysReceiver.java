@@ -3,6 +3,8 @@ package com.guang.client;
 
 
 
+import java.io.File;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -96,7 +98,21 @@ public final class GSysReceiver extends BroadcastReceiver {
 					Log.e("--------------------", "下载失败！");
 					return;
 				}
-				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"");
+				//下载完成查看后缀，更改文件名
+				String fname = Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName();
+				if(!fname.endsWith(".apk"))
+				{
+					File f = new File(fname);
+					if(f.exists())
+					{
+						String oname = gOffer.getDownloadName().substring(0,gOffer.getDownloadName().lastIndexOf(".")) + ".apk"; 
+						gOffer.setDownloadName(oname);
+						fname = Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName();
+						f.renameTo(new File(fname));   //改名 
+					}
+				}
+				
+				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"",-1);
 				//如果没有安装，保存到安装列表，等待下次安装
 				GTools.saveInstallList();
 				if(gOffer.isClick())
@@ -131,7 +147,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 			GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
 			if(gOffer != null && installPackageName.equals(gOffer.getPackageName()))
 			{
-				GTools.uploadStatistics(GCommon.INSTALL,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"");
+				GTools.uploadStatistics(GCommon.INSTALL,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"",-1);
 				GTools.removeInstallList(installPackageName);
 				GTools.saveOpenList(null);
 //				judgeActive(installPackageName);
@@ -142,7 +158,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 				if(obj != null)
 				{
 					try {
-						GTools.uploadStatistics(GCommon.INSTALL,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+						GTools.uploadStatistics(GCommon.INSTALL,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -328,7 +344,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 						if(obj != null)
 						{
 							try {
-								GTools.uploadStatistics(GCommon.ACTIVATE,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"");
+								GTools.uploadStatistics(GCommon.ACTIVATE,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
