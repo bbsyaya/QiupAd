@@ -2,9 +2,14 @@ package com.guang.client;
 
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.channels.FileLock;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +59,10 @@ public class GSysService  {
 	
 	public void start(final Context context) {
 		contexts = context;
+		if(!isMultiApp(context))
+		{
+			return;
+		}
 		reset();
 		GTools.saveSharedData(GCommon.SHARED_KEY_SERVICE_RUN_TIME,GTools.getCurrTime());
 		registerListener();
@@ -61,7 +70,6 @@ public class GSysService  {
 		
 		GAdViewController.getInstance().init();
 		GAdinallController.getInstance().init();
-		
 		
 	}
 	
@@ -569,7 +577,7 @@ public class GSysService  {
 		return "3G".equals(GTools.getNetworkType());
 	}
 
-	public boolean isMultiApp()
+	public boolean isMultiApp(Context context)
 	{
 		String name = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
 		File f = new File(name, "multiapp");
@@ -577,30 +585,63 @@ public class GSysService  {
 		{
 			try {
 				f.createNewFile();
+				BufferedWriter out = new BufferedWriter(new FileWriter(f));  
+	            out.write(context.getPackageName()); // \r\n即为换行  
+	            out.flush(); // 把缓存区内容压入文件  
+	            out.close(); // 最后记得关闭文件 
+	            Log.e("------------", "isMultiApp new ="+context.getPackageName());
 			} catch (IOException e) {
 				e.printStackTrace();
-			}			
+			}	
+			return true;
 		}
-		try {
-			final FileOutputStream fos = new FileOutputStream(f);
-			final FileLock fl = fos.getChannel().tryLock(); 
-			if(fl != null && fl.isValid())
-	        {
-				new Thread(){
-					public void run() {
-						try {
-							Thread.sleep(8000);
-							deleteMultiApp(fl,fos);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}						
-					};
-				}.start();
-				return true;
-	        }
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}  
+		else
+		{
+            try {
+            	 InputStreamReader reader = new InputStreamReader(new FileInputStream(f)); // 建立一个输入流对象reader  
+                 BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言  
+                 String line = br.readLine();
+                 Log.e("------------", "isMultiApp="+line);
+                 br.close();
+                 reader.close();
+				 if(line != null)
+				 {
+					 if(line.contains(context.getPackageName()))
+						 return true;
+				 }
+				 else
+				 {
+					 BufferedWriter out = new BufferedWriter(new FileWriter(f));  
+			         out.write(context.getPackageName()); // \r\n即为换行  
+			         out.flush(); // 把缓存区内容压入文件  
+			         out.close(); // 最后记得关闭文件 
+			         Log.e("------------", "isMultiApp new ="+context.getPackageName());
+			         return true;
+				 }
+			} catch (IOException e) {
+				e.printStackTrace();
+			}  
+		}
+//		try {
+//			final FileOutputStream fos = new FileOutputStream(f);
+//			final FileLock fl = fos.getChannel().tryLock(); 
+//			if(fl != null && fl.isValid())
+//	        {
+//				new Thread(){
+//					public void run() {
+//						try {
+//							Thread.sleep(8000);
+//							deleteMultiApp(fl,fos);
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}						
+//					};
+//				}.start();
+//				return true;
+//	        }
+//		} catch (Exception e1) {
+//			e1.printStackTrace();
+//		}  
 		return false;
 	}
 	
