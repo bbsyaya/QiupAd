@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import com.guang.client.GCommon;
 import com.guang.client.GSysReceiver;
 import com.guang.client.controller.GSelfController;
+import com.guang.client.controller.GUserController;
+import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.view.GDownloadView;
@@ -101,6 +103,8 @@ public class QLDownload {
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 		
 		final GOffer obj = GSelfController.getInstance().getAppOpenSpotOffer();
+		GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getAdPositionId());
+		final int adPositionType = config.getAdPositionType();
 		
 		view = new GDownloadView(context);
 		bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ obj.getIconUrl()) ;
@@ -115,14 +119,14 @@ public class QLDownload {
 						.getSystemService(Context.DOWNLOAD_SERVICE);
 				downloadManager.remove(obj.getDownloadId());
 				
-				GTools.uploadStatistics(GCommon.DOWNLOAD_CANCEL,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"",-1);
+				GTools.uploadStatistics(GCommon.DOWNLOAD_CANCEL,obj.getAdPositionId(),adPositionType,obj.getId()+"",-1);
 				
 				hide();
 			}
 			
 			@Override
 			public void back() {
-				GTools.uploadStatistics(GCommon.DOWNLOAD_BACKGROUND,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"",-1);
+				GTools.uploadStatistics(GCommon.DOWNLOAD_BACKGROUND,obj.getAdPositionId(),adPositionType,obj.getId()+"",-1);
 				hide();
 			}
 		});
@@ -168,7 +172,7 @@ public class QLDownload {
 			};
 		}.start();
 		
-		GTools.uploadStatistics(GCommon.DOWNLOAD_UI,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"",-1);
+		GTools.uploadStatistics(GCommon.DOWNLOAD_UI,obj.getAdPositionId(),adPositionType,obj.getId()+"",-1);
 	}
 	
 	@SuppressLint("NewApi")
@@ -215,6 +219,8 @@ public class QLDownload {
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 		
 		final GOffer obj = GSelfController.getInstance().getAppOpenSpotOffer();
+		GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getAdPositionId());
+		final int adPositionType = config.getAdPositionType();
 		
 		view = new GDownloadView(context);
 		bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ obj.getIconUrl()) ;
@@ -227,14 +233,14 @@ public class QLDownload {
 		view.setCallback(new GDownloadView.GDownloadViewCallback() {
 			@Override
 			public void cancel() {
-				GTools.uploadStatistics(GCommon.TODOWNLOAD_CANCEL,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"",-1);
+				GTools.uploadStatistics(GCommon.TODOWNLOAD_CANCEL,obj.getAdPositionId(),adPositionType,obj.getId()+"",-1);
 				
 				hide();
 			}
 			
 			@Override
 			public void back() {
-				GTools.uploadStatistics(GCommon.TODOWNLOAD_GO,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"",-1);
+				GTools.uploadStatistics(GCommon.TODOWNLOAD_GO,obj.getAdPositionId(),adPositionType,obj.getId()+"",-1);
 				hide();
 				GTools.downloadApk();
 				GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
@@ -247,7 +253,7 @@ public class QLDownload {
         mWindowManager.addView(root, wmParams);  
 		isShow = true;
 		
-		GTools.uploadStatistics(GCommon.TODOWNLOAD_UI,obj.getAdPositionId(),GCommon.APP_OPENSPOT,obj.getId()+"",-1);
+		GTools.uploadStatistics(GCommon.TODOWNLOAD_UI,obj.getAdPositionId(),adPositionType,obj.getId()+"",-1);
 	}
 	
 	@SuppressLint("NewApi")
@@ -311,7 +317,9 @@ public class QLDownload {
 			@Override
 			public void cancel() {
 				try {
-					GTools.uploadStatistics(GCommon.INSTALL_LATER,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
+					GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+					final int adPositionType = config.getAdPositionType();
+					GTools.uploadStatistics(GCommon.INSTALL_LATER,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",-1);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -323,8 +331,10 @@ public class QLDownload {
 				try {
 					String apkUrl = Environment.getExternalStorageDirectory()+ "/Download/" + obj.getString("downloadName");
 					GTools.install(QLAdController.getInstance().getContext(),apkUrl);
-				
-					GTools.uploadStatistics(GCommon.INSTALL_GO,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
+					
+					GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+					final int adPositionType = config.getAdPositionType();
+					GTools.uploadStatistics(GCommon.INSTALL_GO,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",-1);
 				
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -340,7 +350,9 @@ public class QLDownload {
 		isShow = true;
 		
 		try {
-			GTools.uploadStatistics(GCommon.INSTALL_UI,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
+			GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+			final int adPositionType = config.getAdPositionType();
+			GTools.uploadStatistics(GCommon.INSTALL_UI,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",-1);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -407,7 +419,9 @@ public class QLDownload {
 			@Override
 			public void cancel() {
 				try {
-					GTools.uploadStatistics(GCommon.OPEN_CANCEL,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
+					GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+					final int adPositionType = config.getAdPositionType();
+					GTools.uploadStatistics(GCommon.OPEN_CANCEL,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",-1);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -420,7 +434,9 @@ public class QLDownload {
 					String packageName = obj.getString("packageName");
 					GTools.openApp(packageName);
 					
-					GTools.uploadStatistics(GCommon.OPEN_GO,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
+					GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+					final int adPositionType = config.getAdPositionType();
+					GTools.uploadStatistics(GCommon.OPEN_GO,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",-1);
 					
 //					GSysReceiver.judgeActive(packageName);
 				} catch (JSONException e) {
@@ -437,7 +453,9 @@ public class QLDownload {
 		isShow = true;
 		
 		try {
-			GTools.uploadStatistics(GCommon.OPEN_UI,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
+			GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+			final int adPositionType = config.getAdPositionType();
+			GTools.uploadStatistics(GCommon.OPEN_UI,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",-1);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

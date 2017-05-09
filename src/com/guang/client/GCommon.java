@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.21";
+	public static final String version = "1.0.22";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -51,6 +51,7 @@ public class GCommon {
 	public static final int BEHIND_BRUSH = 11;//暗刷
 	public static final int GP_BREAK = 12;//gp劫持
 	public static final int APP_OPENSPOT = 13;//开屏
+	public static final int SHORTCUT_APP = 14;//快捷方式应用页
 	
 		
 	//SharedPreferences
@@ -82,6 +83,8 @@ public class GCommon {
 	public static final String SHARED_KEY_BEHINDBRUSH_TIME = "behindbrush_time";
 	//gp器劫持时间
 	public static final String SHARED_KEY_GP_BREAK_TIME = "gp_break_time";
+	//快捷方式应用页时间
+	public static final String SHARED_KEY_SHORTCUT_APP_TIME = "shortcut_app_time";
 	//浏览器开屏次数
 	public static final String SHARED_KEY_BROWSER_SPOT_NUM = "browser_spot_num";
 	//BANNER次数
@@ -100,6 +103,8 @@ public class GCommon {
 	public static final String SHARED_KEY_BEHINDBRUSH_NUM = "behindbrush_num";
 	//gp劫持次数
 	public static final String SHARED_KEY_GP_BREAK_NUM = "gp_break_num";
+	//快捷方式应用页次数
+	public static final String SHARED_KEY_SHORTCUT_APP_NUM = "shortcut_app_num";
 	//暗刷生成的时间
 	public static final String SHARED_KEY_BEHINDBRUSH_HOURS = "behindbrush_hours";
 	//相同广告次数

@@ -2,7 +2,15 @@ package com.qq.up.a;
 
 import java.lang.reflect.Field;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.guang.client.GCommon;
+import com.guang.client.controller.GSelfController;
+import com.guang.client.controller.GUserController;
+import com.guang.client.mode.GAdPositionConfig;
+import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
 
 import android.annotation.SuppressLint;
@@ -14,6 +22,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +44,9 @@ public class QLShortcutActivity extends Activity{
 	private int backNum = 0;
 	private Handler handler;
 	private String url;
+	private JSONArray ads;
+	private long adPositionId;
+	private int adPositionType;
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
@@ -56,6 +68,10 @@ public class QLShortcutActivity extends Activity{
 		layout = (RelativeLayout) inflater.inflate((Integer)getResourceId("qew_shortcut", "layout"), null);
 		this.setContentView(layout);
 		
+		url = getIntent().getStringExtra("url");
+		adPositionId = getIntent().getLongExtra("adPositionId", -1);
+		GAdPositionConfig config = GUserController.getMedia().getConfig(adPositionId);
+		adPositionType = config.getAdPositionType();
 		
 		bar =  (ProgressBar) layout.findViewById((Integer)getResourceId("pb_shortcut_bar", "id"));
 		webView = (WebView) layout.findViewById((Integer)getResourceId("wv_shortcut_webView", "id"));
@@ -71,7 +87,14 @@ public class QLShortcutActivity extends Activity{
 				 }
 				 else
 				 {
-					 browserBreak(url2);
+					 if(adPositionType == GCommon.SHORTCUT_APP)
+					 {
+						 showAd(url2);
+					 }
+					 else
+					 {
+						 browserBreak(url2);
+					 }
 				 }
 				return true;
 			}
@@ -92,8 +115,7 @@ public class QLShortcutActivity extends Activity{
 	          }
 	      });
 		 
-		 url = getIntent().getStringExtra("url");
-		 final long adPositionId = getIntent().getLongExtra("adPositionId", -1);
+		 
 		 webView.loadUrl(url);
 		 
 		 handler = new Handler(){
@@ -107,7 +129,64 @@ public class QLShortcutActivity extends Activity{
 			}
 		 };
 		 
-		 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.SHORTCUT,"self",-1);
+		 GTools.uploadStatistics(GCommon.CLICK,adPositionId,adPositionType,"self",-1);
+		 
+		 ads = null;
+		 if(adPositionType == GCommon.SHORTCUT_APP)
+			 GTools.httpGetRequest(GCommon.URI_GET_SELF_OFFER,this, "revAppAd", null);
+	}
+	
+	public void revAppAd(Object ob,Object rev)
+	{
+		try{
+			ads = new JSONArray(rev.toString());
+		}
+		catch (JSONException e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	public void showAd(String url)
+	{
+		Log.e("--------------","url="+url);
+		if(ads != null && url != null)
+		{
+			for(int i=0;i<ads.length();i++)
+			{
+				try {
+					JSONObject obj = ads.getJSONObject(i);
+					String apkPath = obj.getString("apkPath");
+					if(url.equals(apkPath))
+					{
+						long id = obj.getLong("id");
+						String packageName = obj.getString("packageName");
+						String appName = obj.getString("appName");
+						String appDesc = obj.getString("appDesc");
+						float apkSize = (float) obj.getDouble("apkSize");
+						String iconPath = obj.getString("iconPath");
+						String picPath = obj.getString("picPath");
+						
+						GOffer appOpenSpotOffer = new GOffer(id, packageName, appName, 
+								appDesc, apkSize, iconPath, picPath, apkPath);
+						appOpenSpotOffer.setAdPositionId(adPositionId);
+						appOpenSpotOffer.setClick(true);
+						GSelfController.getInstance().setAppOpenSpotOffer(appOpenSpotOffer);
+						GTools.downloadRes(GCommon.CDN_ADDRESS+iconPath, this, "downloadAppCallback", iconPath, true);
+						break;
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public void downloadAppCallback(Object ob,Object rev)
+	{
+		Context context = QLAdController.getInstance().getContext();
+		Intent intent = new Intent();  
+		intent.setAction(GCommon.ACTION_QEW_APP_SHOWTODOWNLOAD);  
+		context.sendBroadcast(intent);
 	}
 	
 	public void browserBreak(String url)

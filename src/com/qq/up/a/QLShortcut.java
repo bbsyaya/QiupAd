@@ -23,6 +23,7 @@ public class QLShortcut {
 	private Service context;
 	private static QLShortcut _instance;
 	private long adPositionId;
+	private int adPositionType;
 	private QLShortcut(){}
 	
 	public static QLShortcut getInstance()
@@ -37,6 +38,7 @@ public class QLShortcut {
 		this.adPositionId = adPositionId;
 		this.context = (Service) QLAdController.getInstance().getContext();
 		GAdPositionConfig config = GUserController.getMedia().getConfig(adPositionId);
+		adPositionType = config.getAdPositionType();
 		String iconPath = config.getShortcutIconPath();
 		if(iconPath == null || "".equals(iconPath))
 			return;
@@ -104,7 +106,7 @@ public class QLShortcut {
 		// 发送广播
 		context.sendBroadcast(shortcut);  
 		
-		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.SHORTCUT,"self",-1);
+		GTools.uploadStatistics(GCommon.SHOW,adPositionId,adPositionType,"self",-1);
 	}
 	
 	

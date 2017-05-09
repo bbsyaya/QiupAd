@@ -32,6 +32,8 @@ import org.json.JSONObject;
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GSelfController;
+import com.guang.client.controller.GUserController;
+import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.mode.GOffer;
 import com.qq.up.a.QLAdController;
 import com.qq.up.a.QLSize;
@@ -476,7 +478,9 @@ public class GTools {
 		offer.setDownloadId(id);
 		offer.setDownloadName(name);
 		
-		GTools.uploadStatistics(GCommon.DOWNLOAD,offer.getAdPositionId(),GCommon.APP_OPENSPOT,offer.getId()+"",-1);
+		GAdPositionConfig config = GUserController.getMedia().getConfig(offer.getAdPositionId());
+		final int adPositionType = config.getAdPositionType();
+		GTools.uploadStatistics(GCommon.DOWNLOAD,offer.getAdPositionId(),adPositionType,offer.getId()+"",-1);
 	}
 	
 	public static boolean isDownloadEnd()
@@ -814,7 +818,9 @@ public class GTools {
 			if(obj != null)
 			{
 				try {
-					GTools.uploadStatistics(GCommon.INSTALL_UI_TIME,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",0);
+					GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+					final int adPositionType = config.getAdPositionType();
+					GTools.uploadStatistics(GCommon.INSTALL_UI_TIME,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",0);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -847,7 +853,9 @@ public class GTools {
 					}
 					try {
 						int t = (int) (time/1000);
-						GTools.uploadStatistics(GCommon.INSTALL_UI_TIME,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",t);
+						GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+						final int adPositionType = config.getAdPositionType();
+						GTools.uploadStatistics(GCommon.INSTALL_UI_TIME,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",t);
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -1192,7 +1200,9 @@ public class GTools {
 					if(obj != null)
 					{
 						try {
-							GTools.uploadStatistics(GCommon.ACTIVATE,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
+							GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+							final int adPositionType = config.getAdPositionType();
+							GTools.uploadStatistics(GCommon.ACTIVATE,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",-1);
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}

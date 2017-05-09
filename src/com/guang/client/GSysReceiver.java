@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import com.guang.client.controller.GSelfController;
 import com.guang.client.controller.GUserController;
+import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
@@ -111,8 +112,9 @@ public final class GSysReceiver extends BroadcastReceiver {
 						f.renameTo(new File(fname));   //改名 
 					}
 				}
-				
-				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"",-1);
+				GAdPositionConfig config = GUserController.getMedia().getConfig(gOffer.getAdPositionId());
+				final int adPositionType = config.getAdPositionType();
+				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,gOffer.getAdPositionId(),adPositionType,gOffer.getId()+"",-1);
 				//如果没有安装，保存到安装列表，等待下次安装
 				GTools.saveInstallList();
 				if(gOffer.isClick())
@@ -147,7 +149,10 @@ public final class GSysReceiver extends BroadcastReceiver {
 			GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
 			if(gOffer != null && installPackageName.equals(gOffer.getPackageName()))
 			{
-				GTools.uploadStatistics(GCommon.INSTALL,gOffer.getAdPositionId(),GCommon.APP_OPENSPOT,gOffer.getId()+"",-1);
+				GAdPositionConfig config = GUserController.getMedia().getConfig(gOffer.getAdPositionId());
+				final int adPositionType = config.getAdPositionType();
+				
+				GTools.uploadStatistics(GCommon.INSTALL,gOffer.getAdPositionId(),adPositionType,gOffer.getId()+"",-1);
 				GTools.removeInstallList(installPackageName);
 				GTools.saveOpenList(null);
 //				judgeActive(installPackageName);
@@ -158,7 +163,9 @@ public final class GSysReceiver extends BroadcastReceiver {
 				if(obj != null)
 				{
 					try {
-						GTools.uploadStatistics(GCommon.INSTALL,obj.getLong("adPositionId"),GCommon.APP_OPENSPOT,obj.getLong("id")+"",-1);
+						GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getLong("adPositionId"));
+						final int adPositionType = config.getAdPositionType();
+						GTools.uploadStatistics(GCommon.INSTALL,obj.getLong("adPositionId"),adPositionType,obj.getLong("id")+"",-1);
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}

@@ -105,6 +105,7 @@ public class GSysService  {
 								
 							}
 							shortcutThread();
+							shortcutAppThread();
 							behindBrushThread();
 						}
 						
@@ -256,6 +257,25 @@ public class GSysService  {
 			}
 		}
 	}
+	//快捷方式应用页
+	private void shortcutAppThread()
+	{
+		if(isPresent)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.SHORTCUT_APP);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					shortcutApp(adPositionId);
+				}
+			}
+		}
+	}
 	//一上来开始暗刷
 	private void startBehindBrushThread()
 	{
@@ -385,6 +405,24 @@ public class GSysService  {
 		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_NUM+adPositionId, 0);
 		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM+adPositionId, num+1);
 		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, GTools.getCurrTime());
+	}
+	//shortcut app
+	public void shortcutApp(long adPositionId)
+	{
+		if(adPositionId == -1)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.SHORTCUT_APP);
+			for(GAdPositionConfig config : list)
+			{
+				adPositionId = config.getAdPositionId();
+				break;
+			}
+		}
+		GLog.e("-----------------", "shortcut app success");
+		QLShortcut.getInstance().show(adPositionId);
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_APP_NUM+adPositionId, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_APP_NUM+adPositionId, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_APP_TIME+adPositionId, GTools.getCurrTime());
 	}
 	//浏览器插屏
 	public void browserSpot(long adPositionId,String packageName)
@@ -525,8 +563,19 @@ public class GSysService  {
 			{
 				long adPositionId = config.getAdPositionId();
 				{
-					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, n_time);
-					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM+adPositionId, 0);
+//					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, n_time);
+					if(GUserController.getMedia().isShowTimeInterval(adPositionId))
+						GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_NUM+adPositionId, 0);
+				}
+			}
+			list = GUserController.getMedia().getConfig(GCommon.SHORTCUT_APP);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				{
+//					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, n_time);
+					if(GUserController.getMedia().isShowTimeInterval(adPositionId))
+						GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_APP_NUM+adPositionId, 0);
 				}
 			}
 			list = GUserController.getMedia().getConfig(GCommon.BROWSER_BREAK);

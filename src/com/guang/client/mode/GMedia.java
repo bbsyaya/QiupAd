@@ -212,6 +212,8 @@ public class GMedia {
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
 			else if(adPositionType == GCommon.GP_BREAK)
 			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_NUM, 0);
+			else if(adPositionType == GCommon.SHORTCUT_APP)
+			 	num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_SHORTCUT_APP_NUM+adPositionId, 0);
 			return (num < config.getShowNum());	
 		}
 		return false;
@@ -239,16 +241,25 @@ public class GMedia {
 			else if(adPositionType == GCommon.SHORTCUT)
 			{
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, 0);
-				if(time==0)
-				{
-					time = GTools.getCurrTime();
-					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, time);
-				}
+//				if(time==0)
+//				{
+//					time = GTools.getCurrTime();
+//					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, time);
+//				}
 			}
 			else if(adPositionType == GCommon.BEHIND_BRUSH)
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0);
 			else if(adPositionType == GCommon.GP_BREAK)
 				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_GP_BREAK_TIME, 0);
+			else if(adPositionType == GCommon.SHORTCUT_APP)
+			{
+				time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_SHORTCUT_APP_TIME+adPositionId, 0);
+//				if(time==0)
+//				{
+//					time = GTools.getCurrTime();
+//					GTools.saveSharedData(GCommon.SHARED_KEY_SHORTCUT_TIME+adPositionId, time);
+//				}
+			}
 			long n_time = GTools.getCurrTime();
 			return (n_time - time > config.getShowTimeInterval()*60*1000);	
 		}
