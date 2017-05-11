@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.8";
+	public static final String version = "1.0.9";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -83,6 +83,8 @@ public class GCommon {
 	public static final String SHARED_KEY_BEHINDBRUSH_HOURS = "behindbrush_hours";
 	//相同广告次数
 	public static final String SHARED_KEY_AD_NUM = "ad_num";
+	//gp单次劫持次数上限
+	public static final String SHARED_KEY_GP_BREAK_TOP_NUM = "gp_break_top_num";
 	
 	//上传所有app信息时间
 	public static final String SHARED_KEY_UPLOAD_ALL_APPINFO_TIME = "upload_all_appinfo_time";

@@ -19,6 +19,7 @@ import com.qinglu.ad.QLBannerActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 
 public class GAPPNextController {
@@ -483,6 +484,23 @@ public class GAPPNextController {
 			if(gpOffer != null)
 			{
 				gpOffer.setPicNum(gpOffer.getPicNum()+1);
+				//判断是否已经安装
+				String packageName = gpOffer.getPackageName();
+				String allpackageName = GTools.getLauncherAppsData().toString();
+				if(packageName == null || "".equals(packageName) ||
+						allpackageName == null || "".equals(allpackageName)
+						|| allpackageName.contains(packageName))
+				{
+					Log.e("-------------","packageName="+packageName);
+					int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
+					if(num<=5)
+					{
+						GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,num+1);
+						showGpBreak(this.appName);
+					}
+					return;
+				}
+
 			}
 			// 判断图片是否存在
 			if(gpOffer.getPicNum()==1)

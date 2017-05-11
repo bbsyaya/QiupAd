@@ -299,6 +299,7 @@ public class GSysService  {
 	}
 	public void gpBreak(String appNmae)
 	{
+		GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
 		GAPPNextController.getInstance().showGpBreak(appNmae);
 	}
 	//应用启动
