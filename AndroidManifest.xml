@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qq.up"
-    android:versionCode="22"
-    android:versionName="1.0.22" >
+    android:versionCode="23"
+    android:versionName="1.0.23" >
 
 
 
@@ -35,12 +35,6 @@
             android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
-            android:name="com.qq.up.a.QLBannerActivity"
-            android:label=""
-            android:process=":pro1"
-            android:theme="@android:style/Theme.Translucent" >
-        </activity>
-        <activity
             android:name="com.qq.up.a.QLBatteryLockActivity"
             android:label=""
             android:process=":pro1"
@@ -49,13 +43,6 @@
         </activity>
         <activity
             android:name="com.qq.up.a.QLBatteryLockSettingActivity"
-            android:label=""
-            android:process=":pro1"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent" >
-        </activity>
-        <activity
-            android:name="com.qq.up.a.QLAppSpotActivity"
             android:label=""
             android:process=":pro1"
             android:screenOrientation="portrait"

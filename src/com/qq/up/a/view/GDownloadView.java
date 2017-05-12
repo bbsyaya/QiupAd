@@ -25,6 +25,7 @@ public class GDownloadView extends View{
 	private RectF mPoRect2 = new RectF(); // 进度条矩形区域 
 	private RectF mFengeRect = new RectF(); // 分割线矩形区域 
 	private RectF mBtnRect = new RectF(); // 按钮矩形区域 
+	private RectF mBtnRect2 = new RectF(); // 按钮矩形区域 
 	private float mBgRadius = 5; // 矩形的圆角半径,默认为０，即直角矩形
 	private Bitmap iconBitmap;
 	
@@ -90,6 +91,11 @@ public class GDownloadView extends View{
 		mBtnRect.left = dip2px(context, 236);  
 		mBtnRect.right = dip2px(context, 95+236); // 宽度  
 		mBtnRect.bottom = dip2px(context, 38+120); // 高度 
+		
+		mBtnRect2.top = dip2px(context, 120);  
+		mBtnRect2.left = dip2px(context, 12);  
+		mBtnRect2.right = dip2px(context, 95+12); // 宽度  
+		mBtnRect2.bottom = dip2px(context, 38+120); // 高度 
 	}
 
 	@Override
@@ -146,6 +152,7 @@ public class GDownloadView extends View{
 		//后台下载
 		mPaint.setColor(Color.parseColor("#3e8dff"));
 		canvas.drawRoundRect(mBtnRect, dip2px(context,5), dip2px(context,5), mPaint);
+		canvas.drawRoundRect(mBtnRect2, dip2px(context,5), dip2px(context,5), mPaint);
 		
 		mTextPaint.setColor(Color.WHITE);
 		mTextPaint.setTextSize(dip2px(context,15));
@@ -154,11 +161,12 @@ public class GDownloadView extends View{
 		canvas.drawText(okStr, dip2px(context,236+47), dip2px(context,120+19+5), mTextPaint);
 		
 		//取消
-		mTextPaint.setColor(Color.parseColor("#ececec"));
+//		mTextPaint.setColor(Color.parseColor("#ececec"));
 		mTextPaint.setTextSize(dip2px(context,15));
 		mTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
+		mTextPaint.setTextAlign(Align.CENTER);
+		canvas.drawText(cancelStr, dip2px(context,12+47), dip2px(context,120+19+5), mTextPaint);
 		mTextPaint.setTextAlign(Align.LEFT);
-		canvas.drawText(cancelStr, dip2px(context,236-35-15), dip2px(context,120+19+5), mTextPaint);
 	}
 	
 	private void initTouch()
@@ -168,8 +176,8 @@ public class GDownloadView extends View{
 			boolean isClickCancelDown = false;
 			int backX = dip2px(context,236);
 			int backY = dip2px(context,120);
-			int cancelX = dip2px(context,236-35-15);
-			int cancelY = dip2px(context,120+10);
+			int cancelX = dip2px(context,12);
+			int cancelY = dip2px(context,120);
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				
@@ -181,7 +189,7 @@ public class GDownloadView extends View{
 					isClickCancelDown = false;
 					if(x>backX && x < backX + dip2px(context,95) && y > backY && y < backY + dip2px(context,38))
 						isClickBackDown = true;
-					if(x>cancelX && x < cancelX + dip2px(context,30) && y > cancelY && y < cancelY + dip2px(context,18))
+					if(x>cancelX && x < cancelX + dip2px(context,95) && y > cancelY && y < cancelY + dip2px(context,38))
 						isClickCancelDown = true;
 				}
 				else if(event.getAction() == MotionEvent.ACTION_UP)
@@ -198,7 +206,7 @@ public class GDownloadView extends View{
 					}
 					if(isClickCancelDown)
 					{
-						if(x>cancelX && x < cancelX + dip2px(context,30) && y > cancelY && y < cancelY + dip2px(context,18))
+						if(x>cancelX && x < cancelX + dip2px(context,95) && y > cancelY && y < cancelY + dip2px(context,38))
 						{
 							if(callback != null)
 							{
