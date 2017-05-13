@@ -509,7 +509,6 @@ public class GMedia {
 		{
 			name = GTools.getForegroundAppByBlackList();
 			boolean isLauncher = GTools.getSharedPreferences().getBoolean(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER_2, false);
-			Log.e("-------------","name="+name + "  isLauncher="+isLauncher);
 			if(isLauncher)
 			{
 				if(name != null && !launcherApps.contains(name))
