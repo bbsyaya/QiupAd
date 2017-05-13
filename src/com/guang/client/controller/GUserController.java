@@ -353,6 +353,7 @@ public class GUserController {
 					float showTimeInterval = (float) config.getDouble("showTimeInterval");
 					String timeSlot = config.getString("timeSlot");
 					String whiteList = config.getString("whiteList");
+					String blackList = config.getString("blackList");
 					String browerBreakUrl = config.getString("browerBreakUrl");
 					float bannerTwoDelyTime = (float) config.getDouble("bannerTwoDelyTime");
 					float bannerShowTime = (float) config.getDouble("bannerShowTime");
@@ -360,7 +361,7 @@ public class GUserController {
 					
 					GAdPositionConfig adConfig = new GAdPositionConfig(adPositionId,adPositionType, timeSlot, showNum, showTimeInterval,
 							whiteList,adShowNum, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath, 
-							shortcutName, shortcutUrl, behindBrushUrls,browerBreakUrl,bannerTwoDelyTime,bannerShowTime,appSpotDelyTime);
+							shortcutName, shortcutUrl, behindBrushUrls,browerBreakUrl,bannerTwoDelyTime,bannerShowTime,appSpotDelyTime,blackList);
 //					adConfig.initPackageName(launcherApps);
 					list_configs.add(adConfig);
 				}

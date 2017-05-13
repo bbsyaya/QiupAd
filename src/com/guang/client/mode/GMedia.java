@@ -25,7 +25,9 @@ public class GMedia {
 	private Boolean uploadPackage;//是否上传包名
 	
 	private String whiteList;
+	private String blackList;
 	private String launcherApps;
+	private String allApps;
 	
 	private String province;//省份
 		
@@ -93,6 +95,17 @@ public class GMedia {
 	public void setProvince(String province) {
 		this.province = province;
 	}
+	
+	public String getBlackList() {
+		return blackList;
+	}
+	public void setBlackList(String blackList) {
+		this.blackList = blackList;
+	}
+	
+	public String getAllApps() {
+		return allApps;
+	}
 	//初始化白名单
 	public void initWhiteList()
 	{
@@ -119,7 +132,11 @@ public class GMedia {
 		
 		this.launcherApps = GTools.getLauncherApps().toString();
 		GTools.setLauncherApps(launcherApps);
-		GLog.e("------22----------", "launcherApps="+launcherApps  + "   whiteList="+whiteList );
+		GLog.e("----------------", "launcherApps="+launcherApps  + "   whiteList="+whiteList );
+		
+		this.blackList = GTools.getInlayAppsData().toString();
+		this.allApps = apps.toString();
+		GLog.e("----------------", "blackList="+blackList );
 	}
 	
 	//添加白名单
@@ -172,6 +189,19 @@ public class GMedia {
 		if(config != null)
 		{
 			if(config.getWhiteList() != null && !"".equals(config.getWhiteList()) && config.getWhiteList().contains(packageName))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	//是否包含在黑名单中
+	public boolean isBlackList(long adPositionId,String packageName)
+	{
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
+		{
+			if(config.getBlackList() != null && !"".equals(config.getBlackList()) && config.getBlackList().contains(packageName))
 			{
 				return true;
 			}
@@ -472,5 +502,37 @@ public class GMedia {
 		return false;
 	}
 	
-	
+	public boolean isOpenAppByBlackList()
+	{
+		String name = null;
+		if(launcherApps != null)
+		{
+			name = GTools.getForegroundAppByBlackList();
+			boolean isLauncher = GTools.getSharedPreferences().getBoolean(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER_2, false);
+			Log.e("-------------","name="+name + "  isLauncher="+isLauncher);
+			if(isLauncher)
+			{
+				if(name != null && !launcherApps.contains(name))
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP_2, name);
+					GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER_2, false);
+					return true;
+				}
+				else
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP_2, "");
+					if(name == null || !launcherApps.contains(name))
+						GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER_2, false);
+				}
+			}
+			else
+			{
+				if(name != null)
+					GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER_2, launcherApps.contains(name));
+				else
+					GTools.saveSharedData(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER_2, false);
+			}
+		}
+		return false;
+	}
 }

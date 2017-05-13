@@ -82,11 +82,12 @@ public class GSysService  {
 					context = QLAdController.getInstance().getContext();
 				initData();
 				boolean open = false;
+				boolean open2 = false;
 				startBehindBrushThread();
 				while(isMainLoop())
 				{	
 					try {	
-						if(open)
+						if(open || open2)
 							Thread.sleep(10000);
 						else
 							Thread.sleep(2200);
@@ -97,12 +98,14 @@ public class GSysService  {
 							{
 								browserSpotThread();
 								browserBreakThread();
-								
-								
+	
+								bannerThread();
+							}
+							open2 = GUserController.getMedia().isOpenAppByBlackList();
+							if(open2)
+							{
 								appOpenSpotThread();
 								appSpotThread();
-								bannerThread();
-								
 							}
 							shortcutThread();
 							shortcutAppThread();
@@ -182,8 +185,8 @@ public class GSysService  {
 						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
-					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s)&& !GTools.isSelfForeground())
+					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP_2, "");
+					if(s != null && !GUserController.getMedia().isBlackList(adPositionId, s)&& !GTools.isSelfForeground())
 					{
 						appOpenSpot(adPositionId,s);
 					}		
@@ -206,8 +209,8 @@ public class GSysService  {
 						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
-					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s)&& !GTools.isSelfForeground())
+					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP_2, "");
+					if(s != null && !GUserController.getMedia().isBlackList(adPositionId, s)&& !GTools.isSelfForeground())
 					{
 						appSpot(adPositionId,s);
 					}		

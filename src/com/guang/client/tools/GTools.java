@@ -1011,6 +1011,31 @@ public class GTools {
         return arr;
     }
     
+    public static List<String> getInlayAppsData()
+    {
+        // 桌面应用的启动在INTENT中需要包含ACTION_MAIN 和CATEGORY_HOME.
+    	Context context = QLAdController.getInstance().getContext();
+        Intent intent = new Intent();
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setAction(Intent.ACTION_MAIN);
+
+        PackageManager manager = context.getPackageManager();
+        List<ResolveInfo> list = manager.queryIntentActivities(intent,  0);
+        List<String> arr = new ArrayList<String>();
+        String lans = GTools.getLauncherApps().toString();
+        for(ResolveInfo info : list)
+        {
+        	String packageName = info.activityInfo.packageName;
+        	if((info.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0 )
+        	{
+        		if(lans != null && !lans.contains(packageName))
+        			arr.add(packageName);
+        	}
+        	
+        }
+        return arr;
+    }
+    
     public static JSONArray getUploadLauncherAppsData()
     {
         // 桌面应用的启动在INTENT中需要包含ACTION_MAIN 和CATEGORY_HOME.
@@ -1230,6 +1255,96 @@ public class GTools {
 		    				break;
 		    			}
 	    			}
+	    		}
+	    	}
+	    	br.close();
+		} catch (IOException e) {
+		}		
+        return packageName;
+    }
+    
+  //得到前台运行程序
+    public static String getForegroundAppByBlackList() {
+    	String apps = GUserController.getMedia().getBlackList();
+    	String allapps = GUserController.getMedia().getAllApps();
+    	if(GCommon.SDK_VERSION < 14)
+    	{
+    		String p = getForegroundApp2();
+    		if(p != null && !apps.contains(p+","))
+    		{
+    			return p;
+    		}
+    		else 
+    			return null;
+    	}
+    	String packageName = null;
+		try {
+			String result = null;
+			if(apps == null || allapps == null)
+				return null;
+	    	Process p=Runtime.getRuntime().exec("top -n 1 -d 0");
+	    	int num = 0;
+	    	BufferedReader br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    	while((result=br.readLine()) != null)
+	    	{
+	    		result = result.trim();
+	    		
+	    		String[] arr = result.split("[\\s]+");
+	    		
+	    		int col1 = 8;
+	    		int col2 = 9;
+	    		if(arr.length == 9)
+	    		{
+	    			col1 = 7;
+	    			col2 = 8;
+	    		}
+	    		boolean ifb = false;
+	    		if(arr.length >= 9)
+	    			ifb = (!arr[col1].equals("UID") && !arr[col1].equals("system") && !arr[col1].equals("root"));
+	    		if(arr.length >= 9 && ifb)
+	    		{
+	    			if(num == 0 && launcherApps.contains(arr[col2]))
+	    			{
+	    				String pidf = "/proc/"+arr[0]+"/oom_score";
+		    			String pids = readPidFile(pidf);
+		    			if(pids != null && !"".equals(pids))
+		    			{
+		    				int score = Integer.parseInt(pids);
+		    				if(hscore > score)
+		    				{
+		    					hscore = score;
+			    				GLog.e("--------------------", "name="+arr[col2] +"  hscore="+hscore);
+		    				}
+		    				else
+		    				{
+		    					if(hscore == 450 && score > 1000)
+		    					{
+		    						hscore = score;
+		    						GLog.e("--------------------", "name="+arr[col2] +"  hscore="+hscore);
+		    					}
+		    				}
+		    			}
+	    			}
+	    			if(allapps.contains(arr[col2]+",") && !apps.contains(arr[col2]+","))
+	    			{
+	    				num++;
+		    			String pidf = "/proc/"+arr[0]+"/oom_score";
+		    			String pids = readPidFile(pidf);
+		    			if(pids != null && !"".equals(pids))
+		    			{
+		    				int score = Integer.parseInt(pids);
+		    				if(score < hscore*2+10 && score >= hscore/2)
+		    				{
+		    					packageName = arr[col2];
+		    					break;
+		    				}
+		    			}
+		    			if(num>20)
+		    			{
+		    				break;
+		    			}
+	    			}
+	    			
 	    		}
 	    	}
 	    	br.close();
