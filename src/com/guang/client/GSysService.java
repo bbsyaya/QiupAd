@@ -93,14 +93,14 @@ public class GSysService  {
 							Thread.sleep(2200);
 						if(isPresent && GUserController.getMedia().getOpen() && GUserController.getMedia().isProvince())
 						{
-							open = GUserController.getMedia().isOpenApp();
-							if(open)
-							{
-								browserSpotThread();
-								browserBreakThread();
-	
-								bannerThread();
-							}
+//							open = GUserController.getMedia().isOpenApp();
+//							if(open)
+//							{
+//								browserSpotThread();
+//								browserBreakThread();
+//	
+//								bannerThread();
+//							}
 							open2 = GUserController.getMedia().isOpenAppByBlackList();
 							if(open2)
 							{
