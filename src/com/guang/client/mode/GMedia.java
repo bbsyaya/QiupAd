@@ -135,8 +135,8 @@ public class GMedia {
 		GLog.e("----------------", "launcherApps="+launcherApps  + "   whiteList="+whiteList );
 		
 		this.blackList = GTools.getInlayAppsData().toString();
-		this.allApps = apps.toString();
-		GLog.e("----------------", "blackList="+blackList );
+		this.allApps = apps.toString() + this.launcherApps;
+		GLog.e("----------------", "allApps="+allApps );
 	}
 	
 	//添加白名单
@@ -508,6 +508,7 @@ public class GMedia {
 		if(launcherApps != null)
 		{
 			name = GTools.getForegroundAppByBlackList();
+
 			boolean isLauncher = GTools.getSharedPreferences().getBoolean(GCommon.SHARED_KEY_IS_OPEN_LAUNCHER_2, false);
 			if(isLauncher)
 			{

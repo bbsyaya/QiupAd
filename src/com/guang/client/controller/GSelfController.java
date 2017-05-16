@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.guang.client.GCommon;
@@ -202,6 +203,13 @@ public class GSelfController {
 			String idss = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_SHOWADID, "");
 			String ids[] = idss.split(",");
 			
+			//判断是否包含运营商
+			String operators =  obj.getString("operators");
+			if(operators == null || "".equals(operators))
+				return false;
+			if(!operators.contains(getOperator()))
+				return false;
+			
 			//判断是否包含省份
 			String areas = obj.getString("areas");
 			if(areas == null || "".equals(areas))
@@ -272,6 +280,27 @@ public class GSelfController {
 			return false;
 		}	
 		return true;
+	}
+	
+	private String getOperator()
+	{
+		Context context = QLAdController.getInstance().getContext();
+		TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+		String imsi = tm.getSubscriberId();
+		if(imsi == null)
+		{
+			return "0";
+		}
+		else
+		{
+			if(imsi.startsWith("46000") || imsi.startsWith("46002") || imsi.startsWith("46007"))
+				return "1";
+			if(imsi.startsWith("46001"))
+				return "2";
+			if(imsi.startsWith("46003") || imsi.startsWith("46011"))
+				return "3";
+			return "0";
+		}
 	}
 
 	public GOffer getAppOpenSpotOffer() {
