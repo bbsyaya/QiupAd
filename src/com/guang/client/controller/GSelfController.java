@@ -205,10 +205,11 @@ public class GSelfController {
 			
 			//判断是否包含运营商
 			String operators =  obj.getString("operators");
-			if(operators == null || "".equals(operators))
-				return false;
-			if(!operators.contains(getOperator()))
-				return false;
+			if(operators != null && !"".equals(operators))
+			{
+				if(!operators.contains(getOperator()))
+					return false;
+			}			
 			
 			//判断是否包含省份
 			String areas = obj.getString("areas");
