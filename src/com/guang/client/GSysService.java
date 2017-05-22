@@ -93,20 +93,23 @@ public class GSysService  {
 							Thread.sleep(2200);
 						if(isPresent && GUserController.getMedia().getOpen() && GUserController.getMedia().isProvince())
 						{
-//							open = GUserController.getMedia().isOpenApp();
-//							if(open)
-//							{
-//								browserSpotThread();
-//								browserBreakThread();
-//	
-//								bannerThread();
-//							}
-							open2 = GUserController.getMedia().isOpenAppByBlackList();
-							if(open2)
+							open = GUserController.getMedia().isOpenApp();
+							if(open)
 							{
+								browserSpotThread();
+								browserBreakThread();
+	
+								bannerThread();
+								
 								appOpenSpotThread();
 								appSpotThread();
 							}
+//							open2 = GUserController.getMedia().isOpenAppByBlackList();
+//							if(open2)
+//							{
+//								appOpenSpotThread();
+//								appSpotThread();
+//							}
 							shortcutThread();
 							shortcutAppThread();
 							behindBrushThread();
@@ -163,7 +166,7 @@ public class GSysService  {
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
 					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s)&& !GTools.isSelfForeground())
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
 					{
 						banner(adPositionId,s);
 					}		
@@ -209,8 +212,8 @@ public class GSysService  {
 						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
-					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP_2, "");
-					if(s != null && !GUserController.getMedia().isBlackList(adPositionId, s)&& !GTools.isSelfForeground())
+					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
 					{
 						appSpot(adPositionId,s);
 					}		
