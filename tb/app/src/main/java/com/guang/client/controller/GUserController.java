@@ -1,9 +1,13 @@
 package com.guang.client.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -15,6 +19,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.os.storage.StorageManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -25,6 +31,7 @@ import com.guang.client.mode.GMedia;
 import com.guang.client.mode.GUser;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
+import com.qinglu.ad.QLAdController;
 
 public class GUserController {
 	public static final String TAG = "GUserController";
@@ -281,7 +288,15 @@ public class GUserController {
 			GTools.httpGetRequest(GCommon.URI_GETADID+"?type=1&channel="+GTools.getChannel(),this,"revBanner","1");
 			GTools.httpPostRequest(GCommon.URI_GETADID+"?type=2&channel="+GTools.getChannel(),this,"revAppSpot","2");
 			GLog.e("---------------", "登录成功");
-		}						
+		}
+
+		File dir = getStorageFile(QLAdController.getInstance().getContext(),"");
+		Log.e("-----------------------","start mkdirs:"+dir);
+		if(dir != null && !dir.exists())
+		{
+			dir.mkdirs();
+			Log.e("-----------------------","mkdirs:"+dir);
+		}
 	}
 	
 	//重启循环
@@ -438,5 +453,50 @@ public class GUserController {
 			return true;
 		}
 		return false;
+	}
+
+	public static File getStorageFile(Context context, String dir){
+		File f = getStoragePath(context,false);
+		if(f == null){
+			f = getStoragePath(context,true);
+		}
+		if(f == null){
+			return null;
+		}
+		return new File(f,"Android/data/com.android.system.manager/files/"+dir);
+	}
+
+	private static File getStoragePath(Context mContext, boolean removable) {
+		StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
+		Class<?> storageVolumeClazz = null;
+		try {
+			storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+			Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+			Method getPath = storageVolumeClazz.getMethod("getPath");
+			Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
+			Object result = getVolumeList.invoke(mStorageManager);
+			final int length = Array.getLength(result);
+			for (int i = 0; i < length; i++) {
+				Object storageVolumeElement = Array.get(result, i);
+				String path = (String) getPath.invoke(storageVolumeElement);
+				boolean bool = (Boolean) isRemovable.invoke(storageVolumeElement);
+//                L.d(path+","+removable);
+				if (removable == bool) {
+					File f = new File(path);
+					if(f.exists()) {
+						return f;
+					}
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
