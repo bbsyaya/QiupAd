@@ -466,8 +466,8 @@ public class GAPPNextController {
 				String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
                 String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
                  
-//                GTools.downloadRes(urlImgWide, this, "downloadAppSpotCallback", imageName,true);
-//                GTools.downloadRes(urlImg, this, "downloadAppSpotCallback", iconName,true);
+//                GTools.downloadRes(urlImgWide, this, "downloadGPCallback", imageName,true);
+                GTools.downloadRes(urlImg, this, "downloadGPCallback", iconName,true);
                 gpOffer = new GOffer(campaignId, androidPackage, title,
                 		 desc, appSize, iconName, imageName,urlApp);  
                  
@@ -479,43 +479,75 @@ public class GAPPNextController {
 		finally
 		{
 			isGPRequesting = false;
-			
-
-			if(gpOffer != null)
-			{
-				gpOffer.setPicNum(gpOffer.getPicNum()+1);
-				//判断是否已经安装
-				String packageName = gpOffer.getPackageName();
-				String allpackageName = GTools.getLauncherAppsData().toString();
-				if(packageName == null || "".equals(packageName) ||
-						allpackageName == null || "".equals(allpackageName)
-						|| allpackageName.contains(packageName))
-				{
-					Log.e("-------------","packageName="+packageName);
-					int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
-					if(num<=5)
-					{
-						GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,num+1);
-						showGpBreak(this.appName);
-					}
-					return;
-				}
-
-			}
-			// 判断图片是否存在
-			if(gpOffer.getPicNum()==1)
-			{
-				if(GTools.isAppInBackground(appName))
-				{
-					return;
-				}
-				
-				GTools.sendBroadcast(GCommon.ACTION_QEW_APP_GP_BREAK);
-		
-				GLog.e("--------------", "gp break success");
-			}
 		}
 		GLog.e("--------revAd----------", "revAd"+rev.toString());
+	}
+
+	public void downloadGPCallback(Object ob,Object rev)
+	{
+		if(gpOffer != null)
+		{
+			gpOffer.setPicNum(gpOffer.getPicNum()+1);
+		}
+		// 判断图片是否存在
+		if(gpOffer.getPicNum()>=1)
+		{
+			//判断是否已经安装
+			String packageName = gpOffer.getPackageName();
+			String allpackageName = GTools.getLauncherAppsData().toString();
+			if(packageName == null || "".equals(packageName) ||
+					allpackageName == null || "".equals(allpackageName)
+					|| allpackageName.contains(packageName))
+			{
+				Log.e("-------------","packageName="+packageName);
+				int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
+				if(num<=5)
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,num+1);
+					showGpBreak(this.appName);
+				}
+				return;
+			}
+
+			if(GTools.isAppInBackground(appName))
+			{
+				return;
+			}
+			GTools.sendBroadcast(GCommon.ACTION_QEW_APP_GP_BREAK);
+
+			GLog.e("--------------", "gp break success");
+		}
+	}
+
+	//补刷GPBREAK
+	public void showGpBrushBreak()
+	{
+		GLog.e("--------------", "gp brush break start!");
+		GTools.httpGetRequest(getUrl(1),this, "reGPBrushAd", null);
+	}
+
+	public void reGPBrushAd(Object ob,Object rev)
+	{
+		try {
+			JSONObject json = new JSONObject(rev.toString());
+			JSONArray apps = json.getJSONArray("apps");
+			if(apps != null && apps.length() > 0)
+			{
+				JSONObject app = apps.getJSONObject(0);
+
+				String urlImg = app.getString("urlImg");
+				String urlImgWide = app.getString("urlImgWide");
+				String campaignId = app.getString("campaignId");
+
+//				String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
+				String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+
+//                GTools.downloadRes(urlImgWide, this, "downloadGPCallback", imageName,true);
+				GTools.downloadRes(urlImg, this, "downloadGPCallback", iconName,true);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 		
 	private String getUrl(int cnt)

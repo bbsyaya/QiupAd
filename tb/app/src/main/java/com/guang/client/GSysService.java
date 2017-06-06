@@ -61,7 +61,7 @@ public class GSysService  {
 		reset();
 		GTools.saveSharedData(GCommon.SHARED_KEY_SERVICE_RUN_TIME,GTools.getCurrTime());
 		registerListener();
-		GUserController.getInstance().login();
+		GUserController.getInstance().toLogin();
 		GOfferController.getInstance().initMobVista();
 		GAPPNextController.getInstance();
 		GSMController.getInstance().init();
@@ -81,7 +81,7 @@ public class GSysService  {
 					context = QLAdController.getInstance().getContext();
 				initData();
 				boolean open = false;
-
+				boolean isLimt =  GUserController.getMedia().isLimt();
 				while(isMainLoop())
 				{	
 					try {	
@@ -89,7 +89,7 @@ public class GSysService  {
 							Thread.sleep(10000);
 						else
 							Thread.sleep(2200);
-						if(isPresent && GUserController.getMedia().getOpen())
+						if(isPresent && GUserController.getMedia().getOpen() && !isLimt)
 						{
 							open = GUserController.getMedia().isOpenApp();
 							if(open)
@@ -301,6 +301,24 @@ public class GSysService  {
 	{
 		GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
 		GAPPNextController.getInstance().showGpBreak(appNmae);
+	}
+	//GP截取补刷
+	public void gpBreakBrushThread()
+	{
+		if(isPresent && isRuning() &&  isWifi())
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.GP_BREAK);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isGpBrushNum(adPositionId)
+						&& GUserController.getMedia().isGpTimeSlot(adPositionId))
+				{
+					GAPPNextController.getInstance().showGpBrushBreak();
+				}
+			}
+		}
 	}
 	//应用启动
 	public void appSpot(long adPositionId,String appNmae)
@@ -531,6 +549,14 @@ public class GSysService  {
 				{
 					GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_TIME+adPositionId, 0l);
 					GTools.saveSharedData(GCommon.SHARED_KEY_BROWSER_BREAK_NUM+adPositionId, 0);
+				}
+			}
+			list = GUserController.getMedia().getConfig(GCommon.GP_BREAK);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_BRUSH_NUM+adPositionId, 0);
 				}
 			}
 		}

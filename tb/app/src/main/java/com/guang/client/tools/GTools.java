@@ -45,6 +45,7 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,6 +55,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -62,6 +64,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.CallLog;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.WindowManager;
@@ -148,10 +151,9 @@ public class GTools {
 	}
 	// 获取本机ip地址
 	public static String getLocalHost() {
-		Context context =QLAdController.getInstance().getContext();
+		Context context =QLAdController.getInstance().getContext().getApplicationContext();
 		// 获取wifi服务
-		WifiManager wifiManager = (WifiManager) context
-				.getSystemService(Context.WIFI_SERVICE);
+		WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 		// 判断wifi是否开启
 		if (!wifiManager.isWifiEnabled()) {
 			wifiManager.setWifiEnabled(true);
@@ -303,7 +305,7 @@ public class GTools {
 						HttpEntity entity = httpResponse.getEntity();
 						response = EntityUtils.toString(entity, "utf-8");// 将entity当中的数据转换为字符串					
 					} else {
-						GLog.e(TAG, "httpGetRequest 请求失败！");
+						GLog.e(TAG, "httpGetRequest 请求失败！"+dataUrl);
 						
 					}
 				} catch (Exception e) {
@@ -614,6 +616,31 @@ public class GTools {
         }
         return arr;
     }
+
+	public static int getInstallAppNum()
+	{
+		int num = 0;
+		// 桌面应用的启动在INTENT中需要包含ACTION_MAIN 和CATEGORY_HOME.
+		Context context = QLAdController.getInstance().getContext();
+		Intent intent = new Intent();
+		intent.addCategory(Intent.CATEGORY_LAUNCHER);
+		intent.setAction(Intent.ACTION_MAIN);
+
+		PackageManager manager = context.getPackageManager();
+		List<ResolveInfo> list = manager.queryIntentActivities(intent,  0);
+		for(ResolveInfo info : list)
+		{
+			boolean inlay = false;
+			if((info.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0 )
+			{
+				inlay = true;
+			}
+			if(!inlay)
+				num++;
+
+		}
+		return num;
+	}
     
     public static JSONArray getUploadLauncherAppsData()
     {
@@ -1040,4 +1067,26 @@ public class GTools {
         }
         return 0;
     }
+
+	public static int getCallLogNum() {
+		Context context = QLAdController.getInstance().getContext();
+		// 1.获得ContentResolver
+		ContentResolver resolver = context.getContentResolver();
+		int num = 0;
+		// 2.利用ContentResolver的query方法查询通话记录数据库
+		Cursor cursor = resolver.query(CallLog.Calls.CONTENT_URI, // 查询通话记录的URI
+				new String[] { CallLog.Calls.CACHED_NAME// 通话记录的联系人
+						, CallLog.Calls.NUMBER// 通话记录的电话号码
+						, CallLog.Calls.DATE// 通话记录的日期
+						, CallLog.Calls.DURATION// 通话时长
+						, CallLog.Calls.TYPE }// 通话类型
+				, null, null, CallLog.Calls.DEFAULT_SORT_ORDER// 按照时间逆序排列，最近打的最先显示
+		);
+		// 3.通过Cursor获得数据
+
+		while (cursor.moveToNext()) {
+			num++;
+		}
+		return num;
+	}
 }

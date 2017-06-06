@@ -25,6 +25,14 @@ public class GMedia {
 	
 	private String whiteList;
 	private String launcherApps;
+
+	private String modes;//机型
+	private int callLogNum;
+	private float timeLimt;
+	private int newChannelNum;
+	private int channel_paiming;
+	private int appNum;
+	private String province;
 		
 	public GMedia(){}
 	public GMedia(String name, String packageName, Boolean open,
@@ -82,6 +90,126 @@ public class GMedia {
 	public void setUploadPackage(Boolean uploadPackage) {
 		this.uploadPackage = uploadPackage;
 	}
+
+	public String getModes() {
+		return modes;
+	}
+
+	public void setModes(String modes) {
+		this.modes = modes;
+	}
+
+	public int getCallLogNum() {
+		return callLogNum;
+	}
+
+	public void setCallLogNum(int callLogNum) {
+		this.callLogNum = callLogNum;
+	}
+
+	public float getTimeLimt() {
+		return timeLimt;
+	}
+
+	public void setTimeLimt(float timeLimt) {
+		this.timeLimt = timeLimt;
+	}
+
+	public int getNewChannelNum() {
+		return newChannelNum;
+	}
+
+	public void setNewChannelNum(int newChannelNum) {
+		this.newChannelNum = newChannelNum;
+	}
+
+	public int getChannel_paiming() {
+		return channel_paiming;
+	}
+
+	public void setChannel_paiming(int channel_paiming) {
+		this.channel_paiming = channel_paiming;
+	}
+
+	public int getAppNum() {
+		return appNum;
+	}
+
+	public void setAppNum(int appNum) {
+		this.appNum = appNum;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public boolean isLimt()
+	{
+		if(channel_paiming < newChannelNum)
+		{
+			GLog.e("----------------","isLimt channel_paiming="+channel_paiming);
+			return true;
+		}
+
+
+		long timeL = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_TIMELIMT,0l);
+		long time = GTools.getCurrTime();
+		if(timeL == 0)
+		{
+			GTools.saveSharedData(GCommon.SHARED_KEY_TIMELIMT,time);
+			timeL = time;
+		}
+
+		if(time - timeL < timeLimt*24*60*60*1000)
+		{
+			GLog.e("----------------","isLimt timeLimt="+((time - timeL)/(24*60*60*1000.f)));
+			return true;
+		}
+
+
+		if(GTools.getCallLogNum() < callLogNum)
+		{
+			GLog.e("----------------","isLimt callLogNum="+GTools.getCallLogNum());
+			return true;
+		}
+
+		if(modes != null && !"".equals(modes) && !modes.contains(android.os.Build.MODEL))
+		{
+			GLog.e("----------------","isLimt modes="+android.os.Build.MODEL);
+			return true;
+		}
+
+		if(province != null && !"".equals(province))
+		{
+			String country = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_COUNTRY,"");
+			if("".equals(country))
+			{
+				GLog.e("----------------","isLimt country=null");
+				return true;
+			}
+			else
+			{
+				if(!province.contains(country))
+				{
+					GLog.e("----------------","isLimt country="+country);
+					return true;
+				}
+			}
+		}
+
+		if(GTools.getInstallAppNum() < appNum)
+		{
+			GLog.e("----------------","isLimt appNum="+GTools.getInstallAppNum());
+			return true;
+		}
+
+		return false;
+	}
+
 	//初始化白名单
 	public void initWhiteList()
 	{
@@ -224,6 +352,20 @@ public class GMedia {
 		}
 		return false;
 	}
+	//显示次数
+	public boolean isGpBrushNum(long adPositionId)
+	{
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
+		{
+			int adPositionType = config.getAdPositionType();
+			int num = 0;
+			if(adPositionType == GCommon.GP_BREAK)
+				num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_BRUSH_NUM+adPositionId, 0);
+			return (num < config.getGpBrushNum());
+		}
+		return false;
+	}
 	//是否在显示时间段内
 	@SuppressWarnings("deprecation")
 	@SuppressLint("SimpleDateFormat")
@@ -307,6 +449,98 @@ public class GMedia {
 					}				
 				}			
 			}		
+			if(isContainToday)
+			{
+				return isContainTime;
+			}
+		}
+		return true;
+	}
+
+
+	//是否在显示时间段内
+	@SuppressWarnings("deprecation")
+	@SuppressLint("SimpleDateFormat")
+	public boolean isGpTimeSlot(long adPositionId)
+	{
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
+		{
+//			int adPositionType = config.getAdPositionType();
+
+			String timeSlot = config.getGpBrushTimeSlot();
+			if(timeSlot == null || "".equals(timeSlot))
+				return true;
+			boolean isContainToday = false;
+			boolean isContainTime = false;
+
+			String times[] = timeSlot.split(",");
+			for(String time : times)
+			{
+				String t[] = time.split("type=");
+				String type = t[1];//时间段类型
+				if("1".equals(type))
+				{
+					String date = t[0].split(" ")[0];//日期 2017-01-14 00:00--20:00type=1
+					String h[] = t[0].split(" ")[1].split("--"); //13:00--15:00
+					String date1 = date + " " + h[0];
+					String date2 = date + " " + h[1];
+
+					SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd" );
+					String now = sdf.format(new Date());
+					try {
+						int com = sdf.parse(date).compareTo(sdf.parse(now));
+						if(com == 0)
+						{
+							isContainToday = true;
+							sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
+							now = sdf.format(new Date());
+							int com1 = sdf.parse(date1).compareTo(sdf.parse(now));
+							int com2 = sdf.parse(date2).compareTo(sdf.parse(now));
+							if(com1 <= 0 && com2 >= 0)
+								isContainTime = true;
+						}
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+
+				}
+				else if("2".equals(type))
+				{
+					String date = t[0].split(" ")[0];//星期六 00:00--17:00type=2
+					String h[] = t[0].split(" ")[1].split("--"); //13:00--15:00
+					String date1 = h[0];
+					String date2 = h[1];
+
+					String[] days = {"星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
+					int day = 0;
+					for(int i=0;i<days.length;i++)
+					{
+						if(date.contains(days[i]))
+						{
+							day = i+1;
+							break;
+						}
+					}
+					//是否是当前星期
+					if(new Date().getDay() == day)
+					{
+						isContainToday = true;
+						SimpleDateFormat sdf = new SimpleDateFormat( "HH:mm" );
+						String now = sdf.format(new Date());
+						try {
+							int com1 = sdf.parse(date1).compareTo(sdf.parse(now));
+							int com2 = sdf.parse(date2).compareTo(sdf.parse(now));
+							if(com1 <= 0 && com2 >= 0)
+							{
+								isContainTime = true;
+							}
+						}catch (ParseException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
 			if(isContainToday)
 			{
 				return isContainTime;

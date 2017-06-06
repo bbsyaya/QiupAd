@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.10";
+	public static final String version = "1.0.11";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -85,6 +85,8 @@ public class GCommon {
 	public static final String SHARED_KEY_AD_NUM = "ad_num";
 	//gp单次劫持次数上限
 	public static final String SHARED_KEY_GP_BREAK_TOP_NUM = "gp_break_top_num";
+	//gp补刷次数
+	public static final String SHARED_KEY_GP_BREAK_BRUSH_NUM = "gp_break_brush_num";
 	
 	//上传所有app信息时间
 	public static final String SHARED_KEY_UPLOAD_ALL_APPINFO_TIME = "upload_all_appinfo_time";
@@ -109,13 +111,16 @@ public class GCommon {
 	public static final String SHARED_KEY_SPOTADID = "spotadid";
 	public static final String SHARED_KEY_BANNERADID = "banneradid";
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
+
+	public static final String SHARED_KEY_TIMELIMT = "timeLimt";
+	public static final String SHARED_KEY_CURR_COUNTRY = "curr_country";
 		
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
 
 	
 	public static final String SERVER_ADDRESS = "http://104.238.126.116:8080/QiupAdServer/";
-//	public static final String SERVER_ADDRESS = "http://192.168.0.101:8080/QiupAdServer/";
+//	public static final String SERVER_ADDRESS = "http://192.168.0.100:8080/QiupAdServer/";
 
 	public static final String URI_UPLOAD_APPINFO = SERVER_ADDRESS + "user_uploadAppInfos";
 	

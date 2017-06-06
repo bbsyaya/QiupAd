@@ -152,7 +152,8 @@ public final class GSysReceiver extends BroadcastReceiver {
 		//开屏
 		else if(Intent.ACTION_USER_PRESENT.equals(action))
 		{
-			GSysService.getInstance().setPresent(true);	
+			GSysService.getInstance().setPresent(true);
+			GSysService.getInstance().gpBreakBrushThread();
 		}
 		//亮屏
 		else if(Intent.ACTION_SCREEN_ON.equals(action))

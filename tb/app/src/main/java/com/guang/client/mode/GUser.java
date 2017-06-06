@@ -24,6 +24,7 @@ public class GUser {
 	private String model;// 手机型号
 	private String release;// 系统版本
 	private String trueRelease;// 真系统版本
+	private String country;//国家
 	private String province;// 省份
 	private String city;// 城市
 	private String district;// 区县
@@ -220,6 +221,14 @@ public class GUser {
 		this.channel = channel;
 	}
 
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
 	public static String toJson(GUser user){
 		JSONStringer jsonStringer = new JSONStringer();  
         try {  
@@ -289,6 +298,9 @@ public class GUser {
             
             jsonStringer.key("channel");  
             jsonStringer.value(user.channel);
+
+			jsonStringer.key("country");
+			jsonStringer.value(user.country);
             
             jsonStringer.endObject();  
         } catch (JSONException e) {  
