@@ -38,9 +38,21 @@ public class GOffer {
 	private String downloadName;
 	private boolean click;
 	private boolean tongji;
+	
+	private String url;
     
     public GOffer(){};
-    public GOffer(long id, String adm,List<String> imgtrackings,List<String> thclkurls,List<GOfferEs> ess)
+    
+    public GOffer(long id, String appName, String imageUrl, int type, String url) {
+		super();
+		this.id = id;
+		this.appName = appName;
+		this.imageUrl = imageUrl;
+		this.type = type;
+		this.url = url;
+	}
+
+	public GOffer(long id, String adm,List<String> imgtrackings,List<String> thclkurls,List<GOfferEs> ess)
     {
     	this.id = id;
     	this.adm = adm;
@@ -240,6 +252,14 @@ public class GOffer {
 	}
 	public void setTongji(boolean tongji) {
 		this.tongji = tongji;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 	
 

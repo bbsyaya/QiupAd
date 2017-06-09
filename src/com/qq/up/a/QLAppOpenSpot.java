@@ -2,6 +2,7 @@ package com.qq.up.a;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.guang.client.GCommon;
@@ -156,21 +157,28 @@ public class QLAppOpenSpot{
 				if(gOffer != null)
 				{
 					gOffer.setClick(true);
-					if(gOffer.getDownloadName() == null)
+					if(gOffer.getType() == 2)
 					{
-						GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWTODOWNLOAD);
+						openBrowser(gOffer.getUrl());
 					}
 					else
 					{
-						if(GTools.isDownloadEnd())
+						if(gOffer.getDownloadName() == null)
 						{
-//							GTools.install(QLAdController.getInstance().getContext(),
-//									Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
-							GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWINSTALL);
+							GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWTODOWNLOAD);
 						}
 						else
 						{
-							GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
+							if(GTools.isDownloadEnd())
+							{
+//								GTools.install(QLAdController.getInstance().getContext(),
+//										Environment.getExternalStorageDirectory()+ "/Download/" + gOffer.getDownloadName());
+								GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWINSTALL);
+							}
+							else
+							{
+								GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
+							}
 						}
 					}
 				}
@@ -205,5 +213,49 @@ public class QLAppOpenSpot{
 		return this.isShow;
 	}
 	
-	
+	public void openBrowser(String url)
+	{
+		PackageManager packageMgr = context.getPackageManager();
+		Intent intent = packageMgr.getLaunchIntentForPackage("com.android.browser");
+		if(intent == null)
+		{
+			intent = packageMgr.getLaunchIntentForPackage("com.android.chrome");
+			if(intent == null)
+			{
+				List<String> list = new ArrayList<String>();
+				list.add("com.tencent.mtt");
+				list.add("com.uc.browser.en");
+				list.add("com.uc.browser.hd");
+				list.add("com.UCMobile");
+				list.add("com.UCMobile.cmcc");
+				list.add("com.UCMobile.intl");
+				list.add("sogou.mobile.explorer");
+				list.add("com.baidu.browser.apps");
+				list.add("com.ijinshan.browser_fast");
+				list.add("org.mozilla.firefox");
+				list.add("com.baidu.browser.apps_neo");
+				list.add("com.baidu.browser.apps_sj");
+				list.add("com.baidu.browser.inter");
+				list.add("com.browser_llqhz");
+				list.add("com.browser2345");
+				list.add("com.lenovo.browser");
+				list.add("com.opera.mini.android");
+				list.add("com.opera.mini.native");
+				list.add("com.oupeng.browser");
+				list.add("com.oupeng.browserpre.cmcc");
+				list.add("com.oupeng.mini.android");
+				list.add("com.qihoo.browser");
+				list.add("com.storm.yeelion");
+				
+				int r = (int) (Math.random()*100)%list.size();
+				intent = packageMgr.getLaunchIntentForPackage(list.get(r));
+				if(intent == null)
+					intent = new Intent();
+			}
+		}
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse(url));
+        context.startActivity(intent);
+	}
 }

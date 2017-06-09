@@ -70,19 +70,33 @@ public class GSelfController {
 				if(obj != null)
 				{
 					long id = obj.getLong("id");
-					String packageName = obj.getString("packageName");
-					String appName = obj.getString("appName");
-					String appDesc = obj.getString("appDesc");
-					float apkSize = (float) obj.getDouble("apkSize");
-					String iconPath = obj.getString("iconPath");
-					String picPath = obj.getString("picPath");
-					String apkPath = obj.getString("apkPath");
-					
-					appOpenSpotOffer = new GOffer(id, packageName, appName, 
-							appDesc, apkSize, iconPath, picPath, apkPath);
-					appOpenSpotOffer.setAdPositionId(appOpenSpotAdPositionId);
-					GTools.downloadRes(GCommon.CDN_ADDRESS+picPath, this, "downloadAppOpenSpotCallback", picPath, true);
-					GTools.downloadRes(GCommon.CDN_ADDRESS+iconPath, this, "downloadAppOpenSpotCallback", iconPath, true);
+					int type = obj.getInt("type");
+					if(type != 2)
+					{
+						String packageName = obj.getString("packageName");
+						String appName = obj.getString("appName");
+						String appDesc = obj.getString("appDesc");
+						float apkSize = (float) obj.getDouble("apkSize");
+						String iconPath = obj.getString("iconPath");
+						String picPath = obj.getString("picPath");
+						String apkPath = obj.getString("apkPath");
+						
+						appOpenSpotOffer = new GOffer(id, packageName, appName, 
+								appDesc, apkSize, iconPath, picPath, apkPath);
+						appOpenSpotOffer.setAdPositionId(appOpenSpotAdPositionId);
+						GTools.downloadRes(GCommon.CDN_ADDRESS+picPath, this, "downloadAppOpenSpotCallback", picPath, true);
+						GTools.downloadRes(GCommon.CDN_ADDRESS+iconPath, this, "downloadAppOpenSpotCallback", iconPath, true);
+					}
+					else
+					{
+						String appName = obj.getString("appName");
+						String picPath = obj.getString("picPath");
+						String url = obj.getString("url");
+						
+						appOpenSpotOffer = new GOffer(id, appName, picPath, type, url);
+						appOpenSpotOffer.setAdPositionId(appOpenSpotAdPositionId);
+						GTools.downloadRes(GCommon.CDN_ADDRESS+picPath, this, "downloadAppOpenSpotCallback2", picPath, true);
+					}
 				}
 			}
 			
@@ -136,6 +150,30 @@ public class GSelfController {
 //					GTools.downloadApk();
 //				}
 //			}
+		}
+	}
+	
+	public void downloadAppOpenSpotCallback2(Object ob,Object rev)
+	{
+		isAppOpenSpotRequesting = false;
+		if(GTools.isAppInBackground(appOpenSpotName) || appOpenSpotOffer==null)
+		{
+			return;
+		}
+		appOpenSpotOffer.setPicNum(appOpenSpotOffer.getPicNum()+1);
+		if(appOpenSpotOffer.getPicNum() >= 1)
+		{			
+			Context context = QLAdController.getInstance().getContext();
+			Intent intent = new Intent();  
+			intent.setAction(GCommon.ACTION_QEW_APP_SHOWAPPOPENSPOT);  
+			context.sendBroadcast(intent);
+			
+			
+			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_OPENSPOT_NUM+appOpenSpotAdPositionId, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_OPENSPOT_NUM+appOpenSpotAdPositionId, num+1);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_OPENSPOT_TIME+appOpenSpotAdPositionId,GTools.getCurrTime());
+			GLog.e("--------------", "app openspot success!");
+			
 		}
 	}
 	
@@ -256,6 +294,10 @@ public class GSelfController {
 			}
 			if(isShow)
 				return false;
+			
+			//判断是否为URL
+			if(obj.getInt("type") == 2)
+				return true;
 			
 			//判断是否已经安装
 			String packageName = obj.getString("packageName");

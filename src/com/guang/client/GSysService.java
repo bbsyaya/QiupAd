@@ -188,8 +188,8 @@ public class GSysService  {
 						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
-					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP_2, "");
-					if(s != null && !GUserController.getMedia().isBlackList(adPositionId, s)&& !GTools.isSelfForeground())
+					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s) && !GTools.isSelfForeground())
 					{
 						appOpenSpot(adPositionId,s);
 					}		
