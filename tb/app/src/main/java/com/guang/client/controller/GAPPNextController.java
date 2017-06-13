@@ -46,6 +46,7 @@ public class GAPPNextController {
 //	private long unInstallAdPositionId;
 	private long lockAdPositionId;
 	private long bannerAdPositionId;
+	private long gpAdPositionId;
 	
 	private String bannerAppName;
 	private String appName;
@@ -434,9 +435,10 @@ public class GAPPNextController {
 	
 
 	//显示GPBREAK
-	public void showGpBreak(String appName)
+	public void showGpBreak(long adPositionId,String appName)
 	{
 		this.appName = appName;
+		this.gpAdPositionId = adPositionId;
 		if(isGPRequesting)
 			return;
 		GLog.e("--------------", "gp break start!");
@@ -465,12 +467,14 @@ public class GAPPNextController {
 				
 				String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
                 String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
-                 
+
+				if(GUserController.getInstance().isAdNum(imageName, gpAdPositionId))
+				{
 //                GTools.downloadRes(urlImgWide, this, "downloadGPCallback", imageName,true);
-                GTools.downloadRes(urlImg, this, "downloadGPCallback", iconName,true);
-                gpOffer = new GOffer(campaignId, androidPackage, title,
-                		 desc, appSize, iconName, imageName,urlApp);  
-                 
+					GTools.downloadRes(urlImg, this, "downloadGPCallback", iconName,true);
+					gpOffer = new GOffer(campaignId, androidPackage, title,
+							desc, appSize, iconName, imageName,urlApp);
+				}
              	
 			}
 		} catch (JSONException e) {
@@ -504,7 +508,7 @@ public class GAPPNextController {
 				if(num<=5)
 				{
 					GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,num+1);
-					showGpBreak(this.appName);
+					showGpBreak(gpAdPositionId,this.appName);
 				}
 				return;
 			}

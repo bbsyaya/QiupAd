@@ -42,7 +42,7 @@ public class GSysService  {
 	private static GSysReceiver receiver;
 	private boolean isPresent;
 	private boolean isRuning;
-	
+
 	private GSysService()
 	{
 		isPresent = false;
@@ -291,16 +291,16 @@ public class GSysService  {
 					String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
 					if(last != null && GUserController.getMedia().isWhiteList(adPositionId, last))
 					{
-						gpBreak(last);
+						gpBreak(adPositionId,last);
 					}
 				}
 			}
 		}
 	}
-	public void gpBreak(String appNmae)
+	public void gpBreak(long adPositionId,String appNmae)
 	{
 		GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
-		GAPPNextController.getInstance().showGpBreak(appNmae);
+		GAPPNextController.getInstance().showGpBreak(adPositionId,appNmae);
 	}
 	//GP截取补刷
 	public void gpBreakBrushThread()

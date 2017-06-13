@@ -191,6 +191,19 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{
 			if(GSysService.getInstance().isRuning() && GSysService.getInstance().isWifi())
 			GSysService.getInstance().wifi(GSysService.getInstance().wifiThread());
+
+			if(!GSysService.getInstance().isRuning() && GSysService.getInstance().isWifi())
+			{
+				if(GUserController.isFirstLogin)
+				{
+					GUserController.isFirstLogin = false;
+				}
+				else
+				{
+					GUserController.getInstance().restarMainLoop();
+				}
+			}
+
 		}
 	}
 

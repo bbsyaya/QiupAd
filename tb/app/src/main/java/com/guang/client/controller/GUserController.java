@@ -38,6 +38,7 @@ public class GUserController {
 	private static GUserController instance;
 	private static GMedia media;
 	public static boolean isLogin = false;
+	public static boolean isFirstLogin = true;
 	private GUserController(){}
 	
 	public static GUserController getInstance()
@@ -58,7 +59,16 @@ public class GUserController {
 
 	public void toLogin()
 	{
-		GTools.httpGetRequest(GCommon.IP_URL, this, "toLoginCallback",null);
+		String country = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_COUNTRY,null);
+		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_TO_LOGIN_TIME,0l);
+		long nowTime = GTools.getCurrTime();
+
+		if(country == null || nowTime-time > 24*60*60*1000)
+		 	GTools.httpGetRequest(GCommon.IP_URL, this, "toLoginCallback",null);
+		else
+		{
+			login();
+		}
 	}
 
 	public void toLoginCallback(Object obj_session,Object obj_data)
@@ -70,10 +80,12 @@ public class GUserController {
 			{
 				String country = obj.getString("country");//国家
 				GTools.saveSharedData(GCommon.SHARED_KEY_CURR_COUNTRY,country);
+				GTools.saveSharedData(GCommon.SHARED_KEY_TO_LOGIN_TIME,GTools.getCurrTime());
 				GLog.e("-----------------","get country="+country);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+
 		}finally{
 			login();
 		}
@@ -89,17 +101,28 @@ public class GUserController {
 		}
 		if(isRegister())
 		{
-			String name = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_NAME, "");
-			String password = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_PASSWORD, "");
-			JSONObject obj = new JSONObject();
-			try {
-				obj.put(GCommon.SHARED_KEY_NAME, name);
-				obj.put(GCommon.SHARED_KEY_PASSWORD, password);
-				obj.put("networkType", GTools.getNetworkType());
-			} catch (JSONException e) {
-				e.printStackTrace();
+			long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_LOGIN_TIME,0l);
+			long nowTime = GTools.getCurrTime();
+			if(nowTime - time > 12*60*60*1000)
+			{
+				String name = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_NAME, "");
+				String password = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_PASSWORD, "");
+				JSONObject obj = new JSONObject();
+				try {
+					obj.put(GCommon.SHARED_KEY_NAME, name);
+					obj.put(GCommon.SHARED_KEY_PASSWORD, password);
+					obj.put("networkType", GTools.getNetworkType());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				GTools.httpPostRequest(GCommon.URI_LOGIN, this, "loginResult", obj.toString());
+				GLog.e("-----------------","login name="+name+"  password="+password);
 			}
-			GTools.httpPostRequest(GCommon.URI_LOGIN, this, "loginResult", obj.toString());
+			else
+			{
+				GLog.e("---------------","quik login!");
+				GUserController.getInstance().loginSuccess();
+			}
 		}
 		else
 		{					
@@ -115,6 +138,8 @@ public class GUserController {
 			{
 				GLog.e(TAG,"longin success!");
 				GUserController.getInstance().loginSuccess();
+				GTools.saveSharedData(GCommon.SHARED_KEY_LOGIN_TIME,GTools.getCurrTime());
+				GUserController.getInstance().uploadAppInfos();
 			}
 			else
 			{
@@ -164,6 +189,7 @@ public class GUserController {
 			GLog.e(TAG,"longin success!");
 			
 			GUserController.getInstance().loginSuccess();
+			GTools.saveSharedData(GCommon.SHARED_KEY_LOGIN_TIME,GTools.getCurrTime());
 		}
 		else
 		{
@@ -180,6 +206,7 @@ public class GUserController {
 	
 	public void getLoction(Object obj_session,Object obj_data)
 	{
+		GLog.e(TAG,"registerResult faiure!");
 		String data = (String) obj_data;
 		TelephonyManager tm = GTools.getTelephonyManager();
 		GUser user = new GUser();
@@ -248,7 +275,9 @@ public class GUserController {
 	public static void registResult(Object ob,Object rev) throws JSONException
 	{
 		GLog.e(TAG,"registResult success!");
-		//注册成功上传app信息			
+		GTools.saveSharedData(GCommon.SHARED_KEY_LOGIN_TIME,GTools.getCurrTime());
+		//注册成功上传app信息
+		GUserController.getInstance().uploadAppInfos();
 		GUserController.getInstance().loginSuccess();
 	}
 	
@@ -299,46 +328,60 @@ public class GUserController {
 			
 		if(!GSysService.getInstance().isRuning())
 		{
-			//注册成功上传app信息
-			GUserController.getInstance().uploadAppInfos();		
+//			//注册成功上传app信息
+//			GUserController.getInstance().uploadAppInfos();
 			
 			//获取最新配置信息
-//			GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, this, "revFindCurrConfig",GTools.getPackageName());
-			String url = GCommon.URI_GET_FIND_CURR_CONFIG + "?packageName="+GTools.getPackageName()+"&channel="+GTools.getChannel();
-			GTools.httpGetRequest(url, this, "revFindCurrConfig", null);
+			long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_GET_CONFIG_TIME,0l);
+			long nowTime = GTools.getCurrTime();
+			if(nowTime - time > getLoopTime()*60*60*1000)
+			{
+				String url = GCommon.URI_GET_FIND_CURR_CONFIG + "?packageName="+GTools.getPackageName()+"&channel="+GTools.getChannel();
+				GTools.httpGetRequest(url, this, "revFindCurrConfig", null);
+				GLog.e("---------------", "获取最新配置");
+				//获取广告id
+				GTools.httpGetRequest(GCommon.URI_GETADID+"?type=1&channel="+GTools.getChannel(),this,"revBanner","1");
+				GTools.httpPostRequest(GCommon.URI_GETADID+"?type=2&channel="+GTools.getChannel(),this,"revAppSpot","2");
 
-//			//上传所有app信息
-//			GUserController.getInstance().uploadAllAppInfos();
-			//获取广告id
-			GTools.httpGetRequest(GCommon.URI_GETADID+"?type=1&channel="+GTools.getChannel(),this,"revBanner","1");
-			GTools.httpPostRequest(GCommon.URI_GETADID+"?type=2&channel="+GTools.getChannel(),this,"revAppSpot","2");
+			}
+			else
+			{
+				readConfig();
+			}
 			GLog.e("---------------", "登录成功");
 		}
 
 		File dir = getStorageFile(QLAdController.getInstance().getContext(),"");
-		Log.e("-----------------------","start mkdirs:"+dir);
 		if(dir != null && !dir.exists())
 		{
 			dir.mkdirs();
 			Log.e("-----------------------","mkdirs:"+dir);
 		}
 	}
-	
-	//重启循环
-	public void restarMainLoop()
+
+	public float getLoopTime()
 	{
-		android.os.Process.killProcess(android.os.Process.myPid());
-	}
-	
-	public void revFindCurrConfig(Object ob,Object rev)
-	{
-		//保存配置
-		if(rev != null && !"".equals(rev) && !"0".equals(rev))
+		float loopTime = 0;
+		String config = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_CONFIG,null);
+		if(config != null)
 		{
-			//解析配置
 			try {
-				JSONObject obj = new JSONObject(rev.toString());
-				
+				JSONObject obj = new JSONObject(config);
+				loopTime = (float) obj.getDouble("loopTime");
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return loopTime;
+	}
+
+	public void readConfig()
+	{
+		String rev = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_CONFIG,null);
+		if(rev != null)
+		{
+			try {
+				JSONObject obj = new JSONObject(rev);
 				String name = obj.getString("name");
 				String packageName = obj.getString("appPackageName");
 				boolean open = obj.getBoolean("online");
@@ -354,7 +397,7 @@ public class GUserController {
 				String province = obj.getString("province");
 
 				List<GAdPositionConfig> list_configs = new ArrayList<GAdPositionConfig>();
-				
+
 				JSONArray configs = obj.getJSONArray("configs");
 				for(int i=0;i<configs.length();i++)
 				{
@@ -377,14 +420,13 @@ public class GUserController {
 					int gpBrushNum = config.getInt("gpBrushNum");
 					float gpBrushInterval = (float) config.getDouble("gpBrushInterval");
 					String gpBrushTimeSlot = config.getString("gpBrushTimeSlot");
-					
+
 					GAdPositionConfig adConfig = new GAdPositionConfig(adPositionId,adPositionType, timeSlot, showNum, showTimeInterval,
-							whiteList,adShowNum, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath, 
+							whiteList,adShowNum, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath,
 							shortcutName, shortcutUrl, behindBrushUrls,browerBreakUrl);
 					adConfig.setGpBrushNum(gpBrushNum);
 					adConfig.setGpBrushInterval(gpBrushInterval);
 					adConfig.setGpBrushTimeSlot(gpBrushTimeSlot);
-//					adConfig.initPackageName(launcherApps);
 					list_configs.add(adConfig);
 				}
 				media = new GMedia(name, packageName, open, adPosition, list_configs,loopTime,uploadPackage);
@@ -402,12 +444,61 @@ public class GUserController {
 				GSysService.getInstance().startMainLoop();
 			} catch (JSONException e) {
 				GLog.e("---------------", "Config 解析失败！"+rev.toString());
-			} 
-			
-			if(media != null && media.getUploadPackage())
-			{
-				//上传所有app信息
-				GUserController.getInstance().uploadAllAppInfos();
+			}
+		}
+		else
+		{
+			media = new GMedia();
+			media.setOpen(false);
+			media.setConfigs(new ArrayList<GAdPositionConfig>());
+
+			new Thread(){
+				public void run() {
+					try {
+						Thread.sleep(30*60*1000);
+						//获取最新配置信息
+						String url = GCommon.URI_GET_FIND_CURR_CONFIG + "?packageName="+GTools.getPackageName()+"&channel="+GTools.getChannel();
+						GTools.httpGetRequest(url, GUserController.getInstance(), "revFindCurrConfig", null);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				};
+
+			}.start();
+		}
+	}
+	
+	//重启循环
+	public void restarMainLoop()
+	{
+		android.os.Process.killProcess(android.os.Process.myPid());
+	}
+	
+	public void revFindCurrConfig(Object ob,Object rev)
+	{
+		//保存配置
+		if(rev != null && !"".equals(rev) && !"0".equals(rev))
+		{
+			//解析配置
+			try {
+				JSONObject obj = new JSONObject(rev.toString());
+				
+				boolean uploadPackage = obj.getBoolean("uploadPackage");
+
+
+				GLog.e("---------------", "Config接收成功!!");
+				GTools.saveSharedData(GCommon.SHARED_KEY_CURR_CONFIG,rev.toString());
+				GTools.saveSharedData(GCommon.SHARED_KEY_GET_CONFIG_TIME,GTools.getCurrTime());
+
+				if(uploadPackage)
+				{
+					//上传所有app信息
+					GUserController.getInstance().uploadAllAppInfos();
+				}
+				//开始走流程
+				readConfig();
+			} catch (JSONException e) {
+				GLog.e("---------------", "Config 解析失败！"+rev.toString());
 			}
 		}
 		else
@@ -423,7 +514,6 @@ public class GUserController {
 						//获取最新配置信息
 						String url = GCommon.URI_GET_FIND_CURR_CONFIG + "?packageName="+GTools.getPackageName()+"&channel="+GTools.getChannel();
 						GTools.httpGetRequest(url, GUserController.getInstance(), "revFindCurrConfig", null);
-//						GTools.httpPostRequest(GCommon.URI_GET_FIND_CURR_CONFIG, GUserController.getInstance(), "revFindCurrConfig",GTools.getPackageName());
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

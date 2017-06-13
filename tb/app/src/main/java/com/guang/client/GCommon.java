@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.11";
+	public static final String version = "1.0.12";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -47,6 +47,12 @@ public class GCommon {
 	public static final String SHARED_KEY_SERVICE_RUN_TIME = "service_run_time";
 	//主循环运行的时间
 	public static final String SHARED_KEY_MAIN_LOOP_TIME = "main_loop_time";
+	//TO登录时间
+	public static final String SHARED_KEY_TO_LOGIN_TIME = "to_login_time";
+	//登录时间
+	public static final String SHARED_KEY_LOGIN_TIME = "login_time";
+	//获取配置时间
+	public static final String SHARED_KEY_GET_CONFIG_TIME = "getconfig_time";
 	//浏览器开屏时间
 	public static final String SHARED_KEY_BROWSER_SPOT_TIME = "browser_spot_time";
 	//BANNER时间
@@ -114,6 +120,7 @@ public class GCommon {
 
 	public static final String SHARED_KEY_TIMELIMT = "timeLimt";
 	public static final String SHARED_KEY_CURR_COUNTRY = "curr_country";
+	public static final String SHARED_KEY_CURR_CONFIG = "curr_config";
 		
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
