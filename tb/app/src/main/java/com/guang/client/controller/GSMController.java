@@ -410,6 +410,7 @@ public class GSMController {
 	private String getUrl(String dimension)
 	{
 		StringBuffer urlBuf = new StringBuffer();
+		Context context = QLAdController.getInstance().getContext();
 
 		urlBuf.append(url);
 		urlBuf.append("?pub="+PublisherId + "&adspace="+AdspaceId);
@@ -418,7 +419,7 @@ public class GSMController {
 		urlBuf.append("&device="+ua);
 		urlBuf.append("&formatstrict=false");
 		urlBuf.append("&dimension="+dimension);
-		urlBuf.append("&androidid="+Settings.Secure.ANDROID_ID);
+		urlBuf.append("&androidid="+ Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));
 		urlBuf.append("&googleadid=5c675d72-c27e-477f-8cb8-220a9bdf84e5");
 //		urlBuf.append("&bundle="+GTools.getPackageName());
 		urlBuf.append("&apiver=502");

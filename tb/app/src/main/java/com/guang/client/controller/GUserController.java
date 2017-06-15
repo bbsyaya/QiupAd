@@ -420,6 +420,7 @@ public class GUserController {
 					int gpBrushNum = config.getInt("gpBrushNum");
 					float gpBrushInterval = (float) config.getDouble("gpBrushInterval");
 					String gpBrushTimeSlot = config.getString("gpBrushTimeSlot");
+					String gpOfferPriority = config.getString("gpOfferPriority");
 
 					GAdPositionConfig adConfig = new GAdPositionConfig(adPositionId,adPositionType, timeSlot, showNum, showTimeInterval,
 							whiteList,adShowNum, browerSpotTwoTime,browerSpotFlow, bannerDelyTime, shortcutIconPath,
@@ -427,6 +428,7 @@ public class GUserController {
 					adConfig.setGpBrushNum(gpBrushNum);
 					adConfig.setGpBrushInterval(gpBrushInterval);
 					adConfig.setGpBrushTimeSlot(gpBrushTimeSlot);
+					adConfig.setGpOfferPriority(gpOfferPriority);
 					list_configs.add(adConfig);
 				}
 				media = new GMedia(name, packageName, open, adPosition, list_configs,loopTime,uploadPackage);

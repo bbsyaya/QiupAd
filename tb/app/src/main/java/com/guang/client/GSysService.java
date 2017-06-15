@@ -12,6 +12,7 @@ import java.util.List;
 import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GAdMobController;
 import com.guang.client.controller.GAvazuController;
+import com.guang.client.controller.GMIController;
 import com.guang.client.controller.GOfferController;
 import com.guang.client.controller.GSMController;
 import com.guang.client.controller.GUserController;
@@ -66,6 +67,7 @@ public class GSysService  {
 		GAPPNextController.getInstance();
 		GSMController.getInstance().init();
 		GAvazuController.getInstance().init();
+		GMIController.getInstance().init();
 		
 		QLInstall.getInstance().getInstallAppNum();
 		QLUnInstall.getInstance().getAppInfo(true);	
@@ -300,7 +302,10 @@ public class GSysService  {
 	public void gpBreak(long adPositionId,String appNmae)
 	{
 		GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
-		GAPPNextController.getInstance().showGpBreak(adPositionId,appNmae);
+		if(GUserController.getMedia().isAppNext(adPositionId))
+			GAPPNextController.getInstance().showGpBreak(adPositionId,appNmae);
+		else
+			GMIController.getInstance().showGpBreak(adPositionId,appNmae);
 	}
 	//GP截取补刷
 	public void gpBreakBrushThread()
@@ -316,6 +321,7 @@ public class GSysService  {
 						&& GUserController.getMedia().isGpTimeSlot(adPositionId))
 				{
 					GAPPNextController.getInstance().showGpBrushBreak();
+					GMIController.getInstance().showGpBrushBreak();
 				}
 			}
 		}
@@ -469,18 +475,18 @@ public class GSysService  {
 		{
 			return;
 		}
-		Context context = QLAdController.getInstance().getContext();
-		
-		Intent intent = new Intent(context, QLWIFIActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		intent.putExtra("state", (state ? 1 : 0));
-		intent.putExtra("youmeng", false);
-		context.startActivity(intent);	
- 
-		
+
 		if(state)
 		{
+			Context context = QLAdController.getInstance().getContext();
+
+			Intent intent = new Intent(context, QLWIFIActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+			intent.putExtra("state", (state ? 1 : 0));
+			intent.putExtra("youmeng", false);
+			context.startActivity(intent);
+
 			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_WIFI_NUM, 0);
 			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_NUM, num+1);
 			GTools.saveSharedData(GCommon.SHARED_KEY_WIFI_TIME, GTools.getCurrTime());
@@ -504,7 +510,7 @@ public class GSysService  {
 			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_TIME, 0l);
 			GTools.saveSharedData(GCommon.SHARED_KEY_BEHINDBRUSH_NUM, 0);
 			
-			GTools.saveSharedData(GCommon.SHARED_KEY_AD_NUM, "");
+//			GTools.saveSharedData(GCommon.SHARED_KEY_AD_NUM, "");
 			
 			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.BROWSER_SPOT);
 			for(GAdPositionConfig config : list)

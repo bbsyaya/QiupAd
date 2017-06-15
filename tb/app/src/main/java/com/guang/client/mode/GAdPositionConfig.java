@@ -43,6 +43,7 @@ public class GAdPositionConfig {
 	private int gpBrushNum;//补刷次数
 	private String gpBrushTimeSlot;//补刷时间段
 	private float gpBrushInterval;//补刷间隔
+	private String gpOfferPriority;//GP OFFER 优先级
 	
 		
 	public GAdPositionConfig(){}
@@ -205,6 +206,13 @@ public class GAdPositionConfig {
 		this.gpBrushInterval = gpBrushInterval;
 	}
 
+	public String getGpOfferPriority() {
+		return gpOfferPriority;
+	}
+
+	public void setGpOfferPriority(String gpOfferPriority) {
+		this.gpOfferPriority = gpOfferPriority;
+	}
 //	public void initPackageName(List<String> launcherApps)
 //	{
 //		packageNames = new ArrayList<String>();

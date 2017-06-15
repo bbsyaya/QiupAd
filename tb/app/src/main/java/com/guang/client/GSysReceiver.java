@@ -86,7 +86,8 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if(GCommon.ACTION_QEW_APP_GP_BREAK.equals(action))
 		{
-			QLGPBreak.getInstance().show();
+			String type = intent.getStringExtra("type");
+			QLGPBreak.getInstance().show(type);
 		}
 		
 		

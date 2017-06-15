@@ -10,13 +10,16 @@ package com.qinglu.ad;
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GAPPNextController;
+import com.guang.client.controller.GMIController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,7 +43,9 @@ public class QLGPBreak{
 	private String target;
 	private WebView webView;
 	private RelativeLayout view;
-	
+
+	private String type;
+
 	private QLGPBreak(){}
 	
 	public static QLGPBreak getInstance()
@@ -53,7 +58,8 @@ public class QLGPBreak{
 	}
 	
 	@SuppressLint("NewApi")
-	public void show() {			
+	public void show(String type) {
+		this.type = type;
 		this.context = (Service) QLAdController.getInstance().getContext();
 		wmParams = new WindowManager.LayoutParams();
 		// 获取的是WindowManagerImpl.CompatModeWrapper
@@ -87,6 +93,7 @@ public class QLGPBreak{
 		webView.setWebViewClient(new WebViewClient(){
 			 @Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				 Log.e("--------------","url="+url);
 				 if(url != null && url.startsWith("market:"))
 				 {
 					 target = url;
@@ -102,9 +109,12 @@ public class QLGPBreak{
 			}
 		 });
 		
-		
-		urls = GAPPNextController.getInstance().getGpOffer().getUrlApp();
+		if("mi".equals(type))
+			urls = GMIController.getInstance().getGpOffer().getUrlApp();
+		else
+			urls = GAPPNextController.getInstance().getGpOffer().getUrlApp();
 		target = null;
+		Log.e("--------------","urls="+urls);
 		if(urls != null && !"".equals(urls))
 		{
 			webView.loadUrl(urls);
@@ -113,7 +123,10 @@ public class QLGPBreak{
 		{
 			hide();
 		}
-		GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"AppNext");
+		if("mi".equals(type))
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"mi");
+		else
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"appNext");
 		
 	}
 	
@@ -157,9 +170,19 @@ public class QLGPBreak{
 			public void onClick(View arg0) {
 				if(target != null)
 				{
-					 Uri uri = Uri.parse(target);
-		             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-		             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					Uri uri = Uri.parse(target);
+
+					PackageManager packageMgr = context.getPackageManager();
+					Intent intent = packageMgr.getLaunchIntentForPackage("com.android.vending");
+					if(intent == null)
+						intent = new Intent(Intent.ACTION_VIEW, uri);
+					else
+						intent.setAction(Intent.ACTION_VIEW);
+
+
+					intent.addCategory(Intent.CATEGORY_DEFAULT);
+					intent.setData(uri);
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		 			 intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 		             context.startActivity(intent);
 		             

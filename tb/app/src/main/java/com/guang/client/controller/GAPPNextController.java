@@ -468,17 +468,44 @@ public class GAPPNextController {
 				String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
                 String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
 
-				if(GUserController.getInstance().isAdNum(imageName, gpAdPositionId))
+				if(GUserController.getInstance().isAdNum(androidPackage, gpAdPositionId))
 				{
 //                GTools.downloadRes(urlImgWide, this, "downloadGPCallback", imageName,true);
 					GTools.downloadRes(urlImg, this, "downloadGPCallback", iconName,true);
 					gpOffer = new GOffer(campaignId, androidPackage, title,
 							desc, appSize, iconName, imageName,urlApp);
 				}
-             	
+             	else
+				{
+					int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
+					if(num<=5)
+					{
+						GLog.e("--------------------", "切换广告源 mi");
+						GMIController.getInstance().showGpBreak(gpAdPositionId,appName);
+						GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,num+1);
+					}
+				}
+			}
+			else
+			{
+				int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
+				if(num<=5)
+				{
+					GLog.e("--------------------", "切换广告源 mi");
+					GMIController.getInstance().showGpBreak(gpAdPositionId,appName);
+					GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,num+1);
+				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+
+			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
+			if(num<=5)
+			{
+				GLog.e("--------------------", "切换广告源 mi");
+				GMIController.getInstance().showGpBreak(gpAdPositionId,appName);
+				GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,num+1);
+			}
 		}	
 		finally
 		{
@@ -517,8 +544,12 @@ public class GAPPNextController {
 			{
 				return;
 			}
-			GTools.sendBroadcast(GCommon.ACTION_QEW_APP_GP_BREAK);
-
+//			GTools.sendBroadcast(GCommon.ACTION_QEW_APP_GP_BREAK);
+			Context context = QLAdController.getInstance().getContext();
+			Intent intent = new Intent();
+			intent.putExtra("type","appNext");
+			intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
+			context.sendBroadcast(intent);
 			GLog.e("--------------", "gp break success");
 		}
 	}
@@ -547,7 +578,7 @@ public class GAPPNextController {
 				String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
 
 //                GTools.downloadRes(urlImgWide, this, "downloadGPCallback", imageName,true);
-				GTools.downloadRes(urlImg, this, "downloadGPCallback", iconName,true);
+				GTools.downloadRes(urlImg, this, null, iconName,true);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

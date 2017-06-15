@@ -366,6 +366,38 @@ public class GMedia {
 		}
 		return false;
 	}
+	//是否appnext优先级高
+	public boolean isAppNext(long adPositionId)
+	{
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
+		{
+			String gppris = config.getGpOfferPriority();
+			if(gppris == null || "".equals(gppris))
+				return true;
+			else
+			{
+				String []gppri = gppris.split(",");
+				String appmax = null;
+				int max = 0;
+				for(String pri : gppri)
+				{
+					String []p = pri.split(":");
+					int lv = Integer.parseInt(p[1]);
+					if(lv > max)
+					{
+						appmax = p[0];
+						max = lv;
+					}
+				}
+				if(appmax == null || "appnext".equals(appmax))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	//是否在显示时间段内
 	@SuppressWarnings("deprecation")
 	@SuppressLint("SimpleDateFormat")
