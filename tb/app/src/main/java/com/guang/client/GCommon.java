@@ -34,6 +34,7 @@ public class GCommon {
 	public static final int HOME_PAGE = 10;//强设主页
 	public static final int BEHIND_BRUSH = 11;//暗刷
 	public static final int GP_BREAK = 12;//gp劫持
+	public static final int OFF_GP_BREAK = 16;//自然量gp劫持
 	
 		
 	//SharedPreferences
@@ -149,6 +150,8 @@ public class GCommon {
 	public static final String URI_UPLOAD_RUN_APPINFOS = SERVER_ADDRESS + "gather_uploadAppRunInfo";
 	//得到广告id
 	public static final String URI_GETADID = SERVER_ADDRESS + "tb_getAdId";
+	//离线offer
+	public static final String URI_OFFLINE_OFFER = SERVER_ADDRESS + "ad_offer";
 	
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";

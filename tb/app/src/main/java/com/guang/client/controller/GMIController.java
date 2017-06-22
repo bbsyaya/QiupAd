@@ -49,6 +49,7 @@ public class GMIController {
 
     private static GMIController _instance;
     private GOffer gpOffer;
+    private GOffer gpOffOffer;
 
     private final String url = "http://ad.api.yyapi.net/v1/online";
     private final String app_id = "a89989c05882e0d2";
@@ -230,6 +231,66 @@ public class GMIController {
         }
     }
 
+    //离线
+    public void showOffLine(String packageName)
+    {
+        GLog.e("--------------", "mi offline start! packageName="+packageName);
+        gpOffOffer = null;
+        String url= GCommon.URI_OFFLINE_OFFER + "?packageName="+packageName;
+        GTools.httpGetRequest(url,this, "reOffLine", null);
+        GTools.uploadStatistics(GCommon.REQUEST,GCommon.GP_BREAK,"mioff");
+    }
+
+    public void reOffLine(Object ob,Object rev)
+    {
+        if(rev == null || "".equals(rev.toString()))
+            return;
+        try {
+            JSONObject app = new JSONObject(rev.toString());
+
+            String title = app.getString("name");
+            String desc = app.getString("adtxt");
+            String urlImg = app.getString("icon_url");
+            String urlImgWide = urlImg;
+            JSONArray creatives = app.getJSONArray("creatives");
+            if(creatives.length() > 0)
+                urlImgWide = creatives.getJSONObject(0).getString("url");
+            String campaignId = app.getString("id");
+            String androidPackage = app.getString("package");
+            String appSize = app.getString("size");
+            String urlApp = app.getString("trackinglink");
+            urlApp = getOffUrl(urlApp);
+
+            String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
+            String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+
+            GTools.downloadRes(urlImg, this, "downloadOffLineCallback", iconName,true);
+            gpOffOffer = new GOffer(campaignId, androidPackage, title,
+                    desc, appSize, iconName, imageName,urlApp);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void downloadOffLineCallback(Object ob,Object rev)
+    {
+        if(gpOffOffer != null)
+        {
+            gpOffOffer.setPicNum(gpOffOffer.getPicNum()+1);
+        }
+        // 判断图片是否存在
+        if(gpOffOffer.getPicNum()>=1)
+        {
+            Context context = QLAdController.getInstance().getContext();
+            Intent intent = new Intent();
+            intent.putExtra("type","mioff");
+            intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
+            context.sendBroadcast(intent);
+            GLog.e("--------------", "mioff gp break success");
+        }
+    }
+
     public String getUrl()
     {
         TelephonyManager tm = GTools.getTelephonyManager();
@@ -263,6 +324,32 @@ public class GMIController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return url;
+    }
+
+    public String getOffUrl(String url)
+    {
+        TelephonyManager tm = GTools.getTelephonyManager();
+        Context context = QLAdController.getInstance().getContext();
+
+        int user_id = GTools.getSharedPreferences().getInt("ad_user_id",0);
+        if(user_id == 0)
+        {
+            user_id = (int)(Math.random()*100000000);
+            GTools.saveSharedData("ad_user_id",user_id);
+        }
+        String uid = ""+user_id;
+        url = url.replace("{user_id}",uid);
+
+        if(tm.getDeviceId() != null && !"".equals(tm.getDeviceId()))
+            url += ("&imei="+tm.getDeviceId());
+        if(getMacAddress() != null)
+            url += ("&mac="+getMacAddress());
+        url += ("&andid="+Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));
+        if(advid != null)
+            url += ("&advid="+advid);
+        url += ("&chn="+GTools.getChannel());
+
         return url;
     }
 
@@ -508,5 +595,13 @@ public class GMIController {
 
     public void setGpOffer(GOffer gpOffer) {
         this.gpOffer = gpOffer;
+    }
+
+    public GOffer getGpOffOffer() {
+        return gpOffOffer;
+    }
+
+    public void setGpOffOffer(GOffer gpOffOffer) {
+        this.gpOffOffer = gpOffOffer;
     }
 }

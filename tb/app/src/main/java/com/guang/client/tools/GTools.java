@@ -993,7 +993,6 @@ public class GTools {
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
-		Log.e("-----------------", "qew_channel lib ="+qew_channel);
 		return qew_channel;
     }
     public static String getRelease(int sdk)

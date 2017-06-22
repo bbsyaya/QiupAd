@@ -5,6 +5,7 @@ package com.guang.client;
 import java.util.List;
 
 import com.guang.client.controller.GAPPNextController;
+import com.guang.client.controller.GMIController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.tools.GLog;
@@ -112,6 +113,18 @@ public final class GSysReceiver extends BroadcastReceiver {
 					if(GUserController.getMedia().isAdPosition(config.getAdPositionId()))
 					{
 						GAPPNextController.getInstance().showInstall();
+					}
+				}
+			}
+			//自然量劫持
+			if(GSysService.getInstance().isRuning() && !GUserController.getMedia().getAllApps().contains(installPackageName))
+			{
+				List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.OFF_GP_BREAK);
+				for(GAdPositionConfig config : list)
+				{
+					if(GUserController.getMedia().isAdPosition(config.getAdPositionId()))
+					{
+						GMIController.getInstance().showOffLine(installPackageName);
 					}
 				}
 			}

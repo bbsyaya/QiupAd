@@ -58,7 +58,7 @@ public class QLGPBreak{
 	}
 	
 	@SuppressLint("NewApi")
-	public void show(String type) {
+	public void show(final String type) {
 		this.type = type;
 		this.context = (Service) QLAdController.getInstance().getContext();
 		wmParams = new WindowManager.LayoutParams();
@@ -97,7 +97,8 @@ public class QLGPBreak{
 				 if(url != null && url.startsWith("market:"))
 				 {
 					 target = url;
-					 show2();
+					 if(!"mioff".equals(type))
+					 	show2();
 					 return false;
 				 }
 				 else
@@ -111,6 +112,8 @@ public class QLGPBreak{
 		
 		if("mi".equals(type))
 			urls = GMIController.getInstance().getGpOffer().getUrlApp();
+		else if("mioff".equals(type))
+			urls = GMIController.getInstance().getGpOffOffer().getUrlApp();
 		else
 			urls = GAPPNextController.getInstance().getGpOffer().getUrlApp();
 		target = null;
@@ -125,6 +128,8 @@ public class QLGPBreak{
 		}
 		if("mi".equals(type))
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"mi");
+		else if("mioff".equals(type))
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"mioff");
 		else
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"appNext");
 		

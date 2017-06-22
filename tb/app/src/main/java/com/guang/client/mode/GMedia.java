@@ -25,6 +25,7 @@ public class GMedia {
 	
 	private String whiteList;
 	private String launcherApps;
+	private String allApps;
 
 	private String modes;//机型
 	private int callLogNum;
@@ -147,6 +148,14 @@ public class GMedia {
 		this.province = province;
 	}
 
+	public String getAllApps() {
+		return allApps;
+	}
+
+	public void setAllApps(String allApps) {
+		this.allApps = allApps;
+	}
+
 	public boolean isLimt()
 	{
 		if(channel_paiming < newChannelNum)
@@ -222,6 +231,7 @@ public class GMedia {
 			}
 		}
 		List<String> apps = GTools.getLauncherAppsData();
+		allApps = apps.toString();
 		StringBuffer buff = new StringBuffer();
 		String all = new String(allWhiteList);
 		for(String packageName : apps)
