@@ -238,7 +238,7 @@ public class GMIController {
         gpOffOffer = null;
         String url= GCommon.URI_OFFLINE_OFFER + "?packageName="+packageName;
         GTools.httpGetRequest(url,this, "reOffLine", null);
-        GTools.uploadStatistics(GCommon.REQUEST,GCommon.GP_BREAK,"mioff");
+        GTools.uploadStatistics(GCommon.REQUEST,GCommon.OFF_GP_BREAK,"mioff");
     }
 
     public void reOffLine(Object ob,Object rev)

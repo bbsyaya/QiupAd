@@ -129,7 +129,7 @@ public class QLGPBreak{
 		if("mi".equals(type))
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"mi");
 		else if("mioff".equals(type))
-			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"mioff");
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.OFF_GP_BREAK,"mioff");
 		else
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"appNext");
 		
