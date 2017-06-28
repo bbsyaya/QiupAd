@@ -94,6 +94,8 @@ public class GCommon {
 	public static final String SHARED_KEY_GP_BREAK_TOP_NUM = "gp_break_top_num";
 	//gp补刷次数
 	public static final String SHARED_KEY_GP_BREAK_BRUSH_NUM = "gp_break_brush_num";
+	//离线补刷次数
+	public static final String SHARED_KEY_GP_OFF_BREAK_BRUSH_NUM = "gp_off_break_brush_num";
 	
 	//上传所有app信息时间
 	public static final String SHARED_KEY_UPLOAD_ALL_APPINFO_TIME = "upload_all_appinfo_time";
@@ -121,6 +123,7 @@ public class GCommon {
 
 	public static final String SHARED_KEY_TIMELIMT = "timeLimt";
 	public static final String SHARED_KEY_CURR_COUNTRY = "curr_country";
+	public static final String SHARED_KEY_CURR_COUNTRYCODE = "curr_country_code";
 	public static final String SHARED_KEY_CURR_CONFIG = "curr_config";
 		
 	//获取地理位置用到
@@ -152,6 +155,8 @@ public class GCommon {
 	public static final String URI_GETADID = SERVER_ADDRESS + "tb_getAdId";
 	//离线offer
 	public static final String URI_OFFLINE_OFFER = SERVER_ADDRESS + "ad_offer";
+	//离线offer补刷
+	public static final String URI_OFFLINE_OFFER_BUSH = SERVER_ADDRESS + "ad_brush";
 	
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";

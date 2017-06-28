@@ -60,10 +60,11 @@ public class GUserController {
 	public void toLogin()
 	{
 		String country = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_COUNTRY,null);
+		String countryCode = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_COUNTRYCODE,null);
 		long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_TO_LOGIN_TIME,0l);
 		long nowTime = GTools.getCurrTime();
 
-		if(country == null || nowTime-time > 24*60*60*1000)
+		if(country == null || countryCode == null || nowTime-time > 24*60*60*1000)
 		 	GTools.httpGetRequest(GCommon.IP_URL, this, "toLoginCallback",null);
 		else
 		{
@@ -79,9 +80,11 @@ public class GUserController {
 			if("success".equals(obj.getString("status")))
 			{
 				String country = obj.getString("country");//国家
+				String countryCode = obj.getString("countryCode");//国家代码
 				GTools.saveSharedData(GCommon.SHARED_KEY_CURR_COUNTRY,country);
+				GTools.saveSharedData(GCommon.SHARED_KEY_CURR_COUNTRYCODE,countryCode);
 				GTools.saveSharedData(GCommon.SHARED_KEY_TO_LOGIN_TIME,GTools.getCurrTime());
-				GLog.e("-----------------","get country="+country);
+				GLog.e("-----------------","get country="+country+" countryCode="+countryCode);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

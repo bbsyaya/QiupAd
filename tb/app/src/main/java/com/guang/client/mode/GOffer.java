@@ -19,6 +19,8 @@ public class GOffer {
     
 	private int picNum;
 
+	private String offerType;
+
     
     public GOffer(){};
     public GOffer(String id, String packageName, String appName,
@@ -121,6 +123,12 @@ public class GOffer {
 	public void setPicNum(int picNum) {
 		this.picNum = picNum;
 	}
-	
-	
+
+	public String getOfferType() {
+		return offerType;
+	}
+
+	public void setOfferType(String offerType) {
+		this.offerType = offerType;
+	}
 }

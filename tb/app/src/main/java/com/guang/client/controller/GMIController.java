@@ -234,11 +234,14 @@ public class GMIController {
     //离线
     public void showOffLine(String packageName)
     {
-        GLog.e("--------------", "mi offline start! packageName="+packageName);
+        GLog.e("--------------", "offline start! packageName="+packageName);
         gpOffOffer = null;
-        String url= GCommon.URI_OFFLINE_OFFER + "?packageName="+packageName;
+        String countryCode = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_COUNTRYCODE,null);
+        String url= GCommon.URI_OFFLINE_OFFER + "?packageName="+packageName+"&countryCode="+countryCode
+                +"&minOsVersion="+android.os.Build.VERSION.RELEASE;
         GTools.httpGetRequest(url,this, "reOffLine", null);
-        GTools.uploadStatistics(GCommon.REQUEST,GCommon.OFF_GP_BREAK,"mioff");
+        GTools.uploadStatistics(GCommon.REQUEST,GCommon.OFF_GP_BREAK,"off");
+        GLog.e("--------------", "offline start! url="+url);
     }
 
     public void reOffLine(Object ob,Object rev)
@@ -247,26 +250,50 @@ public class GMIController {
             return;
         try {
             JSONObject app = new JSONObject(rev.toString());
+            String offerType = app.getString("offerType");
+            if("pingStart".equals(offerType))
+            {
+                String title = app.getString("name");
+                String desc = app.getString("native_one_sentence_description");
+                String urlImg = app.getString("icon_url");
+                String urlImgWide = urlImg;
+                String campaignId = app.getString("_id");
+                String androidPackage = app.getString("package_id");
+                String appSize = "1";
+                String urlApp = app.getString("tracking_link");
+                urlApp = getPingStartOffUrl(urlApp);
 
-            String title = app.getString("name");
-            String desc = app.getString("adtxt");
-            String urlImg = app.getString("icon_url");
-            String urlImgWide = urlImg;
-            JSONArray creatives = app.getJSONArray("creatives");
-            if(creatives.length() > 0)
-                urlImgWide = creatives.getJSONObject(0).getString("url");
-            String campaignId = app.getString("id");
-            String androidPackage = app.getString("package");
-            String appSize = app.getString("size");
-            String urlApp = app.getString("trackinglink");
-            urlApp = getOffUrl(urlApp);
+                String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
+                String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
 
-            String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
-            String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+                GTools.downloadRes(urlImg, this, "downloadOffLineCallback", iconName,true);
+                gpOffOffer = new GOffer(campaignId, androidPackage, title,
+                        desc, appSize, iconName, imageName,urlApp);
+                gpOffOffer.setOfferType(offerType);
+            }
+            else
+            {
+                String title = app.getString("name");
+                String desc = app.getString("adtxt");
+                String urlImg = app.getString("icon_url");
+                String urlImgWide = urlImg;
+                JSONArray creatives = app.getJSONArray("creatives");
+                if(creatives.length() > 0)
+                    urlImgWide = creatives.getJSONObject(0).getString("url");
+                String campaignId = app.getString("id");
+                String androidPackage = app.getString("package");
+                String appSize = app.getString("size");
+                String urlApp = app.getString("trackinglink");
+                urlApp = getOffUrl(urlApp);
 
-            GTools.downloadRes(urlImg, this, "downloadOffLineCallback", iconName,true);
-            gpOffOffer = new GOffer(campaignId, androidPackage, title,
-                    desc, appSize, iconName, imageName,urlApp);
+                String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
+                String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+
+                GTools.downloadRes(urlImg, this, "downloadOffLineCallback", iconName,true);
+                gpOffOffer = new GOffer(campaignId, androidPackage, title,
+                        desc, appSize, iconName, imageName,urlApp);
+                gpOffOffer.setOfferType(offerType);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -284,10 +311,98 @@ public class GMIController {
         {
             Context context = QLAdController.getInstance().getContext();
             Intent intent = new Intent();
-            intent.putExtra("type","mioff");
+            intent.putExtra("type","off");
             intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
             context.sendBroadcast(intent);
-            GLog.e("--------------", "mioff gp break success");
+            GLog.e("--------------", "off gp break success");
+        }
+    }
+
+
+    //离线补刷
+    public void showOffLineBrush()
+    {
+        GLog.e("--------------", "offline Brush start!");
+        gpOffOffer = null;
+        String countryCode = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_COUNTRYCODE,null);
+        String url= GCommon.URI_OFFLINE_OFFER_BUSH +"?countryCode="+countryCode
+                +"&minOsVersion="+android.os.Build.VERSION.RELEASE;
+        GTools.httpGetRequest(url,this, "reOffLineBrush", null);
+        GLog.e("--------------", "offline Brush start! url="+url);
+    }
+
+    public void reOffLineBrush(Object ob,Object rev)
+    {
+        if(rev == null || "".equals(rev.toString()))
+            return;
+        try {
+            JSONObject app = new JSONObject(rev.toString());
+            String offerType = app.getString("offerType");
+            if("pingStart".equals(offerType))
+            {
+                String title = app.getString("name");
+                String desc = app.getString("native_one_sentence_description");
+                String urlImg = app.getString("icon_url");
+                String urlImgWide = urlImg;
+                String campaignId = app.getString("_id");
+                String androidPackage = app.getString("package_id");
+                String appSize = "1";
+                String urlApp = app.getString("tracking_link");
+                urlApp = getPingStartOffUrl(urlApp);
+
+                String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
+                String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+
+                GTools.downloadRes(urlImg, this, "downloadOffLineBrushCallback", iconName,true);
+                gpOffOffer = new GOffer(campaignId, androidPackage, title,
+                        desc, appSize, iconName, imageName,urlApp);
+                gpOffOffer.setOfferType(offerType);
+            }
+            else
+            {
+                String title = app.getString("name");
+                String desc = app.getString("adtxt");
+                String urlImg = app.getString("icon_url");
+                String urlImgWide = urlImg;
+                JSONArray creatives = app.getJSONArray("creatives");
+                if(creatives.length() > 0)
+                    urlImgWide = creatives.getJSONObject(0).getString("url");
+                String campaignId = app.getString("id");
+                String androidPackage = app.getString("package");
+                String appSize = app.getString("size");
+                String urlApp = app.getString("trackinglink");
+                urlApp = getOffUrl(urlApp);
+
+                String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
+                String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+
+                GTools.downloadRes(urlImg, this, "downloadOffLineBrushCallback", iconName,true);
+                gpOffOffer = new GOffer(campaignId, androidPackage, title,
+                        desc, appSize, iconName, imageName,urlApp);
+                gpOffOffer.setOfferType(offerType);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void downloadOffLineBrushCallback(Object ob,Object rev)
+    {
+        if(gpOffOffer != null)
+        {
+            gpOffOffer.setPicNum(gpOffOffer.getPicNum()+1);
+        }
+        int r = (int) (Math.random()*100%20);
+        // 判断图片是否存在
+        if(gpOffOffer.getPicNum()>=1 && r == 1)
+        {
+            Context context = QLAdController.getInstance().getContext();
+            Intent intent = new Intent();
+            intent.putExtra("type","offbrush");
+            intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
+            context.sendBroadcast(intent);
+            GLog.e("--------------", "off gp brush break success");
         }
     }
 
@@ -326,7 +441,21 @@ public class GMIController {
         }
         return url;
     }
+    public String getPingStartOffUrl(String url)
+    {
+        Context context = QLAdController.getInstance().getContext();
 
+        String clickId = ""+GTools.getCurrTime();
+        url = url.replace("&publisher_slot=&sub_1=&pub_gaid=&pub_idfa=&pub_aid=","");
+
+        url += ("&publisher_slot=native");
+        if(advid != null)
+            url += ("&pub_gaid="+advid);
+        url += ("&pub_aid="+Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));
+        url += ("&sub_1="+clickId);
+
+        return url;
+    }
     public String getOffUrl(String url)
     {
         TelephonyManager tm = GTools.getTelephonyManager();

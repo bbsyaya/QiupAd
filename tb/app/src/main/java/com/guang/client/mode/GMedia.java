@@ -372,6 +372,8 @@ public class GMedia {
 			int num = 0;
 			if(adPositionType == GCommon.GP_BREAK)
 				num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_BRUSH_NUM+adPositionId, 0);
+			else if(adPositionType == GCommon.OFF_GP_BREAK)
+				num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_OFF_BREAK_BRUSH_NUM+adPositionId, 0);
 			return (num < config.getGpBrushNum());
 		}
 		return false;

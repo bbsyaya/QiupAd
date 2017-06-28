@@ -324,6 +324,18 @@ public class GSysService  {
 					GMIController.getInstance().showGpBrushBreak();
 				}
 			}
+
+			list = GUserController.getMedia().getConfig(GCommon.OFF_GP_BREAK);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isGpBrushNum(adPositionId)
+						&& GUserController.getMedia().isGpTimeSlot(adPositionId))
+				{
+					GMIController.getInstance().showOffLineBrush();
+				}
+			}
 		}
 	}
 	//应用启动
@@ -563,6 +575,14 @@ public class GSysService  {
 				long adPositionId = config.getAdPositionId();
 				{
 					GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_BRUSH_NUM+adPositionId, 0);
+				}
+			}
+			list = GUserController.getMedia().getConfig(GCommon.OFF_GP_BREAK);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_GP_OFF_BREAK_BRUSH_NUM+adPositionId, 0);
 				}
 			}
 		}

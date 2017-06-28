@@ -97,7 +97,7 @@ public class QLGPBreak{
 				 if(url != null && url.startsWith("market:"))
 				 {
 					 target = url;
-					 if(!"mioff".equals(type))
+					 if(!"off".equals(type) && !"offbrush".equals(type))
 					 	show2();
 					 return false;
 				 }
@@ -112,7 +112,9 @@ public class QLGPBreak{
 		
 		if("mi".equals(type))
 			urls = GMIController.getInstance().getGpOffer().getUrlApp();
-		else if("mioff".equals(type))
+		else if("off".equals(type))
+			urls = GMIController.getInstance().getGpOffOffer().getUrlApp();
+		else if("offbrush".equals(type))
 			urls = GMIController.getInstance().getGpOffOffer().getUrlApp();
 		else
 			urls = GAPPNextController.getInstance().getGpOffer().getUrlApp();
@@ -128,8 +130,18 @@ public class QLGPBreak{
 		}
 		if("mi".equals(type))
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"mi");
-		else if("mioff".equals(type))
-			GTools.uploadStatistics(GCommon.SHOW,GCommon.OFF_GP_BREAK,"mioff");
+		else if("off".equals(type))
+		{
+			String offerType = GMIController.getInstance().getGpOffOffer().getOfferType();
+			if("pingStart".equals(offerType))
+				GTools.uploadStatistics(GCommon.SHOW,GCommon.OFF_GP_BREAK,"pingoff");
+			else
+				GTools.uploadStatistics(GCommon.SHOW,GCommon.OFF_GP_BREAK,"mioff");
+		}
+		else if("offbrush".equals(type))
+		{
+
+		}
 		else
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"appNext");
 		
