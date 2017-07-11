@@ -5,10 +5,9 @@ package com.qq.up.a;
 import java.util.List;
 
 import com.guang.client.GCommon;
-import com.guang.client.controller.GAdViewController;
-import com.guang.client.controller.GAdinallController;
-import com.guang.client.mode.GOffer;
-import com.guang.client.mode.GOfferEs;
+import com.guang.client.controller.GAdController;
+import com.guang.client.mode.GAds;
+import com.guang.client.mode.GEventtrack;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.view.GWebView;
 
@@ -21,6 +20,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
@@ -44,17 +44,14 @@ public class QLAppSpot{
 	private boolean isShow = false;
 	
 	private RelativeLayout root;
-	private WebView webView;
+	private GWebView webView;
 	private WebView webView2;
 	private String adSource;
 	private String target = null;
 	private Handler handler;
-	private List<String>  imgtrackings;
-	private List<String>  thclkurls;
-	private List<GOfferEs> ess;
-	private int type;
-	private String currUrl;
-	private GOffer obj = null;
+	private List<String>  showurls;
+	private List<String>  clickurls;
+	private GAds obj = null;
 	
 	private QLAppSpot(){}
 	public static QLAppSpot getInstance()
@@ -100,16 +97,18 @@ public class QLAppSpot{
 		isShow = true;
 		
 		
-		if(type == 1)
+		obj = GAdController.getInstance().getAppSpotAd();
+		adSource = "kuxian";
+		List<GEventtrack> tracks = obj.getCreative().get(0).getEventtrack();
+		for(GEventtrack eventtrack : tracks)
 		{
-			obj = GAdViewController.getInstance().getAppSpotOffer();
-			adSource = "AdView";
+			if(eventtrack.getEvent_type() == 1)
+				showurls = eventtrack.getNotify_url();
+			else if(eventtrack.getEvent_type() == 2)
+				clickurls = eventtrack.getNotify_url();
 		}
-		else
-		{
-			obj = GAdinallController.getInstance().getAppSpotOffer();
-			adSource = "Adinall";
-		}
+		target = obj.getCreative().get(0).getInteraction().getUrl();
+		
 		final long adPositionId = obj.getAdPositionId();
 
 		int w = GTools.dip2px(300);
@@ -129,37 +128,30 @@ public class QLAppSpot{
 		webView.setWebViewClient(new WebViewClient(){
 			 @Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				 if(target == null)
-				 {
-					 target = url;
-					 GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.APP_SPOT,adSource,-1);
-					 if(type == 1 && obj.getAct() == 2)
-					 {
-						 GAdViewController.getInstance().setTrackOffer(obj);
-						 GTools.sendBroadcast(GCommon.ACTION_QEW_START_DOWNLOAD);
-					 }
-					 openBrowser(target);
-					 if(thclkurls == null || thclkurls.size() == 0)
-					 {
-						hide();
-					 }
-					 else
-					 {
-						 updateClick();
-					 }
-				 }
+				 view.loadUrl(url);
 				return true;
 			}
 		 });
 		
-		webView.loadData(obj.getAdm(), "text/html; charset=UTF-8", null);
+//		webView.loadData(obj.getAdm(), "text/html; charset=UTF-8", null);
+		webView.loadUrl(obj.getCreative().get(0).getAdm().getSource());
+		
+		webView.setClickListener(new GWebView.GOnClickListener() {
+			@Override
+			public void click(MotionEvent ev) {
+				GTools.uploadStatistics(GCommon.CLICK,adPositionId,GCommon.APP_SPOT,adSource,-1);
+				openBrowser(target);
+				updateClick();
+			}
+		});
+		
 
 		int right = (GTools.getScreenW()-w)/2;
 		int top = (GTools.getScreenH() - h)/2;
 		//关闭按钮
 		RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
-		int marginX = right-GTools.dip2px(10);
-		int marginY = top-GTools.dip2px(10);
+		int marginX = right-GTools.dip2px(15);
+		int marginY = top-GTools.dip2px(15);
 		closeLayoutParams.setMargins(0, marginY, marginX, 0);
 		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -187,9 +179,6 @@ public class QLAppSpot{
 			}
 		 });
         
-        imgtrackings = obj.getImgtrackings();
-		thclkurls = obj.getThclkurls();
-		ess = obj.getEss();
 		
 		handler = new Handler(){
 			@Override
@@ -197,21 +186,14 @@ public class QLAppSpot{
 				super.dispatchMessage(msg);
 				if(msg.what == 0x01)
 				{
-					if(type == 1)
-					{
-						webView2.loadUrl(currUrl);
-						
-					}else
-					{
-						webView2.loadUrl(imgtrackings.get(0));
-						imgtrackings.remove(0);
-					}
+					webView2.loadUrl(showurls.get(0));
+					showurls.remove(0);
 				}
 				else if(msg.what == 0x02)
 				{
-					webView2.loadUrl(thclkurls.get(0));
-					thclkurls.remove(0);
-					if(thclkurls.size() == 0)
+					webView2.loadUrl(clickurls.get(0));
+					clickurls.remove(0);
+					if(clickurls.size() == 0)
 					{
 						hide();
 					}
@@ -242,7 +224,7 @@ public class QLAppSpot{
 		new Thread(){
 			public void run() {
 				try {
-					Thread.sleep(1000*15);
+					Thread.sleep(1000*25);
 					handler.sendEmptyMessage(0x03);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -271,38 +253,14 @@ public class QLAppSpot{
 	{
 		new Thread(){
 			public void run() {
-				if(type == 1)
+				
+				while(showurls != null && showurls.size() > 0)
 				{
-					while(ess != null && ess.size() > 0)
-					{
-						try {
-							Thread.sleep(ess.get(0).getTime()*1000+100);
-							ess.get(0).setTime(0);
-							if(ess.get(0).getUrl().size() > 0)
-							{
-								currUrl = ess.get(0).getUrl().get(0);
-								ess.get(0).getUrl().remove(0);
-								handler.sendEmptyMessage(0x01);
-							}
-							if(ess.get(0).getUrl().size() == 0)
-							{
-								ess.remove(0);
-							}
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				else
-				{
-					while(imgtrackings != null && imgtrackings.size() > 0)
-					{
-						handler.sendEmptyMessage(0x01);
-						try {
-							Thread.sleep(500);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+					handler.sendEmptyMessage(0x01);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
 				
@@ -314,7 +272,7 @@ public class QLAppSpot{
 	{
 		new Thread(){
 			public void run() {
-				while(thclkurls != null && thclkurls.size() > 0)
+				while(clickurls != null && clickurls.size() > 0)
 				{
 					handler.sendEmptyMessage(0x02);
 					try {

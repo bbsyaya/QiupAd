@@ -15,7 +15,7 @@ import java.util.List;
 
 
 
-import com.guang.client.controller.GAdViewController;
+import com.guang.client.controller.GAdController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
@@ -117,44 +117,44 @@ public class QLTrack{
 		{
 			return;
 		}
-		if(GAdViewController.getInstance().getTrackOffer() == null)
-			return;
-		if(GTools.getCurrTime()-GAdViewController.getInstance().getTrackOffer().getTime() > 30*60*1000)
-		{
-			GAdViewController.getInstance().setTrackOffer(null);
-			return;
-		}
-		show();
-		if(type == 1)
-		{
-			urls = GAdViewController.getInstance().getTrackOffer().getSurl();
-		}
-		else if(type == 2)
-		{
-			urls = GAdViewController.getInstance().getTrackOffer().getFurl();
-			if(urls == null)
-			{
-				urls = new ArrayList<String>();
-			}
-			
-			List<String> list = GAdViewController.getInstance().getTrackOffer().getIurl();
-			if(list != null)
-			{
-				for(String u : list)
-				{
-					urls.add(u);
-				}
-			}
-			
-			list = GAdViewController.getInstance().getTrackOffer().getOurl();
-			if(list != null)
-			{
-				for(String u : list)
-				{
-					urls.add(u);
-				}
-			}
-		}
+//		if(GAdController.getInstance().getTrackOffer() == null)
+//			return;
+//		if(GTools.getCurrTime()-GAdController.getInstance().getTrackOffer().getTime() > 30*60*1000)
+//		{
+//			GAdController.getInstance().setTrackOffer(null);
+//			return;
+//		}
+//		show();
+//		if(type == 1)
+//		{
+//			urls = GAdController.getInstance().getTrackOffer().getSurl();
+//		}
+//		else if(type == 2)
+//		{
+//			urls = GAdController.getInstance().getTrackOffer().getFurl();
+//			if(urls == null)
+//			{
+//				urls = new ArrayList<String>();
+//			}
+//			
+//			List<String> list = GAdController.getInstance().getTrackOffer().getIurl();
+//			if(list != null)
+//			{
+//				for(String u : list)
+//				{
+//					urls.add(u);
+//				}
+//			}
+//			
+//			list = GAdController.getInstance().getTrackOffer().getOurl();
+//			if(list != null)
+//			{
+//				for(String u : list)
+//				{
+//					urls.add(u);
+//				}
+//			}
+//		}
 		if(urls == null)
 		{
 			urls = new ArrayList<String>();

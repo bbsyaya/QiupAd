@@ -1,7 +1,6 @@
 package com.guang.client.mode;
 
 import java.util.List;
-import java.util.Map;
 
 import com.guang.client.tools.GTools;
 
@@ -25,7 +24,6 @@ public class GOffer {
 	private List<String> imgtrackings;
 	private List<String> thclkurls;
 
-	private List<GOfferEs> ess;
 	private int act;//1 =>页 2 =>下载
 	private List<String> surl;
 	private List<String> furl;
@@ -52,23 +50,6 @@ public class GOffer {
 		this.url = url;
 	}
 
-	public GOffer(long id, String adm,List<String> imgtrackings,List<String> thclkurls,List<GOfferEs> ess)
-    {
-    	this.id = id;
-    	this.adm = adm;
-    	this.imgtrackings = imgtrackings;
-    	this.thclkurls = thclkurls;
-    	this.ess = ess;
-    	this.time = GTools.getCurrTime();
-    }
-
-	public GOffer(long id, String adm,List<String> imgtrackings,List<String> thclkurls)
-    {
-    	this.id = id;
-    	this.adm = adm;
-    	this.imgtrackings = imgtrackings;
-    	this.thclkurls = thclkurls;
-    }
     public GOffer(long id, String packageName, String appName,
 			String appDesc, float size, String iconUrl, String imageUrl,String urlApp) {
 		super();
@@ -186,12 +167,6 @@ public class GOffer {
 	}
 	public void setThclkurls(List<String> thclkurls) {
 		this.thclkurls = thclkurls;
-	}
-	public List<GOfferEs> getEss() {
-		return ess;
-	}
-	public void setEss(List<GOfferEs> ess) {
-		this.ess = ess;
 	}
 	public List<String> getSurl() {
 		return surl;

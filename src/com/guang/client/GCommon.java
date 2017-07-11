@@ -172,6 +172,8 @@ public class GCommon {
 	public static final String URI_UPLOAD_RUN_APPINFOS = SERVER_ADDRESS + "gather_uploadAppRunInfo";
 	//请求自有插屏
 	public static final String URI_GET_SELF_OFFER = SERVER_ADDRESS + "offer_getOffers";
+	//请求酷现
+	public static final String URI_GET_OFFLINE_OFFER = SERVER_ADDRESS + "ad_offer";
 	
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";

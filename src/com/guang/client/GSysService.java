@@ -14,8 +14,7 @@ import java.nio.channels.FileLock;
 import java.util.Date;
 import java.util.List;
 
-import com.guang.client.controller.GAdViewController;
-import com.guang.client.controller.GAdinallController;
+import com.guang.client.controller.GAdController;
 import com.guang.client.controller.GSelfController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
@@ -68,8 +67,7 @@ public class GSysService  {
 		registerListener();
 		GUserController.getInstance().login();
 		
-		GAdViewController.getInstance().init();
-		GAdinallController.getInstance().init();
+		GAdController.getInstance().init();
 		
 	}
 	
@@ -378,7 +376,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAdViewController.getInstance().showAppSpot(adPositionId,appNmae);
+		GAdController.getInstance().showAppSpot(adPositionId,appNmae);
 	}
 	//banner
 	public void banner(long adPositionId,String appNmae)
@@ -392,7 +390,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAdViewController.getInstance().showBanner(adPositionId,appNmae);
+		GAdController.getInstance().showBanner(adPositionId,appNmae);
 	}
 	//shortcut
 	public void shortcut(long adPositionId)
@@ -442,7 +440,7 @@ public class GSysService  {
 				break;
 			}
 		}
-		GAdViewController.getInstance().showBrowserSpot(adPositionId,packageName);
+		GAdController.getInstance().showBrowserSpot(adPositionId,packageName);
 	}
 	//浏览器截取
 	public void browserBreak(long adPositionId,String packageName)
@@ -507,7 +505,7 @@ public class GSysService  {
 	//跟踪
 	public void track(int type)
 	{
-		QLTrack.getInstance().track(type);
+//		QLTrack.getInstance().track(type);
 	}
 	
 	private void initData()

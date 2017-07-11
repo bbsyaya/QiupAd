@@ -1,6 +1,5 @@
 package com.qq.up.a.view;
 
-import com.guang.client.tools.GLog;
 import com.qq.up.a.QLBatteryLockActivity;
 
 import android.annotation.SuppressLint;
@@ -10,7 +9,7 @@ import android.view.MotionEvent;
 import android.webkit.WebView;
 
 public class GWebView extends WebView{
-	
+	private GOnClickListener clickListener;
   
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
@@ -35,14 +34,28 @@ public class GWebView extends WebView{
 		// TODO Auto-generated constructor stub
 	}
     
+    
 
-    private QLBatteryLockActivity.MyOnTouchListener2 listener;
+    public GOnClickListener getClickListener() {
+		return clickListener;
+	}
+
+	public void setClickListener(GOnClickListener clickListener) {
+		this.clickListener = clickListener;
+	}
+
+
+
+	private QLBatteryLockActivity.MyOnTouchListener2 listener;
     
     public void setListener(QLBatteryLockActivity.MyOnTouchListener2 listener)
     {
     	this.listener = listener;
     }
 
+    private float lastX;
+	private float lastY;
+	
 	@Override  
     public boolean onTouchEvent(MotionEvent ev) {  
 		
@@ -52,8 +65,26 @@ public class GWebView extends WebView{
 		}
 		if(ev.getAction() != MotionEvent.ACTION_MOVE)
 			super.onTouchEvent(ev);
+		
+		if(ev.getAction() == MotionEvent.ACTION_DOWN)
+		{
+			lastX  = ev.getRawX();
+			lastY  = ev.getRawY();
+		}
+		else if(ev.getAction() == MotionEvent.ACTION_UP)
+		{
+			if(Math.abs(ev.getRawX() - lastX)<20 && Math.abs(ev.getRawY() - lastY)<20)
+			{
+				if(clickListener != null)
+					clickListener.click(ev);
+			}
+		}
 	    return true;
     }  
 	
 	
+	public interface GOnClickListener
+	{
+		void click(MotionEvent ev);
+	}
 }

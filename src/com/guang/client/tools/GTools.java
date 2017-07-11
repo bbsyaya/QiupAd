@@ -41,6 +41,7 @@ import com.qq.up.a.QLSize;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
@@ -1149,6 +1150,22 @@ public class GTools {
         return use;
     }
    
+    public static long getRam()
+    {
+    	Context context = QLAdController.getInstance().getContext();
+    	ActivityManager am=(ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);  
+        MemoryInfo mi=new MemoryInfo();  
+        am.getMemoryInfo(mi);  
+        return mi.totalMem;
+    }
+    public static long getRom()
+    {
+    	File root = Environment.getRootDirectory();  
+        StatFs sf = new StatFs(root.getPath());  
+        long blockSize = sf.getBlockSize();  
+        long availCount = sf.getAvailableBlocks(); 
+        return blockSize*availCount;
+    }
     /**
      * 判断程序是否在前台运行
      * @param context
@@ -1241,8 +1258,7 @@ public class GTools {
 		    			if(pids != null && !"".equals(pids))
 		    			{
 		    				int score = Integer.parseInt(pids);
-		    				
-		    				if(score < hscore*2+10 && score >= hscore/2)
+		    				if(score < hscore*2+10 && score >= hscore/3)
 		    				{
 		    					packageName = arr[col2];
 		    					if(!launcherApps.contains(arr[col2]))
