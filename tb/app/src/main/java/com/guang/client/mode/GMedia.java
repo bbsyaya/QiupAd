@@ -410,6 +410,32 @@ public class GMedia {
 		}
 		return false;
 	}
+
+	//获取自然量劫持广告的延迟时间
+	public long getGpDelyTime(long adPositionId,String ad)
+	{
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null && ad != null)
+		{
+			String gppris = config.getGpDelyTime();
+			if(gppris == null || "".equals(gppris))
+				return 0l;
+			else
+			{
+				String []gppri = gppris.split(",");
+				for(String pri : gppri)
+				{
+					String []p = pri.split(":");
+					if(ad.equals(p[0]))
+					{
+						return Long.parseLong(p[1])*1000;
+					}
+				}
+			}
+		}
+		return 0l;
+	}
+
 	//是否在显示时间段内
 	@SuppressWarnings("deprecation")
 	@SuppressLint("SimpleDateFormat")

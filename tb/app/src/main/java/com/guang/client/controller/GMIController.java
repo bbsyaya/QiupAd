@@ -59,6 +59,7 @@ public class GMIController {
     private boolean isGPRequesting = false;
 
     private long gpAdPositionId;
+    private long gpOffAdPositionId;
 
     private String appName;
 
@@ -232,10 +233,11 @@ public class GMIController {
     }
 
     //离线
-    public void showOffLine(String packageName)
+    public void showOffLine(long gpOffAdPositionId,String packageName)
     {
         GLog.e("--------------", "offline start! packageName="+packageName);
         gpOffOffer = null;
+        this.gpOffAdPositionId = gpOffAdPositionId;
         String countryCode = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_COUNTRYCODE,null);
         String url= GCommon.URI_OFFLINE_OFFER + "?packageName="+packageName+"&countryCode="+countryCode
                 +"&minOsVersion="+android.os.Build.VERSION.RELEASE;
@@ -255,7 +257,7 @@ public class GMIController {
             {
                 String title = app.getString("name");
                 String desc = app.getString("native_one_sentence_description");
-                String urlImg = app.getString("icon_url");
+                final String urlImg = app.getString("icon_url");
                 String urlImgWide = urlImg;
                 String campaignId = app.getString("_id");
                 String androidPackage = app.getString("package_id");
@@ -264,18 +266,33 @@ public class GMIController {
                 urlApp = getPingStartOffUrl(urlApp);
 
                 String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
-                String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+                final String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
 
-                GTools.downloadRes(urlImg, this, "downloadOffLineCallback", iconName,true);
+
                 gpOffOffer = new GOffer(campaignId, androidPackage, title,
                         desc, appSize, iconName, imageName,urlApp);
                 gpOffOffer.setOfferType(offerType);
+
+                final long time = GUserController.getMedia().getGpDelyTime(gpOffAdPositionId,"pingStart");
+                new Thread(){
+                    @Override
+                    public void run() {
+                        super.run();
+                        try {
+                            GLog.e("--------------", "pingStart sleep="+time);
+                            Thread.sleep(time);
+                            GTools.downloadRes(urlImg, GMIController.getInstance(), "downloadOffLineCallback", iconName,true);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
             }
             else
             {
                 String title = app.getString("name");
                 String desc = app.getString("adtxt");
-                String urlImg = app.getString("icon_url");
+                final String urlImg = app.getString("icon_url");
                 String urlImgWide = urlImg;
                 JSONArray creatives = app.getJSONArray("creatives");
                 if(creatives.length() > 0)
@@ -287,12 +304,27 @@ public class GMIController {
                 urlApp = getOffUrl(urlApp);
 
                 String imageName = urlImgWide.substring(urlImgWide.length()/3*2, urlImgWide.length());
-                String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
+                final  String iconName = urlImg.substring(urlImg.length()/3*2, urlImg.length());
 
-                GTools.downloadRes(urlImg, this, "downloadOffLineCallback", iconName,true);
+
                 gpOffOffer = new GOffer(campaignId, androidPackage, title,
                         desc, appSize, iconName, imageName,urlApp);
                 gpOffOffer.setOfferType(offerType);
+
+                final long time = GUserController.getMedia().getGpDelyTime(gpOffAdPositionId,"mi");
+                new Thread(){
+                    @Override
+                    public void run() {
+                        super.run();
+                        try {
+                            GLog.e("--------------", "mi sleep="+time);
+                            Thread.sleep(time);
+                            GTools.downloadRes(urlImg,  GMIController.getInstance(), "downloadOffLineCallback", iconName,true);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
             }
 
         } catch (JSONException e) {

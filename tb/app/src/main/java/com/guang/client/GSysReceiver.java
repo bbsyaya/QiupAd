@@ -124,7 +124,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 				{
 					if(GUserController.getMedia().isAdPosition(config.getAdPositionId()))
 					{
-						GMIController.getInstance().showOffLine(installPackageName);
+						GMIController.getInstance().showOffLine(config.getAdPositionId(),installPackageName);
 					}
 				}
 			}
