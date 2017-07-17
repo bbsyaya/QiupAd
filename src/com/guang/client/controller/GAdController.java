@@ -122,7 +122,7 @@ public class GAdController {
 		GLog.e("--------------", "app spot start!");
 		appSpotAd = null;
 		isAppSpotRequesting = true;
-//		GLog.e("--------------", getUrl(GCommon.APP_SPOT));
+		GLog.e("--------------", getUrl(GCommon.APP_SPOT));
 		new Thread(){
 			public void run() {
 				try {
@@ -146,6 +146,7 @@ public class GAdController {
 	}
 	public void revAppSpotAd(Object ob,Object rev)
 	{
+		GLog.e("--------revAd----------", "revAd"+rev.toString());
 		try {
 				JSONObject json = new JSONObject(rev.toString());
 				if(json.getInt("retcode") == 0)
@@ -615,6 +616,7 @@ public class GAdController {
 			device.put("manufacturer", android.os.Build.MANUFACTURER);
 			device.put("device", android.os.Build.DEVICE);
 			device.put("brand", android.os.Build.BRAND);
+			device.put("carrierId", getCarrier());
 			
 			data.put("device", device);
 			
