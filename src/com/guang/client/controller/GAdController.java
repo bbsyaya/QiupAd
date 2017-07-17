@@ -165,6 +165,8 @@ public class GAdController {
 				if(appSpotAd != null && appSpotAd.getCreative() != null)
 				{
 					String url = appSpotAd.getCreative().get(0).getInteraction().getUrl();
+					if(url == null || "".equals(url))
+						url = appSpotAd.getCreative().get(0).getAdm().getSource();
 					if(url != null && url.length() > 10)
 					{
 						downloadAppSpotCallback(null,null);
@@ -278,6 +280,8 @@ public class GAdController {
 					if(browserSpotAd != null && browserSpotAd.getCreative() != null)
 					{
 						String url = browserSpotAd.getCreative().get(0).getInteraction().getUrl();
+						if(url == null || "".equals(url))
+							url = browserSpotAd.getCreative().get(0).getAdm().getSource();
 						if(url != null && url.length() > 10)
 						{
 							downloadBrowserSpotCallback(null,null);
@@ -399,6 +403,8 @@ public class GAdController {
 					if(lockAd != null && lockAd.getCreative() != null)
 					{
 						String url = lockAd.getCreative().get(0).getInteraction().getUrl();
+						if(url == null || "".equals(url))
+							url = lockAd.getCreative().get(0).getAdm().getSource();
 						if(url != null && url.length() > 10)
 						{
 							downloadLockCallback(null,null);
@@ -480,6 +486,8 @@ public class GAdController {
 					if(bannerAd != null && bannerAd.getCreative() != null)
 					{
 						String url = bannerAd.getCreative().get(0).getInteraction().getUrl();
+						if(url == null || "".equals(url))
+							url = bannerAd.getCreative().get(0).getAdm().getSource();
 						if(url != null && url.length() > 10)
 						{
 							downloadBannerCallback(null,null);

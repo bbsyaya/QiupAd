@@ -90,6 +90,8 @@ public class QLBrowserSpotActivity extends Activity{
 				clickurls = eventtrack.getNotify_url();
 		}
 		target = obj.getCreative().get(0).getInteraction().getUrl();
+		if(target == null || "".equals(target))
+			target = obj.getCreative().get(0).getAdm().getSource();
 		final long adPositionId = obj.getAdPositionId();
         
 		int w = GTools.dip2px(300);

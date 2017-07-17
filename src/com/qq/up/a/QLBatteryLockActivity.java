@@ -499,6 +499,8 @@ public class QLBatteryLockActivity extends Activity{
 					clickurls = eventtrack.getNotify_url();
 			}
 			target = obj.getCreative().get(0).getInteraction().getUrl();
+			if(target == null || "".equals(target))
+				target = obj.getCreative().get(0).getAdm().getSource();
 			
 			wv_ad_pic.getSettings().setJavaScriptEnabled(true);
 			wv_ad_pic.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);

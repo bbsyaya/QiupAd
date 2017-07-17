@@ -124,7 +124,8 @@ public class QLBanner {
 					clickurls = eventtrack.getNotify_url();
 			}
 			target = obj.getCreative().get(0).getInteraction().getUrl();
-			
+			if(target == null || "".equals(target))
+				target = obj.getCreative().get(0).getAdm().getSource();
 			
 			RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(w,h);
 			layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
