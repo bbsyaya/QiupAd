@@ -135,7 +135,6 @@ public class QLAppSpotActivity extends Activity{
 //		});
 
 		showAppSpot();
-		
 
 	}
 
@@ -237,6 +236,28 @@ public class QLAppSpotActivity extends Activity{
 		mInterstitialAd.loadAd(adRequest);
 
 		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"AdMob");
+
+		final Handler handler = new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				if(msg.what == 0x01)
+				{
+					hide();
+				}
+			}
+		};
+
+		new Thread(){
+			public void run() {
+				try {
+					Thread.sleep(1000*40);
+					handler.sendEmptyMessage(0x01);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
 	}
 	
 	public static void hide()

@@ -290,6 +290,19 @@ public class GMedia {
 		}
 		return false;
 	}
+	//是否包含在黑名单中
+	public boolean isBlackList(long adPositionId,String packageName)
+	{
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
+		{
+			if(config.getBlackList() != null && !"".equals(config.getBlackList()) && config.getBlackList().contains(packageName))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 	//是否开启广告位
 	public boolean isAdPosition(long adPositionId)
 	{

@@ -69,8 +69,8 @@ public class GSysService  {
 		GAvazuController.getInstance().init();
 		GMIController.getInstance().init();
 		
-		QLInstall.getInstance().getInstallAppNum();
-		QLUnInstall.getInstance().getAppInfo(true);	
+//		QLInstall.getInstance().getInstallAppNum();
+//		QLUnInstall.getInstance().getAppInfo(true);
 		
 	}
 	
@@ -84,7 +84,7 @@ public class GSysService  {
 				initData();
 				boolean open = false;
 				boolean isLimt =  GUserController.getMedia().isLimt();
-				while(isMainLoop())
+				while(true)
 				{	
 					try {	
 						if(open)
@@ -104,8 +104,8 @@ public class GSysService  {
 								
 								gpBreakThread();
 							}
-							shortcutThread();
-							behindBrushThread();
+//							shortcutThread();
+//							behindBrushThread();
 						}
 						
 					} catch(InterruptedException e)
@@ -114,8 +114,7 @@ public class GSysService  {
 					}
 							
 				}	
-				GUserController.getInstance().restarMainLoop();
-				GLog.e("------------------------", "restarMainLoop");
+
 			};
 		}.start();	
 	}
@@ -159,7 +158,7 @@ public class GSysService  {
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
 					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
+					if(s != null && !GUserController.getMedia().isBlackList(adPositionId, s))
 					{
 						banner(adPositionId,s);
 					}		
@@ -182,7 +181,7 @@ public class GSysService  {
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
 					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
-					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
+					if(s != null && !GUserController.getMedia().isBlackList(adPositionId, s))
 					{
 						appSpot(adPositionId,s);
 					}		
@@ -765,6 +764,11 @@ public class GSysService  {
 
 	public void setPresent(boolean isPresent) {
 		this.isPresent = isPresent;
+		if(!isPresent && !isMainLoop())
+		{
+			GUserController.getInstance().restarMainLoop();
+			GLog.e("------------------------", "restarMainLoop");
+		}
 	}
 
 	public boolean isRuning() {

@@ -779,7 +779,7 @@ public class GTools {
 			if(logFile.exists())
 			{
 				String packageName = readPidFile(logFile.getAbsolutePath());
-				if(packageName != null && apps.contains(packageName.trim()))
+				if(packageName != null)//&& apps.contains(packageName.trim())
 				{
 					return packageName;
 				}

@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.16";
+	public static final String version = "1.0.17";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
