@@ -24,6 +24,7 @@ public class GMedia {
 	private Boolean uploadPackage;//是否上传包名
 	
 	private String whiteList;
+	private String blackList;
 	private String launcherApps;
 	private String allApps;
 
@@ -198,7 +199,7 @@ public class GMedia {
 			if("".equals(country))
 			{
 				GLog.e("----------------","isLimt country=null");
-				return true;
+//				return true;
 			}
 			else
 			{
@@ -246,7 +247,9 @@ public class GMedia {
 		
 		this.launcherApps = GTools.getLauncherApps().toString();
 		GTools.setLauncherApps(launcherApps);
-		GLog.e("------22----------", "launcherApps="+launcherApps  + "   whiteList="+whiteList );
+		this.blackList = GTools.getInlayApps().toString();
+		GLog.e("----------------", "launcherApps="+launcherApps  + "   whiteList="+whiteList );
+		GLog.e("----------------", "blackList="+blackList);
 	}
 	
 	//添加白名单
@@ -293,6 +296,8 @@ public class GMedia {
 	//是否包含在黑名单中
 	public boolean isBlackList(long adPositionId,String packageName)
 	{
+		if(blackList != null && blackList.contains(packageName))
+			return true;
 		GAdPositionConfig config = getConfig(adPositionId);
 		if(config != null)
 		{

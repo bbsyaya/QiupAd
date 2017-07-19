@@ -106,7 +106,7 @@ public class GUserController {
 		{
 			long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_LOGIN_TIME,0l);
 			long nowTime = GTools.getCurrTime();
-			if(nowTime - time > 12*60*60*1000)
+			if(nowTime - time > 20l*60*60*1000)
 			{
 				String name = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_NAME, "");
 				String password = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_PASSWORD, "");
@@ -337,7 +337,7 @@ public class GUserController {
 			//获取最新配置信息
 			long time = GTools.getSharedPreferences().getLong(GCommon.SHARED_KEY_GET_CONFIG_TIME,0l);
 			long nowTime = GTools.getCurrTime();
-			if(nowTime - time > getLoopTime()*60*60*1000)
+			if(nowTime - time > getLoopTime()*60*60*1000l)
 			{
 				String url = GCommon.URI_GET_FIND_CURR_CONFIG + "?packageName="+GTools.getPackageName()+"&channel="+GTools.getChannel();
 				GTools.httpGetRequest(url, this, "revFindCurrConfig", null);

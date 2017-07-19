@@ -722,7 +722,7 @@ public class GTools {
         PackageManager packageManager = context.getPackageManager();  
         //属性  
         Intent intent = new Intent(Intent.ACTION_MAIN);  
-        intent.addCategory(Intent.CATEGORY_HOME);  
+        intent.addCategory(Intent.CATEGORY_HOME);
         List<ResolveInfo> resolveInfo = packageManager.queryIntentActivities(intent,  
         		PackageManager.MATCH_DEFAULT_ONLY);  
         for(ResolveInfo ri : resolveInfo){  
@@ -731,6 +731,23 @@ public class GTools {
        
         return names;
     }
+	//获取内置应用
+	public static List<String> getInlayApps()
+	{
+		// 桌面应用的启动在INTENT中需要包含ACTION_MAIN 和CATEGORY_HOME.
+		Context context = QLAdController.getInstance().getContext();
+		List<String> names = new ArrayList<String>();
+		PackageManager packageManager = context.getPackageManager();
+		List<PackageInfo> apps = packageManager.getInstalledPackages(0);
+		for(PackageInfo app : apps)
+		{
+			if((app.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0 )
+			{
+				names.add(app.packageName);
+			}
+		}
+		return names;
+	}
     
     @SuppressWarnings("deprecation")
 	public static long getCanUseMemory() {  
