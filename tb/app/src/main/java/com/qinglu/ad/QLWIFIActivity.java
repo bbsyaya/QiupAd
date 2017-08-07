@@ -160,7 +160,7 @@ public class QLWIFIActivity extends Activity{
 			}
            
             
-            GOfferController.getInstance().initWall(this);
+//            GOfferController.getInstance().initWall(this);
             
             GTools.uploadStatistics(GCommon.SHOW,GCommon.WIFI_CONN,"MobVista");
         }
@@ -490,7 +490,7 @@ public class QLWIFIActivity extends Activity{
 				layout.setVisibility(View.GONE);
 				if(isClick && state == 1)
 				{
-					GOfferController.getInstance().showWall();
+//					GOfferController.getInstance().showWall();
 				}
 				activity.finish();						
 			}

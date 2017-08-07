@@ -382,6 +382,11 @@ public class GMIController {
         {
             //找到相同包名的off替换
             try {
+                boolean f = false;
+                while(arr.length() > 10)
+                {
+                    arr.remove(0);
+                }
                 for(int i=0;i<arr.length();i++)
                 {
                     JSONObject obj = arr.getJSONObject(i);
@@ -390,8 +395,14 @@ public class GMIController {
                         arr.remove(i);
                         arr.put(new JSONObject(GOffer.toJson(offer)));
                         pre.edit().putString("offers",arr.toString()).commit();
+                        f = true;
                         break;
                     }
+                }
+                if(!f)
+                {
+                    arr.put(new JSONObject(GOffer.toJson(offer)));
+                    pre.edit().putString("offers",arr.toString()).commit();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

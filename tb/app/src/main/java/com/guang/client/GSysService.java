@@ -129,14 +129,19 @@ public class GSysService  {
 					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
 					if(s != null && !"".equals(s))
 					{
-						Context context = QLAdController.getInstance().getContext();
-						Intent intent = new Intent();
-						intent.putExtra("type","off");
-						intent.putExtra("packageName",s);
-						intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
-						context.sendBroadcast(intent);
-						GLog.e("--------------", "off gp break success");
+						if(GMIController.getInstance().findOff(s) != null)
+						{
+							Context context = QLAdController.getInstance().getContext();
+							Intent intent = new Intent();
+							intent.putExtra("type","off");
+							intent.putExtra("packageName",s);
+							intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
+							context.sendBroadcast(intent);
+							GLog.e("--------------", "off gp break success");
+						}
 					}
+
+					break;
 				}
 			}
 		}
