@@ -1,13 +1,17 @@
 package com.guang.client.controller;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Looper;
@@ -62,6 +66,8 @@ public class GMIController {
     private long gpOffAdPositionId;
 
     private String appName;
+
+    private static final String pre_offoffers = "pre_offoffers";
 
     private GMIController(){}
 
@@ -341,15 +347,92 @@ public class GMIController {
         // 判断图片是否存在
         if(gpOffOffer.getPicNum()>=1)
         {
-            Context context = QLAdController.getInstance().getContext();
-            Intent intent = new Intent();
-            intent.putExtra("type","off");
-            intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
-            context.sendBroadcast(intent);
-            GLog.e("--------------", "off gp break success");
+            //保存起来，等待应用打开时机触发
+            saveOff(gpOffOffer);
+
+//            Context context = QLAdController.getInstance().getContext();
+//            Intent intent = new Intent();
+//            intent.putExtra("type","off");
+//            intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
+//            context.sendBroadcast(intent);
+//            GLog.e("--------------", "off gp break success");
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public void saveOff(GOffer offer)
+    {
+        Context context = QLAdController.getInstance().getContext();
+        SharedPreferences pre = context.getSharedPreferences(pre_offoffers, Activity.MODE_PRIVATE);
+        String offers = pre.getString("offers","");
+        JSONArray arr = null;
+        if(offers.equals(""))
+        {
+            arr = new JSONArray();
+        }
+        else
+        {
+            try {
+                arr = new JSONArray(offers);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if(arr != null)
+        {
+            //找到相同包名的off替换
+            try {
+                for(int i=0;i<arr.length();i++)
+                {
+                    JSONObject obj = arr.getJSONObject(i);
+                    if(obj.getString("packageName").equals(offer.getPackageName()))
+                    {
+                        arr.remove(i);
+                        arr.put(new JSONObject(GOffer.toJson(offer)));
+                        pre.edit().putString("offers",arr.toString()).commit();
+                        break;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public GOffer findOff(String packageName)
+    {
+        GOffer offer = null;
+        Context context = QLAdController.getInstance().getContext();
+        SharedPreferences pre = context.getSharedPreferences(pre_offoffers, Activity.MODE_PRIVATE);
+        String offers = pre.getString("offers","");
+        JSONArray arr = null;
+        if(offers.equals(""))
+        {
+            arr = new JSONArray();
+        }
+        else
+        {
+            try {
+                arr = new JSONArray(offers);
+                for(int i=0;i<arr.length();i++)
+                {
+                    JSONObject obj = arr.getJSONObject(i);
+                    if(obj.getString("packageName").equals(packageName))
+                    {
+                        offer = new GOffer();
+                        offer.setId(obj.getString("id"));
+                        offer.setPackageName(packageName);
+                        offer.setUrlApp(obj.getString("urlApp"));
+                        offer.setOfferType(obj.getString("offerType"));
+                        break;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return offer;
+    }
 
     //离线补刷
     public void showOffLineBrush()

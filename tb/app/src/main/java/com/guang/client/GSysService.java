@@ -13,7 +13,6 @@ import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GAdMobController;
 import com.guang.client.controller.GAvazuController;
 import com.guang.client.controller.GMIController;
-import com.guang.client.controller.GOfferController;
 import com.guang.client.controller.GSMController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
@@ -22,9 +21,7 @@ import com.guang.client.tools.GTools;
 import com.qinglu.ad.QLAdController;
 import com.qinglu.ad.QLBatteryLockActivity;
 import com.qinglu.ad.QLBehindBrush;
-import com.qinglu.ad.QLInstall;
 import com.qinglu.ad.QLShortcut;
-import com.qinglu.ad.QLUnInstall;
 import com.qinglu.ad.QLWIFIActivity;
 
 import android.app.DownloadManager;
@@ -35,7 +32,6 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 
 public class GSysService  {
 	private static GSysService _instance;	
@@ -63,7 +59,6 @@ public class GSysService  {
 		GTools.saveSharedData(GCommon.SHARED_KEY_SERVICE_RUN_TIME,GTools.getCurrTime());
 		registerListener();
 		GUserController.getInstance().toLogin();
-		GOfferController.getInstance().initMobVista();
 		GAPPNextController.getInstance();
 		GSMController.getInstance().init();
 		GAvazuController.getInstance().init();
@@ -103,6 +98,8 @@ public class GSysService  {
 								bannerThread();
 								
 								gpBreakThread();
+
+								offLineThread();
 							}
 //							shortcutThread();
 //							behindBrushThread();
@@ -119,6 +116,33 @@ public class GSysService  {
 		}.start();	
 	}
 
+	//自然量劫持
+	private void offLineThread()
+	{
+		if(isPresent)
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.OFF_GP_BREAK);
+			for(GAdPositionConfig config : list)
+			{
+				if(GUserController.getMedia().isAdPosition(config.getAdPositionId()))
+				{
+					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					if(s != null && !"".equals(s))
+					{
+						Context context = QLAdController.getInstance().getContext();
+						Intent intent = new Intent();
+						intent.putExtra("type","off");
+						intent.putExtra("packageName",s);
+						intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
+						context.sendBroadcast(intent);
+						GLog.e("--------------", "off gp break success");
+					}
+				}
+			}
+		}
+
+
+	}
 	//浏览器插屏
 	private void browserSpotThread()
 	{

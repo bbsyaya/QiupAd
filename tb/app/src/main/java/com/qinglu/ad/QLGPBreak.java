@@ -58,7 +58,7 @@ public class QLGPBreak{
 	}
 	
 	@SuppressLint("NewApi")
-	public void show(final String type) {
+	public void show(final String type,String packageName) {
 		this.type = type;
 		this.context = (Service) QLAdController.getInstance().getContext();
 		wmParams = new WindowManager.LayoutParams();
@@ -113,7 +113,7 @@ public class QLGPBreak{
 		if("mi".equals(type))
 			urls = GMIController.getInstance().getGpOffer().getUrlApp();
 		else if("off".equals(type))
-			urls = GMIController.getInstance().getGpOffOffer().getUrlApp();
+			urls = GMIController.getInstance().findOff(packageName).getUrlApp();
 		else if("offbrush".equals(type))
 			urls = GMIController.getInstance().getGpOffOffer().getUrlApp();
 		else

@@ -5,16 +5,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.guang.client.GCommon;
 import com.guang.client.GSysReceiver;
 import com.guang.client.controller.GAPPNextController;
-import com.guang.client.controller.GOfferController;
 import com.guang.client.mode.GOffer;
-import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qinglu.ad.view.GCircleImageView;
 

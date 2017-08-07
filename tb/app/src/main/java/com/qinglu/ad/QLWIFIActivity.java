@@ -3,17 +3,11 @@ package com.qinglu.ad;
 
 
 import com.guang.client.GCommon;
-import com.guang.client.controller.GOfferController;
-import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 
-import android.R;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Matrix;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,7 +15,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
