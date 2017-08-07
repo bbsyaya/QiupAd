@@ -783,7 +783,9 @@ public class GTools {
 			return false;
 		}
     	String p = getForegroundApp(packageName);
-		return (p == null);
+		if(p == null)
+			return true;
+		return (!p.contains(packageName));
     }
     //得到前台运行程序
     public static String getForegroundApp(String apps) {

@@ -153,10 +153,6 @@ public class QLBannerActivity extends Activity{
 					show();
 					GTools.uploadStatistics(GCommon.SHOW,GCommon.BANNER,"AdMob");
 
-					int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, 0);
-					GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, num+1);
-					GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME+bannerAdPositionId,GTools.getCurrTime());
-
 					GLog.e("--------------", "banner success");
 				}
 				else
@@ -167,6 +163,10 @@ public class QLBannerActivity extends Activity{
 		mAdView.loadAd(adRequest);
 
  		this.setContentView(root,rootlayoutParams);
+
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_NUM+bannerAdPositionId, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_BANNER_TIME+bannerAdPositionId,GTools.getCurrTime());
 
 		GTools.uploadStatistics(GCommon.REQUEST,GCommon.BANNER,"AdMob");
 

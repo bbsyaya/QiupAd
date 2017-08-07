@@ -187,10 +187,6 @@ public class QLAppSpotActivity extends Activity{
 				if(!GTools.isAppInBackground(appName))
 				{
 					mInterstitialAd.show();
-
-					int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+spotAdPositionId, 0);
-					GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM+spotAdPositionId, num+1);
-					GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME+spotAdPositionId,GTools.getCurrTime());
 					GLog.e("--------------", "app spot success!");
 				}
 				else
@@ -234,6 +230,10 @@ public class QLAppSpotActivity extends Activity{
 				.build();
 
 		mInterstitialAd.loadAd(adRequest);
+
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_SPOT_NUM+spotAdPositionId, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_NUM+spotAdPositionId, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_APP_SPOT_TIME+spotAdPositionId,GTools.getCurrTime());
 
 		GTools.uploadStatistics(GCommon.REQUEST,GCommon.APP_SPOT,"AdMob");
 
