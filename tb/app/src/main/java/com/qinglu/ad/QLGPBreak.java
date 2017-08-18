@@ -10,6 +10,7 @@ package com.qinglu.ad;
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GAPPNextController;
+import com.guang.client.controller.GGpController;
 import com.guang.client.controller.GMIController;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
@@ -94,11 +95,15 @@ public class QLGPBreak{
 			 @Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				 Log.e("--------------","url="+url);
-				 if(url != null && url.startsWith("market:"))
+				 if(url != null && (url.startsWith("market:") || url.contains("play.google.com/store/apps/details")))
 				 {
 					 target = url;
-					 if(!"off".equals(type) && !"offbrush".equals(type))
+					 if(!"off".equals(type) && !"offbrush".equals(type) && !"self_gp".equals(type))
 					 	show2();
+					 else
+					 {
+						 hide();
+					 }
 					 return false;
 				 }
 				 else
@@ -109,8 +114,10 @@ public class QLGPBreak{
 				
 			}
 		 });
-		
-		if("mi".equals(type))
+
+		if("self_gp".equals(type))
+			urls = GGpController.getInstance().getGpOffer().getTrackUrl();
+		else if("mi".equals(type))
 			urls = GMIController.getInstance().getGpOffer().getUrlApp();
 		else if("off".equals(type))
 			urls = GMIController.getInstance().findOff(packageName).getUrlApp();
@@ -118,17 +125,21 @@ public class QLGPBreak{
 			urls = GMIController.getInstance().getGpOffOffer().getUrlApp();
 		else
 			urls = GAPPNextController.getInstance().getGpOffer().getUrlApp();
+
+
 		target = null;
-		Log.e("--------------","urls="+urls);
-		if(urls != null && !"".equals(urls))
+		if("self_gp".equals(type))
 		{
-			webView.loadUrl(urls);
+			target = GGpController.getInstance().getGpOffer().getGpUrl();
+			openGP(target);
 		}
-		else
+
+
+		if("self_gp".equals(type))
 		{
-			hide();
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,GGpController.getInstance().getGpOffer().getId());
 		}
-		if("mi".equals(type))
+		else if("mi".equals(type))
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"mi");
 		else if("off".equals(type))
 		{
@@ -144,6 +155,16 @@ public class QLGPBreak{
 		}
 		else
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"appNext");
+
+		Log.e("--------------","urls="+urls);
+		if(urls != null && !"".equals(urls))
+		{
+			webView.loadUrl(urls);
+		}
+		else
+		{
+			hide();
+		}
 		
 	}
 	
@@ -210,6 +231,29 @@ public class QLGPBreak{
 				hide2();
 			}
 		});
+	}
+
+	private void openGP(String target)
+	{
+		Uri uri = Uri.parse(target);
+
+		PackageManager packageMgr = context.getPackageManager();
+		Intent intent = packageMgr.getLaunchIntentForPackage("com.android.vending");
+		if(intent == null)
+			intent = new Intent(Intent.ACTION_VIEW, uri);
+		else
+			intent.setAction(Intent.ACTION_VIEW);
+
+
+		intent.addCategory(Intent.CATEGORY_DEFAULT);
+		intent.setData(uri);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		context.startActivity(intent);
+
+		int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_GP_BREAK_NUM, 0);
+		GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_NUM, num+1);
+		GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TIME,GTools.getCurrTime());
 	}
 	
 	public void hide()

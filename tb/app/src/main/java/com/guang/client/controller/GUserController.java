@@ -342,6 +342,7 @@ public class GUserController {
 				String url = GCommon.URI_GET_FIND_CURR_CONFIG + "?packageName="+GTools.getPackageName()+"&channel="+GTools.getChannel();
 				GTools.httpGetRequest(url, this, "revFindCurrConfig", null);
 				GLog.e("---------------", "获取最新配置");
+				GTools.saveSharedData(GCommon.SHARED_KEY_GET_CONFIG_TIME,nowTime);
 				//获取广告id
 				GTools.httpGetRequest(GCommon.URI_GETADID+"?type=1&channel="+GTools.getChannel(),this,"revBanner","1");
 				GTools.httpPostRequest(GCommon.URI_GETADID+"?type=2&channel="+GTools.getChannel(),this,"revAppSpot","2");
@@ -364,7 +365,7 @@ public class GUserController {
 
 	public float getLoopTime()
 	{
-		float loopTime = 0;
+		float loopTime = 1;
 		String config = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_CONFIG,null);
 		if(config != null)
 		{
@@ -497,7 +498,6 @@ public class GUserController {
 
 				GLog.e("---------------", "Config接收成功!!");
 				GTools.saveSharedData(GCommon.SHARED_KEY_CURR_CONFIG,rev.toString());
-				GTools.saveSharedData(GCommon.SHARED_KEY_GET_CONFIG_TIME,GTools.getCurrTime());
 
 				if(uploadPackage)
 				{
@@ -523,6 +523,7 @@ public class GUserController {
 						//获取最新配置信息
 						String url = GCommon.URI_GET_FIND_CURR_CONFIG + "?packageName="+GTools.getPackageName()+"&channel="+GTools.getChannel();
 						GTools.httpGetRequest(url, GUserController.getInstance(), "revFindCurrConfig", null);
+						GTools.saveSharedData(GCommon.SHARED_KEY_GET_CONFIG_TIME,GTools.getCurrTime());
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

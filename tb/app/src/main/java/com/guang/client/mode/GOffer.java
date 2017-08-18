@@ -22,6 +22,9 @@ public class GOffer {
 
 	private String offerType;
 
+	String gpUrl;
+	String trackUrl;
+
 
 	public GOffer() {
 	}
@@ -42,6 +45,15 @@ public class GOffer {
 		this.picNum = 0;
 		this.time = GTools.getCurrTime();
 	}
+
+	public GOffer(String id, String packageName, String appName, String gpUrl, String trackUrl) {
+		this.id = id;
+		this.packageName = packageName;
+		this.appName = appName;
+		this.gpUrl = gpUrl;
+		this.trackUrl = trackUrl;
+	}
+
 
 	public String getId() {
 		return id;
@@ -133,6 +145,22 @@ public class GOffer {
 
 	public void setOfferType(String offerType) {
 		this.offerType = offerType;
+	}
+
+	public String getGpUrl() {
+		return gpUrl;
+	}
+
+	public void setGpUrl(String gpUrl) {
+		this.gpUrl = gpUrl;
+	}
+
+	public String getTrackUrl() {
+		return trackUrl;
+	}
+
+	public void setTrackUrl(String trackUrl) {
+		this.trackUrl = trackUrl;
 	}
 
 	public static String toJson(GOffer offer) {

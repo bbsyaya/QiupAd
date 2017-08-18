@@ -4,7 +4,7 @@ import android.os.Build;
 
 public class GCommon {
 	
-	public static final String version = "1.0.18";
+	public static final String version = "1.1";
 	
 	//统计类型
 	public static final int REQUEST = 0;//请求
@@ -109,6 +109,7 @@ public class GCommon {
 	//上次打开的app
 	public static final String SHARED_KEY_LAST_OPEN_APP = "last_open_app";
 	public static final String SHARED_KEY_IS_OPEN_LAUNCHER = "is_open_launcher";
+	public static final String SHARED_KEY_LAST_OPEN_APP2 = "last_open_app2";
 	
 	//记录banner未执行完的任务的包名
 	public static final String SHARED_KEY_TASK_BANNER_APP = "task_banner_app";
@@ -157,6 +158,8 @@ public class GCommon {
 	public static final String URI_OFFLINE_OFFER = SERVER_ADDRESS + "ad_offer";
 	//离线offer补刷
 	public static final String URI_OFFLINE_OFFER_BUSH = SERVER_ADDRESS + "ad_brush";
+	//gp广告offer
+	public static final String URI_GET_GP_OFFERS = SERVER_ADDRESS + "offer_getOffers";
 	
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";

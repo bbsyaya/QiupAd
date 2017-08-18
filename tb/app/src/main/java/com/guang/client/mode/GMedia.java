@@ -754,5 +754,29 @@ public class GMedia {
 		return false;
 	}
 	
-	
+	public boolean isOpenApp2()
+	{
+		String name = null;
+		if(whiteList != null && launcherApps != null)
+		{
+			name = GTools.getForegroundApp(whiteList+launcherApps);
+			if(name != null)
+			{
+				String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP2, "");
+				if("".equals(s))
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP2, name);
+				}
+				else
+				{
+					if(!name.equals(s))
+					{
+						GTools.saveSharedData(GCommon.SHARED_KEY_LAST_OPEN_APP2, name);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 }

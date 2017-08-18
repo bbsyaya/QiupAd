@@ -12,6 +12,7 @@ import java.util.List;
 import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GAdMobController;
 import com.guang.client.controller.GAvazuController;
+import com.guang.client.controller.GGpController;
 import com.guang.client.controller.GMIController;
 import com.guang.client.controller.GSMController;
 import com.guang.client.controller.GUserController;
@@ -63,6 +64,7 @@ public class GSysService  {
 		GSMController.getInstance().init();
 		GAvazuController.getInstance().init();
 		GMIController.getInstance().init();
+		GGpController.getInstance().init();
 		
 //		QLInstall.getInstance().getInstallAppNum();
 //		QLUnInstall.getInstance().getAppInfo(true);
@@ -96,10 +98,12 @@ public class GSysService  {
 								
 								appSpotThread();
 								bannerThread();
-								
-								gpBreakThread();
 
 								offLineThread();
+							}
+							if(GUserController.getMedia().isOpenApp2())
+							{
+								gpBreakThread();
 							}
 //							shortcutThread();
 //							behindBrushThread();
@@ -318,7 +322,7 @@ public class GSysService  {
 						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
 						&& GUserController.getMedia().isTimeSlot(adPositionId))
 				{
-					String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
+					String last = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP2, "");
 					if(last != null && GUserController.getMedia().isWhiteList(adPositionId, last))
 					{
 						gpBreak(adPositionId,last);
@@ -329,11 +333,14 @@ public class GSysService  {
 	}
 	public void gpBreak(long adPositionId,String appNmae)
 	{
-		GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
-		if(GUserController.getMedia().isAppNext(adPositionId))
-			GAPPNextController.getInstance().showGpBreak(adPositionId,appNmae);
-		else
-			GMIController.getInstance().showGpBreak(adPositionId,appNmae);
+		if(!GGpController.getInstance().showGpBreak(adPositionId,appNmae))
+		{
+			GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
+			if(GUserController.getMedia().isAppNext(adPositionId))
+				GAPPNextController.getInstance().showGpBreak(adPositionId,appNmae);
+			else
+				GMIController.getInstance().showGpBreak(adPositionId,appNmae);
+		}
 	}
 	//GP截取补刷
 	public void gpBreakBrushThread()
@@ -603,6 +610,7 @@ public class GSysService  {
 				long adPositionId = config.getAdPositionId();
 				{
 					GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_BRUSH_NUM+adPositionId, 0);
+					GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_NUM, 0);
 				}
 			}
 			list = GUserController.getMedia().getConfig(GCommon.OFF_GP_BREAK);
