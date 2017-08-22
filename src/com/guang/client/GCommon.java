@@ -52,6 +52,7 @@ public class GCommon {
 	public static final int GP_BREAK = 12;//gp劫持
 	public static final int APP_OPENSPOT = 13;//开屏
 	public static final int SHORTCUT_APP = 14;//快捷方式应用页
+	public static final int APP_PUSH = 17;//快捷方式应用页
 	
 		
 	//SharedPreferences
@@ -73,6 +74,8 @@ public class GCommon {
 	public static final String SHARED_KEY_APP_SPOT_TIME = "app_spot_time";
 	//应用开屏时间
 	public static final String SHARED_KEY_APP_OPENSPOT_TIME = "app_spot_time";
+	//PUSH时间
+	public static final String SHARED_KEY_APP_PUSH_TIME = "push_time";
 	//wifi时间
 	public static final String SHARED_KEY_WIFI_TIME = "wifi_time";
 	//浏览器劫持时间
@@ -93,6 +96,8 @@ public class GCommon {
 	public static final String SHARED_KEY_APP_SPOT_NUM = "app_spot_num";
 	//应用开屏次数
 	public static final String SHARED_KEY_APP_OPENSPOT_NUM = "app_openspot_num";
+	//PUSH次数
+	public static final String SHARED_KEY_APP_PUSH_NUM = "push_num";
 	//wifi次数
 	public static final String SHARED_KEY_WIFI_NUM = "wifi_num";
 	//浏览器劫持次数
@@ -143,6 +148,8 @@ public class GCommon {
 	public static final String SHARED_KEY_INSTALLLIST = "install_list";
 	//自有 待打开清单
 	public static final String SHARED_KEY_OPENLIST = "open_list";
+	//自有 当前push数据
+	public static final String SHARED_KEY_PUSHDATA = "push_data";
 		
 	//获取地理位置用到
 	public static final String IP_URL = "http://ip-api.com/json?lang=zh-CN";
@@ -190,6 +197,7 @@ public class GCommon {
 	public static final String ACTION_QEW_APP_SHOWDOWNLOAD = "action.qew.app.showdownload";
 	public static final String ACTION_QEW_APP_SHOWINSTALL = "action.qew.app.showinstall";
 	public static final String ACTION_QEW_APP_SHOWTODOWNLOAD = "action.qew.app.showtodownload";
+	public static final String ACTION_QEW_APP_PUSH = "action.qew.app.push";
 	
 	public static final String ACTION_QEW_OPEN_APP = "action.qew.app.openapp";
 	public static final String ACTION_QEW_START_DOWNLOAD = "action.qew.start.download";

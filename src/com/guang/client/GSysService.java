@@ -174,6 +174,26 @@ public class GSysService  {
 			}
 		}
 	}
+	//PUSH
+	public void appPushThread()
+	{
+		if(isPresent &&  isWifi())
+		{
+			List<GAdPositionConfig> list = GUserController.getMedia().getConfig(GCommon.APP_PUSH);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				if( GUserController.getMedia().isAdPosition(adPositionId)
+						&& GUserController.getMedia().isShowNum(adPositionId)
+						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
+						&& GUserController.getMedia().isTimeSlot(adPositionId))
+				{
+					GSelfController.getInstance().showAppPush(adPositionId, "");
+				}
+			}
+		}
+	}
+		
 	//应用开屏
 	private void appOpenSpotThread()
 	{
@@ -564,6 +584,17 @@ public class GSysService  {
 					GTools.saveSharedData(GCommon.SHARED_KEY_APP_OPENSPOT_NUM+adPositionId, 0);
 				}
 			}
+			
+			list = GUserController.getMedia().getConfig(GCommon.APP_PUSH);
+			for(GAdPositionConfig config : list)
+			{
+				long adPositionId = config.getAdPositionId();
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_APP_PUSH_TIME+adPositionId, 0l);
+					GTools.saveSharedData(GCommon.SHARED_KEY_APP_PUSH_NUM+adPositionId, 0);
+				}
+			}
+			
 			list = GUserController.getMedia().getConfig(GCommon.SHORTCUT);
 			for(GAdPositionConfig config : list)
 			{
@@ -780,6 +811,7 @@ public class GSysService  {
         filter.addAction(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
         filter.addAction(GCommon.ACTION_QEW_APP_SHOWINSTALL);
         filter.addAction(GCommon.ACTION_QEW_APP_SHOWTODOWNLOAD);
+        filter.addAction(GCommon.ACTION_QEW_APP_PUSH);
         
         
         filter.addAction(Intent.ACTION_SCREEN_ON);

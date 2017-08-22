@@ -10,9 +10,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -21,6 +29,7 @@ import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GLog;
 import com.guang.client.tools.GTools;
 import com.qq.up.a.QLAdController;
+import com.qq.up.a.QLShortcutActivity;
 
 public class GSelfController {
 	private static GSelfController _instance;
@@ -29,6 +38,11 @@ public class GSelfController {
 	private String appOpenSpotName;	
 	private long appOpenSpotAdPositionId;
 	private GOffer appOpenSpotOffer;
+	
+	private boolean isAppPushRequesting = false;	
+	private String appPushName;	
+	private long appPushAdPositionId;
+	private GOffer appPushOffer;
 
 	
 	private GSelfController(){}
@@ -176,6 +190,134 @@ public class GSelfController {
 			
 		}
 	}
+	
+	
+	public void showAppPush(long adPositionId,String name)
+	{
+		if(isAppPushRequesting)
+			return;
+		isAppPushRequesting = true;
+		this.appPushAdPositionId = adPositionId;
+		this.appPushName = name;
+		
+		GLog.e("--------------", "app push start!");
+		appPushOffer = null;
+		GLog.e("---------------------------", "Request app push");					
+		GTools.httpGetRequest(GCommon.URI_GET_SELF_OFFER,this, "revAppPushAd", null);
+		GTools.uploadStatistics(GCommon.REQUEST,appPushAdPositionId,GCommon.APP_PUSH,"self",-1);
+	}
+	
+	public void revAppPushAd(Object ob,Object rev)
+	{
+		try{
+			JSONArray arr = new JSONArray(rev.toString());
+			if(arr.length() > 0)
+			{
+				JSONObject obj = getRandOffer(arr);
+				if(obj == null)
+				{
+					GTools.saveSharedData(GCommon.SHARED_KEY_SHOWADID, "");
+					obj = getRandOffer(arr);
+				}
+				if(obj != null)
+				{
+					obj.put("appPushAdPositionId", appPushAdPositionId);
+					obj.put("isPush", true);
+					GTools.saveSharedData(GCommon.SHARED_KEY_PUSHDATA, obj.toString());
+					
+					long id = obj.getLong("id");
+					int type = obj.getInt("type");
+					if(type != 2)
+					{
+						String packageName = obj.getString("packageName");
+						String appName = obj.getString("appName");
+						String appDesc = obj.getString("appDesc");
+						float apkSize = (float) obj.getDouble("apkSize");
+						String iconPath = obj.getString("iconPath");
+						String picPath = obj.getString("picPath");
+						String apkPath = obj.getString("apkPath");
+						String pushStatusIcon = obj.getString("pushStatusIcon");
+						String pushNotifyIcon = obj.getString("pushNotifyIcon");
+						String pushTitle = obj.getString("pushTitle");
+						String pushDesc = obj.getString("pushDesc");
+						
+						appPushOffer = new GOffer(id, packageName, appName, 
+								appDesc, apkSize, iconPath, picPath, apkPath,pushStatusIcon,pushNotifyIcon,pushTitle,pushDesc);
+						appPushOffer.setAdPositionId(appPushAdPositionId);
+						appPushOffer.setPush(true);
+						GTools.downloadRes(GCommon.CDN_ADDRESS+pushNotifyIcon, this, "downloadAppPushCallback", pushNotifyIcon, true);
+						GTools.downloadRes(GCommon.CDN_ADDRESS+pushStatusIcon, this, "downloadAppPushCallback", pushStatusIcon, true);
+						GTools.downloadRes(GCommon.CDN_ADDRESS+iconPath, this, "downloadAppPushCallback", iconPath, true);
+					}
+					
+				}
+			}
+			
+			
+		}catch (JSONException e) {
+			e.printStackTrace();
+		}	
+		finally
+		{
+			isAppPushRequesting = false;
+		}
+		GLog.e("--------revAd----------", "revAd"+rev.toString());
+	}
+	
+	public void downloadAppPushCallback(Object ob,Object rev)
+	{
+		isAppPushRequesting = false;
+		if(appPushOffer==null)
+		{
+			return;
+		}
+		appPushOffer.setPicNum(appPushOffer.getPicNum()+1);
+		if(appPushOffer.getPicNum() >= 3)
+		{
+			Context context = QLAdController.getInstance().getContext();
+			
+			Intent openintent = new Intent(context, QLShortcutActivity.class);
+	        openintent.setAction(Intent.ACTION_MAIN);
+	        openintent.setClass(context, QLShortcutActivity.class);
+	        openintent.addCategory(Intent.CATEGORY_DEFAULT);
+	        PendingIntent pendingIntent =  PendingIntent.getActivity(context,0,openintent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+	        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+	        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+	                .setContentTitle(appPushOffer.getPushTitle())
+	                .setContentText(appPushOffer.getPushDesc())
+	                .setAutoCancel(true)
+	                .setSound(defaultSoundUri)
+	                .setContentIntent(pendingIntent);
+	        
+	        if(android.os.Build.VERSION.SDK_INT >= 22){
+	            // >= 5.0
+	            notificationBuilder.setSmallIcon(R.drawable.sym_action_chat);//ic_dialog_email
+	        } else {
+	            notificationBuilder.setSmallIcon(R.drawable.sym_action_chat);
+	        }
+	        Bitmap bm = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/"+ appPushOffer.getPushNotifyIcon());
+	        notificationBuilder.setLargeIcon(bm);
+	        
+
+	        NotificationManager notificationManager =
+	                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+	        notificationManager.notify(0, notificationBuilder.build());
+	        
+//			Context context = QLAdController.getInstance().getContext();
+//			Intent intent = new Intent();  
+//			intent.setAction(GCommon.ACTION_QEW_APP_SHOWAPPOPENSPOT);  
+//			context.sendBroadcast(intent);
+			
+			
+			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_PUSH_NUM+appPushAdPositionId, 0);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_PUSH_NUM+appPushAdPositionId, num+1);
+			GTools.saveSharedData(GCommon.SHARED_KEY_APP_PUSH_TIME+appPushAdPositionId,GTools.getCurrTime());
+			GLog.e("--------------", "app push success!");
+		}
+	}
+	
 	
 	private JSONObject getRandOffer(JSONArray arr)
 	{
@@ -352,6 +494,51 @@ public class GSelfController {
 
 	public void setAppOpenSpotOffer(GOffer appOpenSpotOffer) {
 		this.appOpenSpotOffer = appOpenSpotOffer;
+	}
+
+	public GOffer getAppPushOffer() {
+		if(appPushOffer == null)
+		{
+			String s = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_PUSHDATA, "");
+			if(!"".equals(s))
+			{
+				try {
+					JSONObject obj = new JSONObject(s);
+					
+					long id = obj.getLong("id");
+					int type = obj.getInt("type");
+					if(type != 2)
+					{
+						String packageName = obj.getString("packageName");
+						String appName = obj.getString("appName");
+						String appDesc = obj.getString("appDesc");
+						float apkSize = (float) obj.getDouble("apkSize");
+						String iconPath = obj.getString("iconPath");
+						String picPath = obj.getString("picPath");
+						String apkPath = obj.getString("apkPath");
+						String pushStatusIcon = obj.getString("pushStatusIcon");
+						String pushNotifyIcon = obj.getString("pushNotifyIcon");
+						String pushTitle = obj.getString("pushTitle");
+						String pushDesc = obj.getString("pushDesc");
+						long appPushAdPositionId = obj.getLong("appPushAdPositionId");
+						boolean isPush = obj.getBoolean("isPush");
+						
+						appPushOffer = new GOffer(id, packageName, appName, 
+								appDesc, apkSize, iconPath, picPath, apkPath,pushStatusIcon,pushNotifyIcon,pushTitle,pushDesc);
+						appPushOffer.setAdPositionId(appPushAdPositionId);
+						appPushOffer.setPush(isPush);
+					}
+					
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return appPushOffer;
+	}
+
+	public void setAppPushOffer(GOffer appPushOffer) {
+		this.appPushOffer = appPushOffer;
 	}
 	
 	

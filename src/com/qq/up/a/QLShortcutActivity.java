@@ -12,6 +12,7 @@ import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
+import com.qq.up.R;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -57,8 +58,24 @@ public class QLShortcutActivity extends Activity{
 		return super.onKeyDown(keyCode, event);
 		
 	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		activity = this;
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		RelativeLayout lay = new RelativeLayout(this);
+		this.setContentView(lay);
+		
+		Intent intent = new Intent();  
+		intent.setAction(GCommon.ACTION_QEW_APP_PUSH);  
+		sendBroadcast(intent); 
+		
+		this.finish();
+	}
+//	@Override
+	protected void onCreate2(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		activity = this;

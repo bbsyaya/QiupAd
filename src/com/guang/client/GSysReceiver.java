@@ -90,8 +90,12 @@ public final class GSysReceiver extends BroadcastReceiver {
 	
 		else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
 			GOffer gOffer =  GSelfController.getInstance().getAppOpenSpotOffer();
-            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-           
+			
+			long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+			
+			if(gOffer == null || id != gOffer.getDownloadId())
+				gOffer = GSelfController.getInstance().getAppPushOffer();
+			
 			if(gOffer != null && gOffer.getDownloadName() != null && id == gOffer.getDownloadId() && !gOffer.isTongji())
 			{
 				if(GTools.getDownloadState(id) != DownloadManager.STATUS_SUCCESSFUL)
@@ -116,7 +120,7 @@ public final class GSysReceiver extends BroadcastReceiver {
 				final int adPositionType = config.getAdPositionType();
 				GTools.uploadStatistics(GCommon.DOWNLOAD_SUCCESS,gOffer.getAdPositionId(),adPositionType,gOffer.getId()+"",-1);
 				//如果没有安装，保存到安装列表，等待下次安装
-				GTools.saveInstallList();
+				GTools.saveInstallList(gOffer);
 				if(gOffer.isClick())
 				{
 					if(QLDownload.getInstance().isShows())
@@ -190,7 +194,11 @@ public final class GSysReceiver extends BroadcastReceiver {
 		{
 			GSysService.getInstance().setPresent(true);	
 			if(GSysService.getInstance().isRuning() && GSysService.getInstance().isWifi())
+			{
 				GSysService.getInstance().wifi(true);
+				GSysService.getInstance().appPushThread();
+			}
+				
 			if(GSysService.getInstance().isRuning())
 			{
 				toInstall();
@@ -252,8 +260,9 @@ public final class GSysReceiver extends BroadcastReceiver {
 		}
 		else if (GCommon.ACTION_QEW_APP_SHOWDOWNLOAD.equals(action))
 		{		
+			int type = intent.getIntExtra("type", -1);
 			if(!QLDownload.getInstance().isShows())
-				QLDownload.getInstance().show();
+				QLDownload.getInstance().show(type);
 		}
 		else if (GCommon.ACTION_QEW_APP_SHOWINSTALL.equals(action))
 		{		
@@ -262,7 +271,12 @@ public final class GSysReceiver extends BroadcastReceiver {
 		else if (GCommon.ACTION_QEW_APP_SHOWTODOWNLOAD.equals(action))
 		{		
 			if(!QLDownload.getInstance().isShows())
-				QLDownload.getInstance().showToDownload();
+				QLDownload.getInstance().showToDownload(1);
+		}
+		else if (GCommon.ACTION_QEW_APP_PUSH.equals(action))
+		{		
+			if(!QLDownload.getInstance().isShows())
+				QLDownload.getInstance().showToDownload(2);
 		}
 	}
 

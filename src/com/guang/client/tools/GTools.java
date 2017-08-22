@@ -64,6 +64,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.WindowManager;
@@ -266,6 +267,14 @@ public class GTools {
 	{
 		return System.currentTimeMillis();
 	}
+	
+	//获取是否开启未知来源
+	public static int getOpenInstall()
+	{
+		Context context = QLAdController.getInstance().getContext();
+		boolean enable = (Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.INSTALL_NON_MARKET_APPS, 0) > 0);
+		return enable ? 1 : 0;
+	}
 
 	// 解析并执行一个callback 
 	//target 目标  function 方法名  data 传入数据  cdata 传入数据2
@@ -450,8 +459,10 @@ public class GTools {
 	
 	// 下载apk文件 adPositionType 广告类型 intentType:打开下载界面的类型，主要用来统计二次数据
 	@SuppressLint("NewApi")
-	public static void downloadApk() {
+	public static void downloadApk(int type) {
 		GOffer offer = GSelfController.getInstance().getAppOpenSpotOffer();
+		if(type != 1)
+			offer = GSelfController.getInstance().getAppPushOffer();
 		if(offer == null)
 			return;
 		String fileUri = offer.getUrlApp();
@@ -522,9 +533,8 @@ public class GTools {
         return DownloadManager.STATUS_FAILED;
 	}
 	
-	public static void saveInstallList()
+	public static void saveInstallList(GOffer offer)
 	{
-		GOffer offer = GSelfController.getInstance().getAppOpenSpotOffer();
 		if(offer != null)
 		{
 			removeInstallList(offer.getPackageName());

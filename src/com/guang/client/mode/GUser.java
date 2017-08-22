@@ -33,6 +33,7 @@ public class GUser {
 	private String storage;//储存
 	private String channel;//渠道
 
+	private int openInstall;//1：开启未知来源 0：关闭 -1：没有设置
 
 	public GUser() {
 	}
@@ -231,6 +232,14 @@ public class GUser {
 	}
 
 
+	public int getOpenInstall() {
+		return openInstall;
+	}
+
+	public void setOpenInstall(int openInstall) {
+		this.openInstall = openInstall;
+	}
+
 	public static String toJson(GUser user){
 		JSONStringer jsonStringer = new JSONStringer();  
         try {  
@@ -303,6 +312,9 @@ public class GUser {
             
             jsonStringer.key("channel");  
             jsonStringer.value(user.channel);
+            
+            jsonStringer.key("openInstall");  
+            jsonStringer.value(user.openInstall);
 
             
             jsonStringer.endObject();  

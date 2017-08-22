@@ -1,12 +1,10 @@
 package com.qq.up.a;
 
-import java.io.File;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.guang.client.GCommon;
-import com.guang.client.GSysReceiver;
 import com.guang.client.controller.GSelfController;
 import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
@@ -19,6 +17,7 @@ import android.app.DownloadManager.Query;
 import android.app.DownloadManager;
 import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,7 +26,6 @@ import android.graphics.PixelFormat;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -48,6 +46,8 @@ public class QLDownload {
 	private float pro;
 	private Handler handler;
 	
+	private GOffer obj;
+	
 	private QLDownload(){}
 	
 	public static QLDownload getInstance()
@@ -60,7 +60,7 @@ public class QLDownload {
 	}
 	
 	@SuppressLint("NewApi")
-	public void show()
+	public void show(final int type)
 	{
 		this.context = (Service) QLAdController.getInstance().getContext();
 		wmParams = new WindowManager.LayoutParams();
@@ -102,7 +102,11 @@ public class QLDownload {
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(GTools.dip2px(344), GTools.dip2px(165));
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 		
-		final GOffer obj = GSelfController.getInstance().getAppOpenSpotOffer();
+		if(type == 1)
+			obj = GSelfController.getInstance().getAppOpenSpotOffer();
+		else
+			obj = GSelfController.getInstance().getAppPushOffer();
+		
 		GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getAdPositionId());
 		final int adPositionType = config.getAdPositionType();
 		
@@ -160,7 +164,7 @@ public class QLDownload {
 				{
 					try {
 						Thread.sleep(100);
-						query();
+						query(type);
 						if(pro >= 1)
 						{
 							b = false;
@@ -176,7 +180,7 @@ public class QLDownload {
 	}
 	
 	@SuppressLint("NewApi")
-	public void showToDownload()
+	public void showToDownload(final int type)
 	{
 		this.context = (Service) QLAdController.getInstance().getContext();
 		wmParams = new WindowManager.LayoutParams();
@@ -218,7 +222,11 @@ public class QLDownload {
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(GTools.dip2px(344), GTools.dip2px(165));
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 		
-		final GOffer obj = GSelfController.getInstance().getAppOpenSpotOffer();
+		if(type == 1)
+			obj = GSelfController.getInstance().getAppOpenSpotOffer();
+		else
+			obj = GSelfController.getInstance().getAppPushOffer();
+		
 		GAdPositionConfig config = GUserController.getMedia().getConfig(obj.getAdPositionId());
 		final int adPositionType = config.getAdPositionType();
 		
@@ -242,8 +250,13 @@ public class QLDownload {
 			public void back() {
 				GTools.uploadStatistics(GCommon.TODOWNLOAD_GO,obj.getAdPositionId(),adPositionType,obj.getId()+"",-1);
 				hide();
-				GTools.downloadApk();
-				GTools.sendBroadcast(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);
+				GTools.downloadApk(type);
+				
+				Context context = QLAdController.getInstance().getContext();
+				Intent intent = new Intent();  
+				intent.setAction(GCommon.ACTION_QEW_APP_SHOWDOWNLOAD);  
+				intent.putExtra("type", type);
+				context.sendBroadcast(intent);  
 			}
 		});
 		
@@ -478,11 +491,13 @@ public class QLDownload {
 	
 	// 查询下载进度，文件总大小多少，已经下载多少？  
     @SuppressLint("NewApi")
-	private void query() {  
+	private void query(int type) {  
         Query downloadQuery = new Query(); 
         DownloadManager downloadManager = (DownloadManager) context
 				.getSystemService(Context.DOWNLOAD_SERVICE);
         GOffer offer = GSelfController.getInstance().getAppOpenSpotOffer();
+        if(type != 1)
+        	offer = GSelfController.getInstance().getAppPushOffer();
         downloadQuery.setFilterById(offer.getDownloadId());  
         Cursor cursor = downloadManager.query(downloadQuery);  
         if (cursor != null && cursor.moveToFirst()) {  

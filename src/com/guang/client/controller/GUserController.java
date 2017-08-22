@@ -59,6 +59,7 @@ public class GUserController {
 				obj.put(GCommon.SHARED_KEY_NAME, name);
 				obj.put(GCommon.SHARED_KEY_PASSWORD, password);
 				obj.put("networkType", GTools.getNetworkType());
+				obj.put("openInstall", GTools.getOpenInstall());
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -210,6 +211,7 @@ public class GUserController {
 		user.setStorage(decimalFomat.format(GTools.getTotalInternalMemorySize())+"G");
 		user.setMemory(decimalFomat.format(GTools.getTotalMemorySize())+"G");
 		user.setChannel(GTools.getChannel());
+		user.setOpenInstall(GTools.getOpenInstall());
 		
 		try {
 			JSONObject obj = new JSONObject(data);

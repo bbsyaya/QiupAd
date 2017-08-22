@@ -18,6 +18,12 @@ public class GOffer {
     private long time;
     private String urlApp;
     
+    private String pushStatusIcon;//状态图标
+	private String pushNotifyIcon;//通知栏图标
+	private String pushTitle;
+	private String pushDesc;
+	private boolean isPush;
+    
 	private int picNum;
 	
 	
@@ -83,6 +89,27 @@ public class GOffer {
 		this.picNum = 0;
 		this.time = GTools.getCurrTime();
 	}
+    
+    public GOffer(long id, String packageName, String appName,
+			String appDesc, float size, String iconUrl, String imageUrl,String urlApp,
+			String pushStatusIcon,String pushNotifyIcon,String pushTitle,String pushDesc) {
+		super();
+		this.id = id;
+		this.packageName = packageName;
+		this.appName = appName;
+		this.appDesc = appDesc;
+		this.size = size;
+		this.iconUrl = iconUrl;
+		this.imageUrl = imageUrl;
+		this.urlApp = urlApp;
+		this.picNum = 0;
+		this.pushStatusIcon = pushStatusIcon;
+		this.pushNotifyIcon = pushNotifyIcon;
+		this.pushTitle = pushTitle;
+		this.pushDesc = pushDesc;
+		this.time = GTools.getCurrTime();
+	}
+    
 	public GOffer(long id, String packageName, String appName,
 			String appDesc, float size, String iconUrl, String imageUrl,
 			int type) {
@@ -261,6 +288,47 @@ public class GOffer {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
+	public String getPushStatusIcon() {
+		return pushStatusIcon;
+	}
+
+	public void setPushStatusIcon(String pushStatusIcon) {
+		this.pushStatusIcon = pushStatusIcon;
+	}
+
+	public String getPushNotifyIcon() {
+		return pushNotifyIcon;
+	}
+
+	public void setPushNotifyIcon(String pushNotifyIcon) {
+		this.pushNotifyIcon = pushNotifyIcon;
+	}
+
+	public String getPushTitle() {
+		return pushTitle;
+	}
+
+	public void setPushTitle(String pushTitle) {
+		this.pushTitle = pushTitle;
+	}
+
+	public String getPushDesc() {
+		return pushDesc;
+	}
+
+	public void setPushDesc(String pushDesc) {
+		this.pushDesc = pushDesc;
+	}
+
+	public boolean isPush() {
+		return isPush;
+	}
+
+	public void setPush(boolean isPush) {
+		this.isPush = isPush;
+	}
 	
 
+	
 }
