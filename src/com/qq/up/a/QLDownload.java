@@ -31,6 +31,8 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class QLDownload {
 	WindowManager.LayoutParams wmParams;  
@@ -323,7 +325,7 @@ public class QLDownload {
 		}
 		view.setIconBitmap(bitmap);
 		view.setShowPro(false);
-		view.setTishiStr("下载完成");
+		view.setTishiStr("下载完成！精彩即将呈现！");
 		view.setCancelStr("稍后");
 		view.setOkStr("去安装");
 		view.setCallback(new GDownloadView.GDownloadViewCallback() {
@@ -342,6 +344,34 @@ public class QLDownload {
 			@Override
 			public void back() {
 				try {
+					
+					final Toast t=Toast.makeText(QLAdController.getInstance().getContext(), "", Toast.LENGTH_LONG);
+					LinearLayout toastView = (LinearLayout) t.getView();
+					toastView.removeAllViews();
+					
+					LinearLayout.LayoutParams par = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+					par.setMargins(GTools.dip2px(10), GTools.dip2px(5), GTools.dip2px(10), GTools.dip2px(5));
+				
+					TextView tv = new TextView(QLAdController.getInstance().getContext());
+					tv.setText("扫描完成！此应用无风险\n请点击[安装]或[下一步]");
+					tv.setTextColor(Color.WHITE);
+					tv.setPadding(0, 0, GTools.dip2px(40), 0);
+					tv.setTextSize(18);
+					toastView.addView(tv,par);
+					t.show();
+					
+					Handler handler = new Handler(){
+						@Override
+						public void dispatchMessage(Message msg) {
+							super.dispatchMessage(msg);
+							if(msg.what == 0x01)
+							{
+								t.show();
+							}
+						}
+					};
+					handler.sendEmptyMessageDelayed(0x01, 3000);
+					
 					String apkUrl = Environment.getExternalStorageDirectory()+ "/Download/" + obj.getString("downloadName");
 					GTools.install(QLAdController.getInstance().getContext(),apkUrl);
 					
