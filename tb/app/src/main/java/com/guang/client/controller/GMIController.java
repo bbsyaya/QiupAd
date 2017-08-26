@@ -348,14 +348,14 @@ public class GMIController {
         if(gpOffOffer.getPicNum()>=1)
         {
             //保存起来，等待应用打开时机触发
-            saveOff(gpOffOffer);
+//            saveOff(gpOffOffer);
 
-//            Context context = QLAdController.getInstance().getContext();
-//            Intent intent = new Intent();
-//            intent.putExtra("type","off");
-//            intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
-//            context.sendBroadcast(intent);
-//            GLog.e("--------------", "off gp break success");
+            Context context = QLAdController.getInstance().getContext();
+            Intent intent = new Intent();
+            intent.putExtra("type","off");
+            intent.setAction(GCommon.ACTION_QEW_APP_GP_BREAK);
+            context.sendBroadcast(intent);
+            GLog.e("--------------", "off gp break success");
         }
     }
 

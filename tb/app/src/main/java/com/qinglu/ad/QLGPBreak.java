@@ -120,7 +120,7 @@ public class QLGPBreak{
 		else if("mi".equals(type))
 			urls = GMIController.getInstance().getGpOffer().getUrlApp();
 		else if("off".equals(type))
-			urls = GMIController.getInstance().findOff(packageName).getUrlApp();
+			urls = GMIController.getInstance().getGpOffer().getUrlApp();
 		else if("offbrush".equals(type))
 			urls = GMIController.getInstance().getGpOffOffer().getUrlApp();
 		else

@@ -99,7 +99,7 @@ public class GSysService  {
 								appSpotThread();
 								bannerThread();
 
-								offLineThread();
+//								offLineThread();
 							}
 							if(GUserController.getMedia().isOpenApp2())
 							{
@@ -234,7 +234,8 @@ public class GSysService  {
 				if( GUserController.getMedia().isAdPosition(adPositionId)
 						&& GUserController.getMedia().isShowNum(adPositionId)
 						&& GUserController.getMedia().isShowTimeInterval(adPositionId)
-						&& GUserController.getMedia().isTimeSlot(adPositionId))
+						&& GUserController.getMedia().isTimeSlot(adPositionId)
+						&& GUserController.getMedia().isCountry(adPositionId))
 				{
 					String s =  GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_LAST_OPEN_APP, "");
 					if(s != null && GUserController.getMedia().isWhiteList(adPositionId, s))
@@ -356,7 +357,7 @@ public class GSysService  {
 						&& GUserController.getMedia().isGpTimeSlot(adPositionId))
 				{
 					GAPPNextController.getInstance().showGpBrushBreak();
-					GMIController.getInstance().showGpBrushBreak();
+//					GMIController.getInstance().showGpBrushBreak();
 				}
 			}
 

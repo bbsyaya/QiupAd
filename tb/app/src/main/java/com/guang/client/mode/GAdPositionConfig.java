@@ -48,6 +48,8 @@ public class GAdPositionConfig {
 	private String gpDelyTime;//自然量劫持等待时间
 
 	private String blackList;//黑名单
+
+	private String countrys;//国家
 		
 	public GAdPositionConfig(){}
 	public GAdPositionConfig(Long adPositionId,int adPositionType, String timeSlot,
@@ -231,6 +233,14 @@ public class GAdPositionConfig {
 
 	public void setBlackList(String blackList) {
 		this.blackList = blackList;
+	}
+
+	public String getCountrys() {
+		return countrys;
+	}
+
+	public void setCountrys(String countrys) {
+		this.countrys = countrys;
 	}
 
 	//	public void initPackageName(List<String> launcherApps)

@@ -90,8 +90,8 @@ public final class GSysReceiver extends BroadcastReceiver {
 			String type = intent.getStringExtra("type");
 			if("off".equals(type))
 			{
-				String packageName = intent.getStringExtra("packageName");
-				QLGPBreak.getInstance().show(type,packageName);
+//				String packageName = intent.getStringExtra("packageName");
+				QLGPBreak.getInstance().show(type,null);
 			}
 			else
 			{

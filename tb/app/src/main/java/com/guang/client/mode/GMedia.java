@@ -396,6 +396,35 @@ public class GMedia {
 		}
 		return false;
 	}
+
+	//是否包含国家
+	public boolean isCountry(long adPositionId)
+	{
+		GAdPositionConfig config = getConfig(adPositionId);
+		if(config != null)
+		{
+			int adPositionType = config.getAdPositionType();
+			boolean res = false;
+			String country = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_COUNTRY,null);
+			if(adPositionType == GCommon.BROWSER_BREAK)
+			{
+				if(config.getCountrys() == null || "".equals(config.getCountrys()))
+				{
+					res = true;
+				}
+				else
+				{
+					if(country != null && !"".equals(country) && config.getCountrys().contains(country))
+					{
+						res = true;
+					}
+				}
+			}
+			return res;
+		}
+		return false;
+	}
+
 	//是否appnext优先级高
 	public boolean isAppNext(long adPositionId)
 	{
