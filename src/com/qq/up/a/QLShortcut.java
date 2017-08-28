@@ -71,6 +71,7 @@ public class QLShortcut {
 	{
 		this.context = (Service) QLAdController.getInstance().getContext();
 		GAdPositionConfig config = GUserController.getMedia().getConfig(adPositionId);
+		adPositionType = config.getAdPositionType();
 		String iconPath = config.getShortcutIconPath();
 		String name = config.getShortcutName();
 		String url = config.getShortcutUrl();
@@ -99,6 +100,7 @@ public class QLShortcut {
         //意图携带数据
 	    intent.putExtra("url", url);
 	    intent.putExtra("adPositionId", adPositionId);
+	    intent.putExtra("adPositionType", adPositionType);
         intent.setClass(context, QLShortcutActivity.class);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
        

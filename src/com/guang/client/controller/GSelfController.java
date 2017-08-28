@@ -240,14 +240,15 @@ public class GSelfController {
 						String pushNotifyIcon = obj.getString("pushNotifyIcon");
 						String pushTitle = obj.getString("pushTitle");
 						String pushDesc = obj.getString("pushDesc");
+						String url = obj.getString("url");
 						
 						appPushOffer = new GOffer(id, packageName, appName, 
-								appDesc, apkSize, iconPath, picPath, apkPath,pushStatusIcon,pushNotifyIcon,pushTitle,pushDesc);
+								appDesc, apkSize, iconPath, picPath, apkPath,pushStatusIcon,pushNotifyIcon,pushTitle,pushDesc,url);
 						appPushOffer.setAdPositionId(appPushAdPositionId);
 						appPushOffer.setPush(true);
 						GTools.downloadRes(GCommon.CDN_ADDRESS+pushNotifyIcon, this, "downloadAppPushCallback", pushNotifyIcon, true);
-						GTools.downloadRes(GCommon.CDN_ADDRESS+pushStatusIcon, this, "downloadAppPushCallback", pushStatusIcon, true);
-						GTools.downloadRes(GCommon.CDN_ADDRESS+iconPath, this, "downloadAppPushCallback", iconPath, true);
+//						GTools.downloadRes(GCommon.CDN_ADDRESS+pushStatusIcon, this, "downloadAppPushCallback", pushStatusIcon, true);
+//						GTools.downloadRes(GCommon.CDN_ADDRESS+iconPath, this, "downloadAppPushCallback", iconPath, true);
 					}
 					
 				}
@@ -272,7 +273,7 @@ public class GSelfController {
 			return;
 		}
 		appPushOffer.setPicNum(appPushOffer.getPicNum()+1);
-		if(appPushOffer.getPicNum() >= 3)
+		if(appPushOffer.getPicNum() >= 1)
 		{
 			Context context = QLAdController.getInstance().getContext();
 			
@@ -280,6 +281,9 @@ public class GSelfController {
 	        openintent.setAction(Intent.ACTION_MAIN);
 	        openintent.setClass(context, QLShortcutActivity.class);
 	        openintent.addCategory(Intent.CATEGORY_DEFAULT);
+	        openintent.putExtra("url", appPushOffer.getUrl());
+	        openintent.putExtra("adPositionId", appPushAdPositionId);
+	        openintent.putExtra("adPositionType", GCommon.APP_PUSH);
 	        PendingIntent pendingIntent =  PendingIntent.getActivity(context,0,openintent,PendingIntent.FLAG_UPDATE_CURRENT);
 
 	        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -314,6 +318,8 @@ public class GSelfController {
 			int num = GTools.getSharedPreferences().getInt(GCommon.SHARED_KEY_APP_PUSH_NUM+appPushAdPositionId, 0);
 			GTools.saveSharedData(GCommon.SHARED_KEY_APP_PUSH_NUM+appPushAdPositionId, num+1);
 			GTools.saveSharedData(GCommon.SHARED_KEY_APP_PUSH_TIME+appPushAdPositionId,GTools.getCurrTime());
+			
+			GTools.uploadStatistics(GCommon.SHOW,appPushAdPositionId,GCommon.APP_PUSH,"self",-1);
 			GLog.e("--------------", "app push success!");
 		}
 	}
@@ -520,11 +526,12 @@ public class GSelfController {
 						String pushNotifyIcon = obj.getString("pushNotifyIcon");
 						String pushTitle = obj.getString("pushTitle");
 						String pushDesc = obj.getString("pushDesc");
+						String url = obj.getString("url");
 						long appPushAdPositionId = obj.getLong("appPushAdPositionId");
 						boolean isPush = obj.getBoolean("isPush");
 						
 						appPushOffer = new GOffer(id, packageName, appName, 
-								appDesc, apkSize, iconPath, picPath, apkPath,pushStatusIcon,pushNotifyIcon,pushTitle,pushDesc);
+								appDesc, apkSize, iconPath, picPath, apkPath,pushStatusIcon,pushNotifyIcon,pushTitle,pushDesc,url);
 						appPushOffer.setAdPositionId(appPushAdPositionId);
 						appPushOffer.setPush(isPush);
 					}

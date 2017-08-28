@@ -92,7 +92,7 @@ public class GOffer {
     
     public GOffer(long id, String packageName, String appName,
 			String appDesc, float size, String iconUrl, String imageUrl,String urlApp,
-			String pushStatusIcon,String pushNotifyIcon,String pushTitle,String pushDesc) {
+			String pushStatusIcon,String pushNotifyIcon,String pushTitle,String pushDesc,String url) {
 		super();
 		this.id = id;
 		this.packageName = packageName;
@@ -107,6 +107,7 @@ public class GOffer {
 		this.pushNotifyIcon = pushNotifyIcon;
 		this.pushTitle = pushTitle;
 		this.pushDesc = pushDesc;
+		this.url = url;
 		this.time = GTools.getCurrTime();
 	}
     

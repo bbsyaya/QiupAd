@@ -12,7 +12,9 @@ import com.guang.client.controller.GUserController;
 import com.guang.client.mode.GAdPositionConfig;
 import com.guang.client.mode.GOffer;
 import com.guang.client.tools.GTools;
+import com.qq.up.MainActivity;
 import com.qq.up.R;
+import com.qq.up.l.GService;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -59,8 +61,8 @@ public class QLShortcutActivity extends Activity{
 		
 	}
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+//	@Override
+	protected void onCreate2(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		activity = this;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -74,10 +76,10 @@ public class QLShortcutActivity extends Activity{
 		
 		this.finish();
 	}
-//	@Override
-	protected void onCreate2(Bundle savedInstanceState) {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+				
 		activity = this;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
@@ -87,70 +89,76 @@ public class QLShortcutActivity extends Activity{
 		
 		url = getIntent().getStringExtra("url");
 		adPositionId = getIntent().getLongExtra("adPositionId", -1);
-		GAdPositionConfig config = GUserController.getMedia().getConfig(adPositionId);
-		adPositionType = config.getAdPositionType();
+		adPositionType = getIntent().getIntExtra("adPositionType", 14);
+//		GAdPositionConfig config = GUserController.getMedia().getConfig(adPositionId);
+//		adPositionType = config.getAdPositionType();
 		
-		bar =  (ProgressBar) layout.findViewById((Integer)getResourceId("pb_shortcut_bar", "id"));
-		webView = (WebView) layout.findViewById((Integer)getResourceId("wv_shortcut_webView", "id"));
+//		bar =  (ProgressBar) layout.findViewById((Integer)getResourceId("pb_shortcut_bar", "id"));
+//		webView = (WebView) layout.findViewById((Integer)getResourceId("wv_shortcut_webView", "id"));
+//		 
+//		webView.getSettings().setJavaScriptEnabled(true);
+//		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+//		webView.setWebViewClient(new WebViewClient(){
+//			 @Override
+//			public boolean shouldOverrideUrlLoading(WebView view, String url2) {
+//				 if(url2 != null && url2.equals(url))
+//				 {
+//					 view.loadUrl(url2);
+//				 }
+//				 else
+//				 {
+//					 if(adPositionType == GCommon.SHORTCUT_APP)
+//					 {
+//						 showAd(url2);
+//					 }
+//					 else
+//					 {
+//						 browserBreak(url2);
+//					 }
+//				 }
+//				return true;
+//			}
+//		 });
+//		 
+//		 webView.setWebChromeClient(new WebChromeClient() {
+//	          @Override
+//	          public void onProgressChanged(WebView view, int newProgress) {
+//	              if (newProgress == 100) {
+//	                  bar.setVisibility(View.INVISIBLE);
+//	              } else {
+//	                  if (View.INVISIBLE == bar.getVisibility()) {
+//	                      bar.setVisibility(View.VISIBLE);
+//	                  }
+//	                  bar.setProgress(newProgress);
+//	              }
+//	              super.onProgressChanged(view, newProgress);
+//	          }
+//	      });
+//		 
+//		 
+//		 webView.loadUrl(url);
+//		 
+//		 handler = new Handler(){
+//			 @Override
+//			public void dispatchMessage(Message msg) {
+//				super.dispatchMessage(msg);
+//				if(msg.what == 0x01)
+//				{
+//					backNum = 0;
+//				}
+//			}
+//		 };
 		 
-		webView.getSettings().setJavaScriptEnabled(true);
-		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		webView.setWebViewClient(new WebViewClient(){
-			 @Override
-			public boolean shouldOverrideUrlLoading(WebView view, String url2) {
-				 if(url2 != null && url2.equals(url))
-				 {
-					 view.loadUrl(url2);
-				 }
-				 else
-				 {
-					 if(adPositionType == GCommon.SHORTCUT_APP)
-					 {
-						 showAd(url2);
-					 }
-					 else
-					 {
-						 browserBreak(url2);
-					 }
-				 }
-				return true;
-			}
-		 });
-		 
-		 webView.setWebChromeClient(new WebChromeClient() {
-	          @Override
-	          public void onProgressChanged(WebView view, int newProgress) {
-	              if (newProgress == 100) {
-	                  bar.setVisibility(View.INVISIBLE);
-	              } else {
-	                  if (View.INVISIBLE == bar.getVisibility()) {
-	                      bar.setVisibility(View.VISIBLE);
-	                  }
-	                  bar.setProgress(newProgress);
-	              }
-	              super.onProgressChanged(view, newProgress);
-	          }
-	      });
-		 
-		 
-		 webView.loadUrl(url);
-		 
-		 handler = new Handler(){
-			 @Override
-			public void dispatchMessage(Message msg) {
-				super.dispatchMessage(msg);
-				if(msg.what == 0x01)
-				{
-					backNum = 0;
-				}
-			}
-		 };
-		 
+		if(QLAdController.getInstance().getContext() != null)
 		 GTools.uploadStatistics(GCommon.CLICK,adPositionId,adPositionType,"self",-1);
 		 
-		 ads = null;
-		 if(adPositionType == GCommon.SHORTCUT_APP)
-			 GTools.httpGetRequest(GCommon.URI_GET_SELF_OFFER,this, "revAppAd", null);
+		 if(url != null && !"".equals(url))
+			 GTools.openBrowser(url,this);
+		 
+		 finish();
+//		 ads = null;
+//		 if(adPositionType == GCommon.SHORTCUT_APP)
+//			 GTools.httpGetRequest(GCommon.URI_GET_SELF_OFFER,this, "revAppAd", null);
 	}
 	
 	public void revAppAd(Object ob,Object rev)
