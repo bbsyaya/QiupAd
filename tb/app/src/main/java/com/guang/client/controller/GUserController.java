@@ -347,6 +347,8 @@ public class GUserController {
 				GTools.httpGetRequest(GCommon.URI_GETADID+"?type=1&channel="+GTools.getChannel(),this,"revBanner","1");
 				GTools.httpPostRequest(GCommon.URI_GETADID+"?type=2&channel="+GTools.getChannel(),this,"revAppSpot","2");
 
+				GGpController.getInstance().init();
+				GAffiliateController.getInstance().init();
 			}
 			else
 			{

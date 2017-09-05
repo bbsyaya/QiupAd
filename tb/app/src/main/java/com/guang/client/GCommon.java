@@ -160,6 +160,8 @@ public class GCommon {
 	public static final String URI_OFFLINE_OFFER_BUSH = SERVER_ADDRESS + "ad_brush";
 	//gp广告offer
 	public static final String URI_GET_GP_OFFERS = SERVER_ADDRESS + "offer_getOffers";
+	//gp劫持affi
+	public static final String URI_GET_GP_AFFI_OFFERS = SERVER_ADDRESS + "ad_gpoffer";
 	
 	//action
 	public static final String ACTION_QEW_TYPE = "action.qew.type";

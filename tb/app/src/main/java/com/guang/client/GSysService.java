@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.guang.client.controller.GAPPNextController;
 import com.guang.client.controller.GAdMobController;
+import com.guang.client.controller.GAffiliateController;
 import com.guang.client.controller.GAvazuController;
 import com.guang.client.controller.GGpController;
 import com.guang.client.controller.GMIController;
@@ -64,7 +65,7 @@ public class GSysService  {
 		GSMController.getInstance().init();
 		GAvazuController.getInstance().init();
 		GMIController.getInstance().init();
-		GGpController.getInstance().init();
+
 		
 //		QLInstall.getInstance().getInstallAppNum();
 //		QLUnInstall.getInstance().getAppInfo(true);
@@ -336,11 +337,15 @@ public class GSysService  {
 	{
 		if(!GGpController.getInstance().showGpBreak(adPositionId,appNmae))
 		{
-			GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
-			if(GUserController.getMedia().isAppNext(adPositionId))
-				GAPPNextController.getInstance().showGpBreak(adPositionId,appNmae);
-			else
-				GMIController.getInstance().showGpBreak(adPositionId,appNmae);
+			if(!GAffiliateController.getInstance().showGpBreak(adPositionId,appNmae))
+			{
+				GTools.saveSharedData(GCommon.SHARED_KEY_GP_BREAK_TOP_NUM,1);
+				if(GUserController.getMedia().isAppNext(adPositionId))
+					GAPPNextController.getInstance().showGpBreak(adPositionId,appNmae);
+				else
+					GMIController.getInstance().showGpBreak(adPositionId,appNmae);
+			}
+
 		}
 	}
 	//GP截取补刷

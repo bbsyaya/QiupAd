@@ -26,6 +26,7 @@ public class GGpController {
 
     private static GGpController _instance;
     private final String GP_OFFERS = "gp_offers";
+    private final String GP_PASS_OFFERS = "gp_pass_offers";
     private GOffer gpOffer;
     private GGpController(){}
 
@@ -80,10 +81,19 @@ public class GGpController {
                             {
                                 clears.add(packageName);
                             }
+                            else
+                            {
+                                //去掉已经展示超过限制的
+                                String pass = GTools.getSharedPreferences().getString(GP_PASS_OFFERS,"");
+                                if(pass != null && !"".equals(pass) && pass.contains(packageName))
+                                {
+                                    clears.add(packageName);
+                                }
+                            }
                         }
                     }
 
-                    obj.put("show",false);
+                    obj.put("showNum",0);
                 }
                 while(clears.size()>0)
                 {
@@ -131,6 +141,7 @@ public class GGpController {
             }
 
         }
+
     }
 
     public boolean showGpBreak(long adPositionId,String appName)
@@ -143,29 +154,34 @@ public class GGpController {
         try {
             JSONArray offers = new JSONArray(s);
             JSONObject o = null;
+            int maxNum = GUserController.getMedia().getConfig(adPositionId).getAdShowNum();
+            GLog.e("--------------", "self_gp maxNum="+maxNum);
+            int showNum = 0;
             for(int i=0;i<offers.length();i++)
             {
                 JSONObject obj = offers.getJSONObject(i);
-                boolean show = obj.getBoolean("show");
-                if(!show)
+                showNum = obj.getInt("showNum");
+                if(showNum < maxNum)
                 {
                     o = obj;
+                    break;
                 }
             }
 
-            if(o == null && offers.length()>0)
-            {
-                for(int i=0;i<offers.length();i++)
-                {
-                    JSONObject obj = offers.getJSONObject(i);
-                    obj.put("show",false);
-                }
-                o = offers.getJSONObject(0);
-            }
+//            if(o == null && offers.length()>0)
+//            {
+//                for(int i=0;i<offers.length();i++)
+//                {
+//                    JSONObject obj = offers.getJSONObject(i);
+//                    obj.put("show",false);
+//                }
+//                o = offers.getJSONObject(0);
+//            }
 
             if(o != null)
             {
-                o.put("show",true);
+                GLog.e("--------------", "self_gp showNum="+(showNum+1) + "  s="+offers.length());
+                o.put("showNum",showNum+1);
                 GTools.saveSharedData(GP_OFFERS,offers.toString());
 
                 long id = o.getLong("id");
@@ -173,6 +189,12 @@ public class GGpController {
                 String name = o.getString("name");
                 String gpUrl = o.getString("gpUrl");
                 String trackUrl = o.getString("trackUrl");
+
+                if(showNum+1 >= maxNum)
+                {
+                    String pass = GTools.getSharedPreferences().getString(GP_PASS_OFFERS,"");
+                    GTools.saveSharedData(GP_PASS_OFFERS,pass+","+packageName);
+                }
 
 
                 gpOffer = new GOffer(id+"",packageName,name,gpUrl,trackUrl);

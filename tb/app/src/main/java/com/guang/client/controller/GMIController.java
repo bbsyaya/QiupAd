@@ -721,6 +721,11 @@ public class GMIController {
         }.start();
     }
 
+    public String getGoogleAid()
+    {
+        return advid;
+    }
+
     class AdInfo {
         private final String advertisingId;
         private final boolean limitAdTrackingEnabled;

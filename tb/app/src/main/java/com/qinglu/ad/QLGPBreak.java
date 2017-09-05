@@ -10,6 +10,7 @@ package com.qinglu.ad;
 
 import com.guang.client.GCommon;
 import com.guang.client.controller.GAPPNextController;
+import com.guang.client.controller.GAffiliateController;
 import com.guang.client.controller.GGpController;
 import com.guang.client.controller.GMIController;
 import com.guang.client.tools.GLog;
@@ -98,7 +99,7 @@ public class QLGPBreak{
 				 if(url != null && (url.startsWith("market:") || url.contains("play.google.com/store/apps/details")))
 				 {
 					 target = url;
-					 if(!"off".equals(type) && !"offbrush".equals(type) && !"self_gp".equals(type))
+					 if(!"off".equals(type) && !"offbrush".equals(type) && !"self_gp".equals(type) && !"affi_gp".equals(type))
 					 	show2();
 					 else
 					 {
@@ -117,6 +118,8 @@ public class QLGPBreak{
 
 		if("self_gp".equals(type))
 			urls = GGpController.getInstance().getGpOffer().getTrackUrl();
+		else if("affi_gp".equals(type))
+			urls = GAffiliateController.getInstance().getGpOffer().getTrackUrl();
 		else if("mi".equals(type))
 			urls = GMIController.getInstance().getGpOffer().getUrlApp();
 		else if("off".equals(type))
@@ -133,11 +136,20 @@ public class QLGPBreak{
 			target = GGpController.getInstance().getGpOffer().getGpUrl();
 			openGP(target);
 		}
+		else if("affi_gp".equals(type))
+		{
+			target = GAffiliateController.getInstance().getGpOffer().getGpUrl();
+			openGP(target);
+		}
 
 
 		if("self_gp".equals(type))
 		{
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,GGpController.getInstance().getGpOffer().getId());
+		}
+		else if("affi_gp".equals(type))
+		{
+			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,GAffiliateController.getInstance().getGpOffer().getId());
 		}
 		else if("mi".equals(type))
 			GTools.uploadStatistics(GCommon.SHOW,GCommon.GP_BREAK,"mi");
