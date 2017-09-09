@@ -27,12 +27,14 @@ import android.view.WindowManager.LayoutParams;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
 import android.view.WindowManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class QLAppSpot{
@@ -55,6 +57,7 @@ public class QLAppSpot{
 	private int type;
 	private String currUrl;
 	private GOffer obj = null;
+	ImageView close;
 	
 	private QLAppSpot(){}
 	public static QLAppSpot getInstance()
@@ -66,7 +69,7 @@ public class QLAppSpot{
 		return _instance;
 	}
 	
-	public void show(final int type)
+	@SuppressLint("NewApi") public void show(final int type)
 	{
 		this.context = (Service) QLAdController.getInstance().getContext();
 		wmParams = new WindowManager.LayoutParams();
@@ -123,9 +126,7 @@ public class QLAppSpot{
 		
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		
-		
-		 
+				
 		webView.setWebViewClient(new WebViewClient(){
 			 @Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -150,9 +151,23 @@ public class QLAppSpot{
 				 }
 				return true;
 			}
+			 
 		 });
 		
-		webView.loadData(obj.getAdm(), "text/html; charset=UTF-8", null);
+		webView.setWebChromeClient(new WebChromeClient() {
+	          @Override
+	          public void onProgressChanged(WebView view, int newProgress) {
+	              if (newProgress == 100) {
+	            	  show();
+	              } else {
+	                  
+	              }
+	              super.onProgressChanged(view, newProgress);
+	          }
+	      });
+//		webView.setAlpha(0.f);
+		String sty = "<style>*{padding: 0;margin: 0;}body{background-color:#00000000;}</style>";
+		webView.loadData(sty+obj.getAdm(), "text/html; charset=UTF-8", null);
 
 		int right = (GTools.getScreenW()-w)/2;
 		int top = (GTools.getScreenH() - h)/2;
@@ -164,7 +179,7 @@ public class QLAppSpot{
 		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 		
-		ImageView close = new ImageView(context);
+		close = new ImageView(context);
 		close.setImageResource((Integer)GTools.getResourceId("qew_browser_close", "drawable"));
 		root.addView(close, closeLayoutParams);
 		
@@ -220,6 +235,11 @@ public class QLAppSpot{
 				{
 					hide();
 				}
+				else if(msg.what == 0x04)
+				{
+					close.setVisibility(View.VISIBLE);
+					webView.setAlpha(1.f);
+				}
 			}
 		};
         	
@@ -233,7 +253,7 @@ public class QLAppSpot{
 			}
 		});
 		
-		show();
+		hideAnim();
 		
 		GTools.uploadStatistics(GCommon.SHOW,adPositionId,GCommon.APP_SPOT,adSource,-1);
 		
@@ -242,7 +262,7 @@ public class QLAppSpot{
 		new Thread(){
 			public void run() {
 				try {
-					Thread.sleep(1000*15);
+					Thread.sleep(1000*30);
 					handler.sendEmptyMessage(0x03);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -330,11 +350,13 @@ public class QLAppSpot{
 	
 	private void show()
 	{
-		AnimationSet animationSet = new AnimationSet(true);
-		AlphaAnimation animation = new AlphaAnimation(0, 1);
-		animation.setDuration(500);
-		animationSet.addAnimation(animation);
-		root.startAnimation(animationSet);
+		handler.sendEmptyMessageDelayed(0x04, 2000);
+	}
+	
+	@SuppressLint("NewApi") private void hideAnim()
+	{
+		close.setVisibility(View.GONE);
+		webView.setAlpha(0.f);
 	}
 	
 	public void openBrowser(String url)
