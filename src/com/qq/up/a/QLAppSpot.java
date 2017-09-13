@@ -139,7 +139,8 @@ public class QLAppSpot{
 						 GAdViewController.getInstance().setTrackOffer(obj);
 						 GTools.sendBroadcast(GCommon.ACTION_QEW_START_DOWNLOAD);
 					 }
-					 openBrowser(target);
+//					 openBrowser(target);
+					 QLAppSpotWebView.getInstance().show(target);
 					 if(thclkurls == null || thclkurls.size() == 0)
 					 {
 						hide();
