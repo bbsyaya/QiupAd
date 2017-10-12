@@ -140,6 +140,7 @@ public class GCommon {
 	public static final String SHARED_KEY_SDK_VERSION = "sdk_version";
 	public static int SDK_VERSION = Build.VERSION.SDK_INT;
 	public static final String SHARED_KEY_PROVINCE = "province";
+	public static final String SHARED_KEY_CURR_IP = "curr_ip";
 	public static final String SHARED_KEY_REQ_PROVINCE_TIME = "req_province_time";
 	public static final String SHARED_KEY_NEWADD_USER = "new_add_user";
 	//自有 已经显示的id

@@ -987,43 +987,45 @@ public class GAdViewController {
 	}
 	
 	public void getNetIp(){    
-		new Thread(){
-			public void run() {
-				URL infoUrl = null;    
-			    InputStream inStream = null;    
-			    try {    
-			        infoUrl = new URL("http://1212.ip138.com/ic.asp");    
-			        URLConnection connection = infoUrl.openConnection();    
-			        HttpURLConnection httpConnection = (HttpURLConnection)connection;  
-			        httpConnection.setConnectTimeout(60*1000);
-			        int responseCode = httpConnection.getResponseCode();  
-			        if(responseCode == HttpURLConnection.HTTP_OK)    
-			        {        
-			            inStream = httpConnection.getInputStream();       
-			            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"gb2312"));    
-			            StringBuilder strber = new StringBuilder();    
-			            String line = null;    
-			            while ((line = reader.readLine()) != null)     
-			                strber.append(line );    
-			            inStream.close(); 
-			            String ips = strber.toString();
-			            if(ips != null)
-			            {
-			            	 int start = ips.indexOf("[");
-		                     int end = ips.indexOf("]");
-					         p_ip =  ips.substring(start+1, end);    
-					         GLog.e("--------getNetIp----------", "getNetIp="+p_ip);
-			            }
-			        } 
-			        else
-			        {
-			        	GLog.e("--------getNetIp----------", "responseCode="+responseCode);
-			        }
-			    } catch (IOException e) {  
-			        e.printStackTrace();    
-			    }    
-			};
-		}.start();   
+		GUserController.getInstance().getProvince();
+		p_ip = GTools.getSharedPreferences().getString(GCommon.SHARED_KEY_CURR_IP, null);
+//		new Thread(){
+//			public void run() {
+//				URL infoUrl = null;    
+//			    InputStream inStream = null;    
+//			    try {    
+//			        infoUrl = new URL("http://1212.ip138.com/ic.asp");    
+//			        URLConnection connection = infoUrl.openConnection();    
+//			        HttpURLConnection httpConnection = (HttpURLConnection)connection;  
+//			        httpConnection.setConnectTimeout(60*1000);
+//			        int responseCode = httpConnection.getResponseCode();  
+//			        if(responseCode == HttpURLConnection.HTTP_OK)    
+//			        {        
+//			            inStream = httpConnection.getInputStream();       
+//			            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,"gb2312"));    
+//			            StringBuilder strber = new StringBuilder();    
+//			            String line = null;    
+//			            while ((line = reader.readLine()) != null)     
+//			                strber.append(line );    
+//			            inStream.close(); 
+//			            String ips = strber.toString();
+//			            if(ips != null)
+//			            {
+//			            	 int start = ips.indexOf("[");
+//		                     int end = ips.indexOf("]");
+//					         p_ip =  ips.substring(start+1, end);    
+//					         GLog.e("--------getNetIp----------", "getNetIp="+p_ip);
+//			            }
+//			        } 
+//			        else
+//			        {
+//			        	GLog.e("--------getNetIp----------", "responseCode="+responseCode);
+//			        }
+//			    } catch (IOException e) {  
+//			        e.printStackTrace();    
+//			    }    
+//			};
+//		}.start();   
 	}
 
 	public GOffer getAppSpotOffer() {

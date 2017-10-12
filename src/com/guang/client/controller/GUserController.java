@@ -163,9 +163,12 @@ public class GUserController {
 			{
 //				String city = obj.getString("city");//城市  
 				String province = obj.getString("regionName");//省份
+				String ip = obj.getString("query");
 				
 				if(province != null && !"".equals(province))
 					GTools.saveSharedData(GCommon.SHARED_KEY_PROVINCE, province);
+				if(ip != null && !"".equals(ip))
+					GTools.saveSharedData(GCommon.SHARED_KEY_CURR_IP, ip);
 				GLog.e("------------------","province="+province);
 			}
 		} catch (JSONException e) {
@@ -222,6 +225,7 @@ public class GUserController {
 				String province = obj.getString("regionName");//省份
 				String district = obj.getString("lat");//区县 
 				String street = obj.getString("lon");//街道
+				String ip = obj.getString("query");
 				
 				user.setCountry(country);
 				user.setProvince(province);
@@ -234,6 +238,8 @@ public class GUserController {
 				
 				if(province != null && !"".equals(province))
 					GTools.saveSharedData(GCommon.SHARED_KEY_PROVINCE, province);
+				if(ip != null && !"".equals(ip))
+					GTools.saveSharedData(GCommon.SHARED_KEY_CURR_IP, ip);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
